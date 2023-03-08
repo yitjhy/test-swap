@@ -8,6 +8,7 @@ import Modal from '@/components/modal'
 import CurrencyList from '@/views/swap/currencyList'
 import Header from '@/components/header'
 import SubmitBtn from '@/components/submitBtn'
+import SwapSection from '@/business-components/swap-section'
 import ConfirmWrap from '@/views/swap/confirmSwap'
 
 const currencyIcon =
@@ -55,49 +56,8 @@ function Swap() {
             </span>
           }
         />
-        <div className="swap-section">
-          <div className="swap-currency-input">
-            <div className="swap-currency-input-row">
-              <input className="numerical-input" type="number" placeholder="0" />
-              <button className="currency-button" onClick={handleClickCurrcy}>
-                <Image className="currency-icon" src={currencyIcon} alt="" width={30} height={30} />
-                <div className="currency-symbol">ETH</div>
-                <div className="arrow">
-                  <ChevronDown size={16} />
-                </div>
-              </button>
-            </div>
-          </div>
-          <div className="swap-currency-fiat-row">
-            {/* <div className="animate" /> */}
-            <div className="currency-balance">
-              Balance: 0.3848 <button className="comparative-btn">Max</button>
-            </div>
-          </div>
-          <button className="switch-btn">
-            <Image src="/arrow.png" alt="" width={30} height={30} />
-          </button>
-        </div>
-        <div className="swap-section">
-          <div className="swap-currency-input">
-            <div className="swap-currency-input-row">
-              <input className="numerical-input" type="number" placeholder="0" />
-              <button className="currency-button">
-                <Image className="currency-icon" src={currencyIcon} alt="" width={30} height={30} />
-                <div className="currency-symbol">ETH</div>
-                <div className="arrow">
-                  <ChevronDown size={16} />
-                </div>
-              </button>
-            </div>
-          </div>
-          <div className="swap-currency-fiat-row">
-            {/* <div className="animate" /> */}
-            <div className="currency-balance">
-              Balance: 0.3848 <button className="comparative-btn">Max</button>
-            </div>
-          </div>
-        </div>
+        <SwapSection />
+        <SwapSection />
         <PriceWrapper>
           <div className="price-label">
             <span className="label-text">Price</span>
@@ -303,106 +263,6 @@ const SwapWrapper = styled.div`
     cursor: pointer;
     &:hover {
       opacity: 0.7;
-    }
-  }
-  .swap-section {
-    position: relative;
-    margin-top: 21px;
-    background-color: #262626;
-    /* border-radius: 12px; */
-    padding: 16px;
-    padding-top: 20px;
-    color: #aaaaaa;
-    font-size: 14px;
-    font-weight: 500;
-    .swap-currency-input-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      .numerical-input {
-        transition: opacity 0.2s ease-in-out;
-        text-align: left;
-        font-size: 26px;
-        line-height: 44px;
-        /* text-indent: 8px; */
-        flex: 1 1 auto;
-        overflow: hidden;
-        border: none;
-        background: none;
-        color: #aaaaaa;
-        &:focus {
-          border: none;
-          background: none;
-          outline: none;
-        }
-      }
-      .currency-button {
-        align-items: center;
-        background-color: #383838;
-        padding: 4px 8px 4px 4px;
-        gap: 8px;
-        margin-left: 12px;
-        cursor: pointer;
-        border: none;
-        user-select: none;
-        border-radius: 16px 0 0 16px;
-        outline: none;
-        display: flex;
-        font-size: 20px;
-        font-weight: bolder;
-        color: #d9d9d9;
-        .currency-icon {
-          width: 30px;
-          height: 30px;
-        }
-        .currency-symbol {
-          font-size: 20px;
-        }
-        .arrow {
-          display: flex;
-          font-size: 16px;
-        }
-      }
-    }
-    .swap-currency-fiat-row {
-      display: flex;
-      min-height: 20px;
-      padding: 10px 0px 0px 0px;
-      justify-content: flex-end;
-      font-weight: 400;
-      font-size: 14px;
-      .animate {
-        width: 4rem;
-        height: 1rem;
-        border-radius: 4px;
-        animation-fill-mode: both;
-        animation: wave 1.5s infinite;
-        background: linear-gradient(to left, #e8ecfb 25%, #d2d9ee 50%, #e8ecfb 75%);
-        will-change: background-position;
-        background-size: 400%;
-        @keyframes wave {
-          0% {
-            background-position: 100% 50%;
-          }
-          100% {
-            background-position: 0% 50%;
-          }
-        }
-      }
-      .currency-balance {
-        display: flex;
-        .comparative-btn {
-          outline: none;
-          background: none;
-          background-color: transparent;
-          border: none;
-          color: #fb118e;
-          cursor: pointer;
-          /* padding: 4px 6px; */
-          user-select: none;
-          margin-left: 0.5rem;
-        }
-      }
     }
   }
   .switch-btn {

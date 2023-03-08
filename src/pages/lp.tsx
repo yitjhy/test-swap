@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import Image from 'next/image'
 import styled from 'styled-components'
-import Collapse from '@/components/collapse/collapse'
+import Collapse from '@/components/collapse'
 import LPDetail from '@/views/lp/lp-detail'
 
 const imgSrc =

@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import React, { useState, memo, FC } from 'react'
 
 interface HeaderProps {
-  title: string
+  title: React.ReactNode
   showOperation: boolean
   onClick?: Function
   className?: string

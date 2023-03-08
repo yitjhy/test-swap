@@ -37,7 +37,7 @@ const Collapse: FC<TCollapseProps> = ({
     if (globalIsExpand && size) {
       setOffsetHeight(size?.height)
     }
-  }, [size])
+  }, [size, globalIsExpand])
   if (!children) {
     return <Header title={title} showOperation={showOperation} onClick={handleClickHeader} operation={operation} />
   }

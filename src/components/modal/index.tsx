@@ -1,38 +1,28 @@
-import styled from 'styled-components';
-import { X } from 'react-feather';
-import { FC, ReactNode, useEffect, useState, MouseEvent } from 'react';
+import styled from 'styled-components'
+import { X } from 'react-feather'
+import { FC, ReactNode, useEffect, useState, MouseEvent } from 'react'
 export type TModalProps = {
-  open: boolean;
-  title: ReactNode;
-  content: ReactNode;
-  onClose: (open: boolean) => void;
-  contentStyle?: React.CSSProperties;
-};
-const Modal: FC<TModalProps> = ({
-  title,
-  content,
-  open,
-  onClose,
-  contentStyle,
-}) => {
-  const [isOpen, setIsOpen] = useState(open);
+  open: boolean
+  title: ReactNode
+  content: ReactNode
+  onClose: (open: boolean) => void
+  contentStyle?: React.CSSProperties
+}
+const Modal: FC<TModalProps> = ({ title, content, open, onClose, contentStyle }) => {
+  const [isOpen, setIsOpen] = useState(open)
   useEffect(() => {
-    setIsOpen(open);
-  }, [open]);
+    setIsOpen(open)
+  }, [open])
   const handleClose = () => {
-    setIsOpen(false);
-    onClose(false);
-  };
+    setIsOpen(false)
+    onClose(false)
+  }
   const stopPropagation = (e: MouseEvent) => {
-    e.stopPropagation();
-  };
+    e.stopPropagation()
+  }
   return (
     <ModalWrapper open={isOpen} onClick={handleClose}>
-      <div
-        className="modal-content-wrapper"
-        onClick={stopPropagation}
-        style={contentStyle}
-      >
+      <div className="modal-content-wrapper" onClick={stopPropagation} style={contentStyle}>
         <div className="modal-header">
           <span className="modal-header-title">{title}</span>
           <X color="#9C9C9C" cursor="pointer" onClick={handleClose} />
@@ -40,8 +30,8 @@ const Modal: FC<TModalProps> = ({
         <>{content}</>
       </div>
     </ModalWrapper>
-  );
-};
+  )
+}
 const ModalWrapper = styled.div<{ open: boolean }>`
   visibility: ${({ open }) => (open ? 'visible' : 'hidden')};
   opacity: ${({ open }) => (open ? 1 : 0)};
@@ -71,11 +61,11 @@ const ModalWrapper = styled.div<{ open: boolean }>`
       justify-content: space-between;
       align-items: center;
       .modal-header-title {
-        font-size: 16px;
+        font-size: 20px;
       }
       .modal-close-icon {
       }
     }
   }
-`;
-export default Modal;
+`
+export default Modal

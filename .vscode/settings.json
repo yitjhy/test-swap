@@ -1,0 +1,12 @@
+{
+    "eslint.alwaysShowStatus": true,
+    "eslint.format.enable": true,
+    "eslint.packageManager": "yarn",
+    "files.eol": "\n",
+    "prettier.singleQuote": true,
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": false,
+    "editor.formatOnType": false,
+    "solidity.formatter": "prettier"
+  }
+  

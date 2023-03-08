@@ -90,7 +90,6 @@ const RecommandCurrency = styled.div`
     color: #d9d9d9;
     background: #262626;
     column-gap: 0.55rem;
-    height: 20px;
     cursor: pointer;
     .currency-logo {
       width: 24px;

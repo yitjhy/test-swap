@@ -1,4 +1,4 @@
-import { useState, FC, useEffect } from 'react'
+import { useState, FC, useEffect, ChangeEvent } from 'react'
 import styled from 'styled-components'
 
 type TSliderProps = {
@@ -7,7 +7,7 @@ type TSliderProps = {
 }
 const Slider: FC<TSliderProps> = ({ onChange, value: sliderValue = 50 }) => {
   const [value, setValue] = useState<number>(sliderValue | 50)
-  const onSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onSliderChange = (e: ChangeEvent<HTMLInputElement>) => {
     setValue(Number(e.target.value))
     onChange(Number(e.target.value))
   }

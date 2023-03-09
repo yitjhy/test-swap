@@ -1,12 +1,12 @@
 import styled from 'styled-components'
 import { X } from 'react-feather'
-import { FC, ReactNode, useEffect, useState, MouseEvent } from 'react'
+import { FC, ReactNode, useEffect, useState, MouseEvent, CSSProperties } from 'react'
 export type TModalProps = {
   open: boolean
   title: ReactNode
   content: ReactNode
   onClose: (open: boolean) => void
-  contentStyle?: React.CSSProperties
+  contentStyle?: CSSProperties
 }
 const Modal: FC<TModalProps> = ({ title, content, open, onClose, contentStyle }) => {
   const [isOpen, setIsOpen] = useState(open)
@@ -36,7 +36,7 @@ const ModalWrapper = styled.div<{ open: boolean }>`
   visibility: ${({ open }) => (open ? 'visible' : 'hidden')};
   opacity: ${({ open }) => (open ? 1 : 0)};
   position: fixed;
-  background: #373737;
+  background: rgba(0, 0, 0, 0.92);
   transition: all linear 0.15s;
   width: 100vw;
   height: 100vh;
@@ -49,7 +49,7 @@ const ModalWrapper = styled.div<{ open: boolean }>`
   .modal-content-wrapper {
     display: grid;
     grid-auto-rows: auto;
-    row-gap: 12px;
+    row-gap: 25px;
     z-index: 2;
     background: #1a1a1a;
     padding: 20px;

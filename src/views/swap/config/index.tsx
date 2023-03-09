@@ -18,6 +18,7 @@ const Config = () => {
         open={isExpertModeModalOpen}
         onClose={handleExpertModeModalOpen}
       />
+      <div className="split-line" />
       <ConfigItemWrapper>
         <ConfigLabelWrapper>
           <span className="label-text">Slippage Tolerance</span>
@@ -92,7 +93,7 @@ const Config = () => {
               />
             </span>
           </ConfigLabelWrapper>
-          <div>
+          <div style={{ paddingRight: '2rem' }}>
             <Switch
               checked={configData.isExpertMode}
               onChange={(isExpertMode) => {
@@ -121,10 +122,10 @@ const ConfigWrapper = styled.div`
   row-gap: 25px;
   color: #d9d9d9;
   font-size: 14px;
-  padding-top: 3rem;
   padding-bottom: 2rem;
-  /* width: 19rem; */
-  /* min-width: 20rem; */
+  .split-line {
+    border-top: 1px solid #262626;
+  }
   .config-title {
     font-weight: 600;
     font-weight: bolder;
@@ -134,7 +135,7 @@ const ConfigWrapper = styled.div`
 const ConfigItemWrapper = styled.div`
   display: grid;
   grid-auto-rows: auto;
-  row-gap: 12px;
+  row-gap: 1.125rem;
 `
 const ConfigLabelWrapper = styled.span`
   display: flex;
@@ -160,6 +161,7 @@ const ConfigValueWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-right: 2rem;
   .unit {
     position: absolute;
     margin-left: 0.6rem;

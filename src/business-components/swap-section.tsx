@@ -14,14 +14,15 @@ export enum TInputCurrency {
 type TSwapSectionProps = {
   type?: TInputCurrency
   readonly?: boolean
+  style?: React.CSSProperties
 }
-const SwapSection: FC<TSwapSectionProps> = ({ type, readonly }) => {
+const SwapSection: FC<TSwapSectionProps> = ({ type, readonly, style }) => {
   const [isCurrencyListModalOpen, handleCurrencyListModalOpen] = useState(false)
   const handleClickCurrency = () => {
     handleCurrencyListModalOpen(true)
   }
   return (
-    <SwapSectionWrapper>
+    <SwapSectionWrapper style={style}>
       <Modal
         contentStyle={{ width: 480 }}
         title="Select A Token"
@@ -57,7 +58,7 @@ const SwapSection: FC<TSwapSectionProps> = ({ type, readonly }) => {
   )
 }
 const SwapSectionWrapper = styled.div`
-  margin-top: 21px;
+  margin-top: 20px;
   background-color: #262626;
   padding: 16px;
   padding-top: 20px;

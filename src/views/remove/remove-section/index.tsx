@@ -32,15 +32,15 @@ const RemoveSection = () => {
         {removeType === RemoveType.detailed ? (
           <>
             <div className="combination-currency-percent-rate">50%</div>
-            <SwapSection readonly={true} />
+            <SwapSection readonly={true} style={{ marginTop: 7 }} />
             <div className="arrow-wrapper">
               <Image src="/arrow.png" alt="" width={12} height={16} />
             </div>
-            <SwapSection />
-            <div className="add-icon">
+            <SwapSection style={{ marginTop: 7 }} />
+            <div className="add-icon" style={{ marginTop: 7 }}>
               <Plus color="#191919" size={18} />
             </div>
-            <SwapSection />
+            <SwapSection style={{ marginTop: 7 }} />
           </>
         ) : (
           <>
@@ -134,14 +134,14 @@ const RemoveSectionWrapper = styled.div<{ removeType: RemoveType }>`
   .arrow-wrapper {
     display: flex;
     justify-content: center;
-    margin-top: 20px;
+    margin-top: 7px;
   }
   .combination-currency-percent-rate {
     display: flex;
     justify-content: center;
     font-size: 20px;
     color: #ffffff;
-    margin-top: 20px;
+    margin-top: 7px;
   }
 `
 export default RemoveSection

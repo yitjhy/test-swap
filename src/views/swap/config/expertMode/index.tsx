@@ -8,6 +8,7 @@ const ExpertMode = () => {
   const [isShowExpertModeAgain, setIsShowExpertModeAgain] = useState(false)
   return (
     <ExpertModeWrapper>
+      <div className="split-line" />
       <div className="tip-wrapper">
         <Image src="/warning.png" alt="" width={15} height={15} />
         <p className="tip-icon">
@@ -23,9 +24,11 @@ const ExpertMode = () => {
   )
 }
 const ExpertModeWrapper = styled.div`
-  margin-top: 2rem;
   display: grid;
   row-gap: 1.5rem;
+  .split-line {
+    border-top: 1px solid #262626;
+  }
   .tip-wrapper {
     height: 5.3rem;
     border: 1px solid #924343;

@@ -4,7 +4,6 @@ import Image from 'next/image'
 import { Settings } from 'react-feather'
 import Config from '@/views/swap/config'
 import Modal from '@/components/modal'
-import CurrencyList from '@/views/swap/currencyList'
 import Header from '@/components/header'
 import SubmitBtn from '@/components/submitBtn'
 import SwapSection from '@/business-components/swap-section'
@@ -13,12 +12,8 @@ import SwapDetail from '@/views/swap/swap-detail'
 import PriceDetail from '@/views/swap/price-detail'
 
 function Swap() {
-  const [isCurrencyListModalOpen, handleCurrencyListModalOpen] = useState(false)
   const [isConfirmWrapModalOpen, handleConfirmWrapModalOpen] = useState(false)
   const [isConfigModalOpen, handleConfigModalOpen] = useState(false)
-  const onClickCurrency = () => {
-    handleCurrencyListModalOpen(true)
-  }
   const handleSubmit = () => {
     handleConfirmWrapModalOpen(true)
   }
@@ -31,13 +26,6 @@ function Swap() {
           open={isConfirmWrapModalOpen}
           contentStyle={{ width: 480 }}
           onClose={handleConfirmWrapModalOpen}
-        />
-        <Modal
-          contentStyle={{ width: 480 }}
-          title="Select A Token"
-          content={<CurrencyList />}
-          open={isCurrencyListModalOpen}
-          onClose={handleCurrencyListModalOpen}
         />
         <Modal
           contentStyle={{ width: 480 }}
@@ -55,12 +43,12 @@ function Swap() {
           }
         />
         <div style={{ position: 'relative' }}>
-          <SwapSection onClickCurrency={onClickCurrency} />
+          <SwapSection />
           <button className="switch-btn">
             <Image src="/arrow.png" alt="" width={21} height={28} />
           </button>
         </div>
-        <SwapSection onClickCurrency={onClickCurrency} />
+        <SwapSection />
         <PriceDetail />
         <SubmitBtn text="WETH Insufficient Balance" onSubmit={handleSubmit} />
       </SwapWrapper>

@@ -1,7 +1,15 @@
+import { useRouter } from 'next/router'
 import styled from 'styled-components'
 import { ConfirmBtn } from '@/components/button'
 
 const LPDetail = () => {
+  const router = useRouter()
+  const goIncreaseLP = () => {
+    router.push('/add')
+  }
+  const goRemoveLP = () => {
+    router.push('/remove')
+  }
   return (
     <LPDetailWrapper>
       <div className="lp-detail-item-wrapper">
@@ -21,8 +29,12 @@ const LPDetail = () => {
         <div className="lp-detail-item-value">0.001%</div>
       </div>
       <div className="operation-wrapper">
-        <ConfirmBtn style={{ padding: '0 27px', height: '2.5rem' }}>Add</ConfirmBtn>
-        <ConfirmBtn style={{ padding: '0 27px', height: '2.5rem' }}>Remove</ConfirmBtn>
+        <ConfirmBtn style={{ padding: '0 27px', height: '2.5rem' }} onClick={goIncreaseLP}>
+          Add
+        </ConfirmBtn>
+        <ConfirmBtn style={{ padding: '0 27px', height: '2.5rem' }} onClick={goRemoveLP}>
+          Remove
+        </ConfirmBtn>
       </div>
     </LPDetailWrapper>
   )

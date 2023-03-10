@@ -1,7 +1,10 @@
 import styled from 'styled-components'
 import Image from 'next/image'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useRouter } from 'next/router'
+import { useWeb3React } from '@web3-react/core'
+import { useWallet } from '@/context/WalletContext'
+import { getEllipsisStr } from '@/utils'
 
 const routerMenu = [
   { name: 'Swap', route: '/swap', key: 'swap' },
@@ -10,11 +13,17 @@ const routerMenu = [
   { name: 'Docs', route: '/docs', key: 'Docs' },
 ]
 const Header = () => {
+  const { account, chainId } = useWeb3React()
+  console.log(chainId)
+  const { active } = useWallet()
   const router = useRouter()
   const [checkedMenu, setCheckedMenu] = useState(router.pathname)
   const goRouter = (route: string) => {
     setCheckedMenu(route)
     router.push(route).then()
+  }
+  const goConnectWallet = async () => {
+    await active('metaMask')
   }
   return (
     <HeaderWrapper>
@@ -44,7 +53,9 @@ const Header = () => {
       </div>
       <div className="operation-wrapper">
         <div className="chain-wrapper">Cocos Smart Chain</div>
-        <button className="connect-wallet">Connect Wallet</button>
+        <button className="connect-wallet" onClick={goConnectWallet}>
+          {account ? getEllipsisStr(account) : 'Connect Wallet'}
+        </button>
       </div>
     </HeaderWrapper>
   )

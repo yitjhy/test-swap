@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.0.1",
     "@coinbase/wallet-sdk": "^3.5.2",
     "@ethersproject/contracts": "^5.7.0",
     "@types/node": "18.14.6",
@@ -27,7 +28,8 @@
     "ahooks": "^3.7.5",
     "eslint": "8.35.0",
     "eslint-config-next": "13.2.3",
-    "ethers": "^5.1.4",
+    "ethers": "^5.7.1",
+    "ethers-multicall": "^0.2.3",
     "graphemer": "^1.4.0",
     "next": "13.2.3",
     "nprogress": "^0.2.0",
@@ -38,6 +40,7 @@
     "typescript": "4.9.5"
   },
   "devDependencies": {
+    "eslint-plugin-prettier": "^4.2.1",
     "prettier": "^2.8.4"
   }
 }

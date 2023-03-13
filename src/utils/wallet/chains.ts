@@ -77,6 +77,18 @@ export const CHAINS: {
     nativeCurrency: ETH,
     blockExplorerUrls: ['https://etherscan.io'],
   },
+  [Chain.Goerli]: {
+    urls: ['https://goerli.infura.io/v3/'],
+    name: 'Goerli 测试网络',
+    nativeCurrency: ETH,
+    blockExplorerUrls: ['https://goerli.etherscan.io'],
+  },
+  [Chain.OPT]: {
+    urls: ['https://goerli.optimism.io'],
+    name: 'Optimism Goerli',
+    nativeCurrency: ETH,
+    blockExplorerUrls: ['https://goerli-optimism.etherscan.io'],
+  },
 }
 
 export const URLS: { [chainId: number]: string[] } = Object.keys(CHAINS).reduce<{ [chainId: number]: string[] }>(
@@ -92,4 +104,5 @@ export const URLS: { [chainId: number]: string[] } = Object.keys(CHAINS).reduce<
   {}
 )
 
-export const supportChainIds = [Chain.BSC, Chain.ETH]
+// export const supportChainIds = [Chain.BSC, Chain.ETH]
+export const supportChainIds = [Chain.OPT, Chain.Goerli, Chain.ETH, Chain.BSC]

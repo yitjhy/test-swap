@@ -17,6 +17,6 @@ export const CancelBtn = styled(BaseBtn)`
 `
 
 export const ConfirmBtn = styled(BaseBtn)`
-  background: #00ffd1;
+  background: #bfff37;
   color: #120d00;
 `

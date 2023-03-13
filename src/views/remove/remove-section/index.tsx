@@ -47,10 +47,34 @@ const RemoveSection = () => {
             <div className="percent-rate">{percentRate}%</div>
             <Slider onChange={onSliderChange} value={percentRate} />
             <div className="fast-btn-wrapper">
-              <button>25%</button>
-              <button>50%</button>
-              <button>75%</button>
-              <button>MAX</button>
+              <button
+                onClick={() => {
+                  setPercentRate(25)
+                }}
+              >
+                25%
+              </button>
+              <button
+                onClick={() => {
+                  setPercentRate(50)
+                }}
+              >
+                50%
+              </button>
+              <button
+                onClick={() => {
+                  setPercentRate(75)
+                }}
+              >
+                75%
+              </button>
+              <button
+                onClick={() => {
+                  setPercentRate(100)
+                }}
+              >
+                MAX
+              </button>
             </div>
             <div className="currency-amount-wrapper">
               <div className="currency-amount-item-wrapper">
@@ -108,6 +132,7 @@ const RemoveSectionWrapper = styled.div<{ removeType: RemoveType }>`
       font-size: 16px;
       color: #d9d9d9;
       padding: 0.5rem 0.75rem;
+      cursor: pointer;
     }
   }
   .currency-amount-wrapper {

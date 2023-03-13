@@ -16,3 +16,7 @@ export const getEllipsisStr = (str: string, prefixLength = 6, breakPoints = pref
   }
   return res
 }
+
+export const judgeImgUrl = (url: string) => {
+  return url && !url.startsWith('ipfs')
+}

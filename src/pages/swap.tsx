@@ -6,16 +6,76 @@ import Config from '@/views/swap/config'
 import Modal from '@/components/modal'
 import Header from '@/components/header'
 import SubmitBtn from '@/components/submitBtn'
-import SwapSection from '@/business-components/swap-section'
+import SwapSection, { TSwapSectionProps } from '@/business-components/swap-section'
 import ConfirmWrap from '@/views/swap/confirmSwap'
 import SwapDetail from '@/views/swap/swap-detail'
 import PriceDetail from '@/views/swap/price-detail'
+import { TCurrencyListItem } from '@/context/remoteCurrencyListContext'
+import useERC20Approved from '@/hooks/contract/useERC20Approved'
+import { formatEther } from 'ethers/lib/utils'
 
 function Swap() {
+  const [checkedFromCurrency, setCheckedFromCurrency] = useState<TCurrencyListItem>({} as TCurrencyListItem)
+  const [checkedToCurrency, setCheckedToCurrency] = useState<TCurrencyListItem>({} as TCurrencyListItem)
   const [isConfirmWrapModalOpen, handleConfirmWrapModalOpen] = useState(false)
   const [isConfigModalOpen, handleConfigModalOpen] = useState(false)
+  const [inputValueByFrom, setInputValueByFrom] = useState(0)
+  const [inputValueByTo, setInputValueByTo] = useState(0)
+
   const handleSubmit = () => {
     handleConfirmWrapModalOpen(true)
+  }
+  const onSelectedCurrencyByFrom: TSwapSectionProps['onSelectedCurrency'] = (balance, currency) => {
+    setCheckedFromCurrency(currency)
+  }
+  const onSelectedCurrencyByTo: TSwapSectionProps['onSelectedCurrency'] = (balance, currency) => {
+    setCheckedToCurrency(currency)
+  }
+  const handleSwitch = () => {
+    setCheckedFromCurrency(checkedToCurrency)
+    setCheckedToCurrency(checkedFromCurrency)
+    setInputValueByFrom(inputValueByTo)
+    setInputValueByTo(inputValueByFrom)
+  }
+  const onInputByFrom: TSwapSectionProps['onInput'] = (value) => {
+    setInputValueByFrom(value)
+  }
+  const onInputByTo: TSwapSectionProps['onInput'] = (value) => {
+    setInputValueByTo(value)
+  }
+  const handleMaxByFrom: TSwapSectionProps['onMax'] = (value) => {
+    setInputValueByFrom(value)
+  }
+  const handleMaxByTo: TSwapSectionProps['onMax'] = (value) => {
+    setInputValueByTo(value)
+  }
+  const getSubmitBtnText = () => {
+    if (!checkedFromCurrency.address || !checkedToCurrency.address) {
+      return 'Select Token'
+    }
+    if (inputValueByFrom === 0 || inputValueByTo === 0) {
+      return 'Enter the number of Token'
+    }
+    if (checkedToCurrency.address && inputValueByTo > Number(formatEther(checkedToCurrency.balance))) {
+      return 'Insufficient balance'
+    }
+    if (checkedFromCurrency.address && inputValueByFrom > Number(formatEther(checkedFromCurrency.balance))) {
+      return 'Insufficient balance'
+    }
+    return 'Supply'
+  }
+  const getSubmitBtnStatus = () => {
+    if (
+      checkedFromCurrency.address &&
+      checkedToCurrency.address &&
+      inputValueByTo > 0 &&
+      inputValueByFrom > 0 &&
+      inputValueByTo <= Number(formatEther(checkedToCurrency.balance)) &&
+      inputValueByFrom <= Number(formatEther(checkedFromCurrency.balance))
+    ) {
+      return false
+    }
+    return true
   }
   return (
     <div style={{ maxWidth: 480, margin: '0 auto' }}>
@@ -43,14 +103,26 @@ function Swap() {
           }
         />
         <div style={{ position: 'relative' }}>
-          <SwapSection />
-          <button className="switch-btn">
+          <SwapSection
+            amount={inputValueByFrom}
+            onMax={handleMaxByFrom}
+            checkedCurrency={checkedFromCurrency}
+            onSelectedCurrency={onSelectedCurrencyByFrom}
+            onInput={onInputByFrom}
+          />
+          <button className="switch-btn" onClick={handleSwitch}>
             <Image src="/arrow.png" alt="" width={21} height={28} />
           </button>
         </div>
-        <SwapSection />
+        <SwapSection
+          amount={inputValueByTo}
+          onMax={handleMaxByTo}
+          checkedCurrency={checkedToCurrency}
+          onSelectedCurrency={onSelectedCurrencyByTo}
+          onInput={onInputByTo}
+        />
         <PriceDetail />
-        <SubmitBtn text="WETH Insufficient Balance" onSubmit={handleSubmit} />
+        <SubmitBtn text={getSubmitBtnText()} onSubmit={handleSubmit} disabled={getSubmitBtnStatus()} />
       </SwapWrapper>
       <SwapDetail />
     </div>

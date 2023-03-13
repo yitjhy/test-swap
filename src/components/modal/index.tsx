@@ -7,8 +7,9 @@ export type TModalProps = {
   content: ReactNode
   onClose: (open: boolean) => void
   contentStyle?: CSSProperties
+  maskClosable?: boolean
 }
-const Modal: FC<TModalProps> = ({ title, content, open, onClose, contentStyle }) => {
+const Modal: FC<TModalProps> = ({ title, content, maskClosable = true, open, onClose, contentStyle }) => {
   const [isOpen, setIsOpen] = useState(open)
   useEffect(() => {
     setIsOpen(open)
@@ -21,7 +22,14 @@ const Modal: FC<TModalProps> = ({ title, content, open, onClose, contentStyle })
     e.stopPropagation()
   }
   return (
-    <ModalWrapper open={isOpen} onClick={handleClose}>
+    <ModalWrapper
+      open={isOpen}
+      onClick={() => {
+        if (!!maskClosable) {
+          handleClose()
+        }
+      }}
+    >
       <div className="modal-content-wrapper" onClick={stopPropagation} style={contentStyle}>
         <div className="modal-header">
           <span className="modal-header-title">{title}</span>
@@ -54,7 +62,7 @@ const ModalWrapper = styled.div<{ open: boolean }>`
     background: #1a1a1a;
     padding: 20px;
     /* border-radius: 12px; */
-    margin-top: 68px;
+    margin-top: 20vh;
     color: #d9d9d9;
     .modal-header {
       display: flex;

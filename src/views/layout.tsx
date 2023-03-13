@@ -6,18 +6,24 @@ import { CoinbaseWallet } from '@web3-react/coinbase-wallet'
 import { connectors } from '@/utils/wallet/connectors'
 import Header from '@/views/header'
 import { WalletProvider } from '@/context/WalletContext'
+import { RemoteCurrencyListProvider } from '@/context/remoteCurrencyListContext'
+import DialogProvider from '@/components/dialog'
 
 const usedConnectors: [MetaMask | WalletConnect | CoinbaseWallet, Web3ReactHooks][] = connectors.map((connector) => [
-    connector[0],
-    connector[1],
+  connector[0],
+  connector[1],
 ])
 const Layout: React.FC<PropsWithChildren<{}>> = (props) => {
   return (
     <Web3ReactProvider connectors={usedConnectors}>
-        <WalletProvider>
+      <WalletProvider>
+        <DialogProvider>
+          <RemoteCurrencyListProvider>
             <Header />
             {props.children}
-        </WalletProvider>
+          </RemoteCurrencyListProvider>
+        </DialogProvider>
+      </WalletProvider>
     </Web3ReactProvider>
   )
 }

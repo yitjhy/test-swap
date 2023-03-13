@@ -13,8 +13,7 @@ const routerMenu = [
   { name: 'Docs', route: '/docs', key: 'Docs' },
 ]
 const Header = () => {
-  const { account, chainId } = useWeb3React()
-  console.log(chainId)
+  const { account } = useWeb3React()
   const { active } = useWallet()
   const router = useRouter()
   const [checkedMenu, setCheckedMenu] = useState(router.pathname)
@@ -28,7 +27,7 @@ const Header = () => {
   return (
     <HeaderWrapper>
       <div className="nav-wrapper">
-        <div className="website-logo-wrapper">
+        <div className="website-logo-wrapper" onClick={() => router.push('/')}>
           <span className="website-log">
             <Image src="/site-logo.png" alt="" width={48} height={48} />
           </span>

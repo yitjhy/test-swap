@@ -1,20 +1,33 @@
 import styled from 'styled-components'
+import { TCurrencyListItem } from '@/context/remoteCurrencyListContext'
+import { FC } from 'react'
 
-const Rate = () => {
+type TRateProps = {
+  fromCurrency: TCurrencyListItem
+  toCurrency: TCurrencyListItem
+  rateFrom2To: string
+  rateTo2From: string
+  shareOfPool: number
+}
+const Rate: FC<TRateProps> = ({ fromCurrency, toCurrency, shareOfPool, rateFrom2To, rateTo2From }) => {
   return (
     <RateWrapper>
       <span className="rate-title">Prices and pool share</span>
       <div className="rate-detail-wrapper">
         <div className="rate-detail-item-wrapper">
-          <span className="rate-value">15.2618</span>
-          <span className="rate-label">USDT per ETH</span>
+          <span className="rate-value">{rateFrom2To}</span>
+          <span className="rate-label">
+            {fromCurrency?.symbol?.slice(0, 3)} per {toCurrency?.symbol?.slice(0, 3)}
+          </span>
         </div>
         <div className="rate-detail-item-wrapper">
-          <span className="rate-value">0.261811</span>
-          <span className="rate-label">ETH per USDT</span>
+          <span className="rate-value">{rateTo2From}</span>
+          <span className="rate-label">
+            {toCurrency?.symbol?.slice(0, 3)} per {fromCurrency?.symbol?.slice(0, 3)}
+          </span>
         </div>
         <div className="rate-detail-item-wrapper">
-          <span className="rate-value">25.89%</span>
+          <span className="rate-value">{shareOfPool}%</span>
           <span className="rate-label">Share of pool</span>
         </div>
       </div>
@@ -44,6 +57,7 @@ const RateWrapper = styled.div`
       .rate-label {
         font-size: 12px;
         display: block;
+        text-transform: lowercase;
       }
     }
   }

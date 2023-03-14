@@ -13,11 +13,17 @@ import { useEffect, useState } from 'react'
 import useERC20Approved from '@/hooks/contract/useERC20Approved'
 import { TCurrencyListItem } from '@/context/remoteCurrencyListContext'
 import useCreatePair from '@/hooks/useCreatePair'
-import { formatEther, parseUnits } from 'ethers/lib/utils'
+import { formatEther, parseUnits, formatUnits } from 'ethers/lib/utils'
 import useGetPairContract from '@/hooks/useGetPairContract'
 import { ABI } from '@/utils/abis'
 import { getContract } from '@/hooks/contract/useContract'
 import { useDialog } from '@/components/dialog'
+import { useSigner } from '@/hooks/contract/useSigner'
+import useAmountOut from '@/hooks/useAmountOut'
+import { contractAddress, invalidAddress, platFormAddress } from '@/utils/enum'
+import { BigNumber } from 'ethers'
+import { useWeb3React } from '@web3-react/core'
+// import { formatUnits } from '@ethersproject/units/src.ts'
 
 const IncreaseLP = () => {
   const [isConfigModalOpen, handleConfigModalOpen] = useState(false)
@@ -25,22 +31,95 @@ const IncreaseLP = () => {
   const [checkedToCurrency, setCheckedToCurrency] = useState<TCurrencyListItem>({} as TCurrencyListItem)
   const [inputValueByTo, setInputValueByTo] = useState(0)
   const [inputValueByFrom, setInputValueByFrom] = useState(0)
-  const { addLiquidity } = useCreatePair()
+  const [pairAddress, setPairAddress] = useState('')
+  const [shareOfPool, setShareOfPool] = useState(0)
+  const [rate, setRate] = useState<{ from2To: string; to2from: string }>({ from2To: '', to2from: '' })
+  const { addLiquidity, addLiquidityETH } = useCreatePair()
   const { getPairContractAddress } = useGetPairContract()
-  const getPairContract = async () => {
+  const { getAmountOut } = useAmountOut()
+  const { account } = useWeb3React()
+  const signer = useSigner()
+  const getLiquidityRate = async () => {
     const pairContractAddress = await getPairContractAddress(checkedFromCurrency.address, checkedToCurrency.address)
-    console.log(pairContractAddress)
-    const pairContract = await getContract(pairContractAddress, ABI.pair)
-    console.log(pairContract)
-    // const res = await pairContract?.getReserves()
-    console.log(111)
-    // console.log(res)
-  }
-  useEffect(() => {
-    if (checkedFromCurrency.address && checkedToCurrency.address) {
-      getPairContract().then()
+    if (pairContractAddress !== invalidAddress) {
+      setPairAddress(pairContractAddress)
+      const pairContract = await getContract(pairContractAddress, ABI.pair, signer)
+      console.log(pairContract)
+      const accountBalance = await pairContract?.balanceOf(account)
+      console.log('accountBalance-----', formatEther(accountBalance))
+      const pairAmount = await pairContract?.getReserves()
+      const totalSupplyBigNumber = await pairContract?.totalSupply()
+      const token0 = await pairContract?.token0()
+      const poolTotalSupply = formatEther(totalSupplyBigNumber)
+      console.log('poolTotalSupply----', poolTotalSupply)
+      const _reserve0amount = formatEther(pairAmount._reserve0)
+      console.log('_reserve0amount----', _reserve0amount)
+      console.log(Number(accountBalance) / Number(poolTotalSupply))
+      const res = BigNumber.from(pairAmount._reserve0)
+        .mul(BigNumber.from(accountBalance))
+        .div(BigNumber.from(totalSupplyBigNumber))
+      console.log('res---', formatEther(res))
+      console.log('rate----', (Number(accountBalance) / Number(poolTotalSupply)) * Number(_reserve0amount))
+      if (poolTotalSupply !== '0') {
+        // 已经有人添加过流动性
+        const token0 = await pairContract?.token0()
+
+        let liquidity = 0
+        if (token0 === checkedFromCurrency.address) {
+          liquidity = Math.min(
+            (inputValueByFrom * Number(poolTotalSupply)) / Number(formatEther(pairAmount._reserve0)),
+            (inputValueByTo * Number(poolTotalSupply)) / Number(formatEther(pairAmount._reserve1))
+          )
+        } else {
+          liquidity = Math.min(
+            (inputValueByFrom * Number(poolTotalSupply)) / Number(formatEther(pairAmount._reserve1)),
+            (inputValueByTo * Number(poolTotalSupply)) / Number(formatEther(pairAmount._reserve0))
+          )
+        }
+        // const liquidity = Math.min(
+        //   (inputValueByFrom * Number(totalSupply)) / Number(formatEther(pairAmount._reserve0)),
+        //   (inputValueByTo * Number(totalSupply)) / Number(formatEther(pairAmount._reserve1))
+        // )
+        console.log(22)
+        console.log(liquidity / (Number(poolTotalSupply) + liquidity))
+        setShareOfPool(liquidity / (Number(poolTotalSupply) + liquidity))
+      } else {
+        // 还没人添加过流动性
+        const liquidity = Math.sqrt(inputValueByFrom * inputValueByTo) - 1000
+        setShareOfPool(liquidity / (Number(poolTotalSupply) + liquidity))
+      }
+    } else {
+      console.log('pair不存在')
+      console.log(pairContractAddress)
     }
-  }, [checkedFromCurrency.address, checkedToCurrency.address])
+  }
+  const getRate = async () => {
+    const pairContractAddress = await getPairContractAddress(checkedFromCurrency.address, checkedToCurrency.address)
+    if (pairContractAddress !== invalidAddress) {
+      setPairAddress(pairContractAddress)
+      const pairContract = await getContract(pairContractAddress, ABI.pair, signer)
+      const pairAmount = await pairContract?.getReserves()
+
+      const token0 = await pairContract?.token0()
+
+      let amountOut1 = await getAmountOut(parseUnits('1', 18), pairAmount._reserve0, pairAmount._reserve1)
+      console.log(amountOut1)
+      // const rateOfFrom2To = formatEther(amountOut1)
+      const rateOfFrom2To = formatUnits(amountOut1, 18)
+      let amountOut2 = await getAmountOut(parseUnits('1', 18), pairAmount._reserve1, pairAmount._reserve0)
+      const rateOfTo2from = formatEther(amountOut2)
+      console.log('rateOfFrom2To---', rateOfFrom2To)
+      console.log('rateOfTo2from---', rateOfTo2from)
+      if (token0 === checkedFromCurrency.address) {
+        setRate({ from2To: rateOfFrom2To, to2from: rateOfTo2from })
+      } else {
+        setRate({ from2To: rateOfTo2from, to2from: rateOfFrom2To })
+      }
+    } else {
+      console.log('pair不存在')
+      console.log(pairContractAddress)
+    }
+  }
   const onSelectedCurrencyByFrom: TSwapSectionProps['onSelectedCurrency'] = (balance, currency) => {
     setCheckedFromCurrency(currency)
   }
@@ -61,24 +140,51 @@ const IncreaseLP = () => {
   }
   const { approved: isApprovedCurrencyFrom, approve: approveCurrencyFrom } = useERC20Approved(
     checkedFromCurrency.address,
-    '0xB63940335F8c66BD1232077eBA6008370a0Edb47'
+    contractAddress.router
   )
   const { approved: isApprovedCurrencyTo, approve: approveCurrencyTo } = useERC20Approved(
     checkedToCurrency.address,
-    '0xB63940335F8c66BD1232077eBA6008370a0Edb47'
+    contractAddress.router
   )
   const { close, openDialog } = useDialog()
   const handleSubmit = async () => {
     openDialog({ title: 'Add Liquidity', desc: 'adding' })
-    const operation = await addLiquidity(
-      checkedFromCurrency.address,
-      checkedToCurrency.address,
-      parseUnits(String(inputValueByFrom), checkedFromCurrency.decimals),
-      parseUnits(String(inputValueByTo), checkedToCurrency.decimals)
-    )
-    console.log(operation)
-    await operation.wait()
-    close()
+    if (checkedFromCurrency.address === platFormAddress) {
+      console.log(checkedToCurrency.address, parseUnits(String(inputValueByTo), checkedToCurrency.decimals), {
+        value: parseUnits(String(inputValueByFrom), checkedFromCurrency.decimals),
+      })
+      console.log(11111111111)
+      const operation = await addLiquidityETH(
+        checkedToCurrency.address,
+        parseUnits(String(inputValueByTo), checkedToCurrency.decimals),
+        {
+          value: parseUnits(String(inputValueByFrom), checkedFromCurrency.decimals),
+        }
+      )
+      await operation.wait()
+      close()
+    }
+    if (checkedToCurrency.address === platFormAddress) {
+      const operation = await addLiquidityETH(
+        checkedFromCurrency.address,
+        parseUnits(String(inputValueByFrom), checkedFromCurrency.decimals),
+        {
+          value: parseUnits(String(checkedToCurrency), checkedToCurrency.decimals),
+        }
+      )
+      await operation.wait()
+      close()
+    }
+    if (checkedToCurrency.address !== platFormAddress || checkedFromCurrency.address !== platFormAddress) {
+      const operation = await addLiquidity(
+        checkedFromCurrency.address,
+        checkedToCurrency.address,
+        parseUnits(String(inputValueByFrom), checkedFromCurrency.decimals),
+        parseUnits(String(inputValueByTo), checkedToCurrency.decimals)
+      )
+      await operation.wait()
+      close()
+    }
   }
   const getSubmitBtnText = () => {
     if (!checkedFromCurrency.address || !checkedToCurrency.address) {
@@ -108,6 +214,16 @@ const IncreaseLP = () => {
     }
     return true
   }
+  useEffect(() => {
+    if (checkedFromCurrency.address && checkedToCurrency.address && inputValueByFrom && inputValueByTo) {
+      getLiquidityRate().then()
+    }
+  }, [checkedFromCurrency.address, checkedToCurrency.address, inputValueByFrom, inputValueByTo])
+  useEffect(() => {
+    if (checkedFromCurrency.address && checkedToCurrency.address) {
+      getRate().then()
+    }
+  }, [checkedFromCurrency.address, checkedToCurrency.address])
   return (
     <IncreaseLPWrapper>
       <Modal
@@ -150,7 +266,20 @@ const IncreaseLP = () => {
           onSelectedCurrency={onSelectedCurrencyByTo}
           onInput={onInputByTo}
         />
-        <Rate />
+        {pairAddress &&
+        pairAddress !== invalidAddress &&
+        rate.from2To &&
+        rate.to2from &&
+        checkedFromCurrency.address &&
+        checkedToCurrency.address ? (
+          <Rate
+            shareOfPool={shareOfPool}
+            rateFrom2To={rate.from2To}
+            rateTo2From={rate.to2from}
+            fromCurrency={checkedFromCurrency}
+            toCurrency={checkedToCurrency}
+          />
+        ) : null}
         <div className="approve-wrapper">
           {!isApprovedCurrencyFrom && checkedFromCurrency.address && (
             <ApproveBtn onClick={approveCurrencyFrom}>Approve {checkedFromCurrency.symbol}</ApproveBtn>

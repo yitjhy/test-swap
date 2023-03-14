@@ -115,7 +115,7 @@ const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }
                 </div>
                 {index % 2 > -1 ? (
                   <div className="currency-balance-wrapper">
-                    <span className="currency-balance">{formatEther(item.balance)}</span>
+                    <span className="currency-balance">{item.balance ? formatEther(item.balance) : 0}</span>
                     {checkedCurrency?.address === item.address && (
                       <span className="currency-status">
                         <Check size={20} color="rgb(251, 17, 142)" />

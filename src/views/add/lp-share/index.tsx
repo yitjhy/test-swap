@@ -21,7 +21,7 @@ const LPShare = () => {
         <span className="lp-share-value">0.05376</span>
       </div>
       <div className="lp-share-item-wrapper">
-        <span className="lp-share-label">Yout LP Share：</span>
+        <span className="lp-share-label">Your LP Share：</span>
         <span className="lp-share-value">0.000332%</span>
       </div>
       <div className="lp-share-item-wrapper">

@@ -1,6 +1,9 @@
 import { useState, createContext, PropsWithChildren, FC, useEffect, useContext } from 'react'
 import remoteCurrencyListAll from './currencyList.json'
 import useErc20InfoList, { TErc20InfoItem } from '@/hooks/useErc20InfoList'
+import { useWeb3React } from '@web3-react/core'
+import { BigNumber } from 'ethers'
+import { platFormAddress } from '@/utils/enum'
 
 // const url = 'https://gateway.ipfs.io/ipns/tokens.uniswap.org'
 
@@ -36,6 +39,22 @@ export const RemoteCurrencyListProvider: FC<PropsWithChildren> = ({ children }) 
     '0x3A60c560EdCb5ed75020132387Ef1B077d104454',
     '0xBCcEDcEb835F98dAc6fa5a3564Bf164F9A527261',
   ])
+
+  const [platFormBalance, setPlatFormBalance] = useState<BigNumber | undefined>()
+  const { provider, account } = useWeb3React()
+  const getPlatFormBalance = async () => {
+    if (account) {
+      const balance = await provider?.getBalance(account)
+      if (balance) {
+        console.log(balance)
+        setPlatFormBalance(balance)
+      }
+    }
+  }
+  useEffect(() => {
+    getPlatFormBalance().then()
+  }, [account])
+
   // const getCurrencyList = () => {
   //   return currencyErc20InfoList.map((item) => {
   //     const findItem = remoteCurrencyList.find((item2) => item2.address === item.address) as TRemoteCurrencyListItem
@@ -70,7 +89,15 @@ export const RemoteCurrencyListProvider: FC<PropsWithChildren> = ({ children }) 
   // //   fetchCurrencyList().then()
   // // }, [])
   return (
-    <RemoteCurrencyListContext.Provider value={{ remoteCurrencyList, currencyList }}>
+    <RemoteCurrencyListContext.Provider
+      value={{
+        remoteCurrencyList,
+        currencyList: [
+          { address: platFormAddress, name: 'HUNTERS', symbol: 'ETH', decimals: 18, balance: platFormBalance },
+          ...currencyList,
+        ],
+      }}
+    >
       {children}
     </RemoteCurrencyListContext.Provider>
   )

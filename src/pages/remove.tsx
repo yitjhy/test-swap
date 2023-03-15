@@ -1,14 +1,28 @@
 import styled from 'styled-components'
 import { ChevronLeft, Plus } from 'react-feather'
 import { Settings } from 'react-feather'
-import LPShare from '@/views/add/lp-share'
+import LPDetail, { TLPDetailProps } from '@/views/add/lp-detail'
 import { CancelBtn, ConfirmBtn } from '@/components/button'
 import Modal from '@/components/modal'
 import Config from '@/views/swap/config'
 import RemoveSection from '@/views/remove/remove-section'
-import { useState } from 'react'
+import { FC, useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
+import useLPDetail from '@/hooks/usePaireDetail'
+import { formatUnits } from 'ethers/lib/utils'
 
 const RemoveLP = () => {
+  const [LPDetailData, setLPDetailData] = useState<TLPDetailProps>({} as any)
+  const { query } = useRouter()
+  const { getLPDetail } = useLPDetail()
+  useEffect(() => {
+    if (query.address) {
+      getLPDetail(query.address as string).then((data) => {
+        console.log(data)
+        setLPDetailData(data)
+      })
+    }
+  }, [query.address, getLPDetail])
   const [isConfigModalOpen, handleConfigModalOpen] = useState(false)
   return (
     <RemoveLPWrapper>
@@ -34,12 +48,20 @@ const RemoveLP = () => {
             }}
           />
         </div>
-        <RemoveSection />
+        <RemoveSection tokens={LPDetailData.tokens} />
         <div className="price-wrapper">
           <div className="label">Price</div>
           <div className="rate-wrapper">
-            <div className="rate-item">1USDT=0.000147ETH</div>
-            <div className="rate-item">1ETH=2642USDT</div>
+            {LPDetailData.rate?.map((item, index) => {
+              return (
+                <div className="rate-item" key={index}>
+                  1{item.fromCurrency.symbol}={formatUnits(item.rate, item.toCurrency.decimals)}
+                  {item.toCurrency.symbol}
+                </div>
+              )
+            })}
+            {/*<div className="rate-item">1USDT=0.000147ETH</div>*/}
+            {/*<div className="rate-item">1ETH=2642USDT</div>*/}
           </div>
         </div>
         <div className="button-wrapper">
@@ -49,7 +71,7 @@ const RemoveLP = () => {
         </div>
       </div>
       <div style={{ padding: '0.3rem 0.7rem' }}>
-        <LPShare />
+        {LPDetailData.tokens && LPDetailData.tokens.length > 0 && <LPDetail data={LPDetailData} />}
       </div>
     </RemoveLPWrapper>
   )

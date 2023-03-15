@@ -5,7 +5,7 @@ import Modal from '@/components/modal'
 import CurrencyList, { TSelectCurrencyProps } from '@/business-components/currencyList'
 import { TCurrencyListItem } from '@/context/remoteCurrencyListContext'
 import { judgeImgUrl } from '@/utils'
-import { formatEther } from 'ethers/lib/utils'
+import { formatUnits } from 'ethers/lib/utils'
 
 export enum TInputCurrency {
   simple = 'simple',
@@ -42,11 +42,11 @@ const SwapSection: FC<TSwapSectionProps> = ({
   const handleSelectedCurrency: TSelectCurrencyProps['onChecked'] = (data) => {
     handleCurrencyListModalOpen(false)
     setCurrencyData(data)
-    const balance = currencyData?.balance ? Number(formatEther(currencyData.balance)) : 0
+    const balance = currencyData?.balance ? Number(formatUnits(currencyData.balance, currencyData.decimals)) : 0
     onSelectedCurrency?.(balance, data)
   }
   const handleMax = () => {
-    const balance = currencyData?.balance ? Number(formatEther(currencyData.balance)) : 0
+    const balance = currencyData?.balance ? Number(formatUnits(currencyData.balance, currencyData.decimals)) : 0
     setInputAmount(balance)
     onMax?.(balance)
   }
@@ -107,7 +107,7 @@ const SwapSection: FC<TSwapSectionProps> = ({
       {(type === TInputCurrency.normal || !type) && (
         <div className="swap-currency-fiat-row">
           <div className="currency-balance">
-            Balance: {currencyData?.balance ? formatEther(currencyData.balance) : '0'}{' '}
+            Balance: {currencyData?.balance ? formatUnits(currencyData.balance, currencyData.decimals) : '0'}{' '}
             {currencyData?.balance && (
               <button className="comparative-btn" onClick={handleMax}>
                 Max

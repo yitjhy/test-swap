@@ -1,33 +1,59 @@
 import styled from 'styled-components'
 import { TCurrencyListItem } from '@/context/remoteCurrencyListContext'
 import { FC } from 'react'
+import { BigNumber } from 'ethers'
+import { formatUnits } from 'ethers/lib/utils'
 
-type TRateProps = {
+export type RateItem = {
+  rate: BigNumber | any
   fromCurrency: TCurrencyListItem
   toCurrency: TCurrencyListItem
-  rateFrom2To: string
-  rateTo2From: string
+}
+export type TRateProps = {
+  rate: [RateItem, RateItem]
   shareOfPool: number
 }
-const Rate: FC<TRateProps> = ({ fromCurrency, toCurrency, shareOfPool, rateFrom2To, rateTo2From }) => {
+
+const getStrByDecimalPlaces = (val: string, decimalPlaces = 4) => {
+  if (val.includes('.')) {
+    const arr = val.split('.')
+    return arr[0] + '.' + arr[1].slice(0, decimalPlaces)
+  } else {
+    return val
+  }
+}
+
+const Rate: FC<TRateProps> = ({ rate, shareOfPool }) => {
   return (
     <RateWrapper>
       <span className="rate-title">Prices and pool share</span>
       <div className="rate-detail-wrapper">
+        {rate.map((item, index) => {
+          return (
+            <div className="rate-detail-item-wrapper" key={index}>
+              <span className="rate-value">
+                {getStrByDecimalPlaces(formatUnits(item.rate, item.toCurrency.decimals))}
+              </span>
+              <span className="rate-label">
+                {item.fromCurrency?.symbol?.slice(0, 3)} per {item.toCurrency?.symbol?.slice(0, 3)}
+              </span>
+            </div>
+          )
+        })}
+        {/*<div className="rate-detail-item-wrapper">*/}
+        {/*  <span className="rate-value">{getStrByDecimalPlaces(formatUnits(rateFrom2To, 18))}</span>*/}
+        {/*  <span className="rate-label">*/}
+        {/*    {fromCurrency?.symbol?.slice(0, 3)} per {toCurrency?.symbol?.slice(0, 3)}*/}
+        {/*  </span>*/}
+        {/*</div>*/}
+        {/*<div className="rate-detail-item-wrapper">*/}
+        {/*  <span className="rate-value">{getStrByDecimalPlaces(formatUnits(rateTo2From, 18))}</span>*/}
+        {/*  <span className="rate-label">*/}
+        {/*    {toCurrency?.symbol?.slice(0, 3)} per {fromCurrency?.symbol?.slice(0, 3)}*/}
+        {/*  </span>*/}
+        {/*</div>*/}
         <div className="rate-detail-item-wrapper">
-          <span className="rate-value">{rateFrom2To}</span>
-          <span className="rate-label">
-            {fromCurrency?.symbol?.slice(0, 3)} per {toCurrency?.symbol?.slice(0, 3)}
-          </span>
-        </div>
-        <div className="rate-detail-item-wrapper">
-          <span className="rate-value">{rateTo2From}</span>
-          <span className="rate-label">
-            {toCurrency?.symbol?.slice(0, 3)} per {fromCurrency?.symbol?.slice(0, 3)}
-          </span>
-        </div>
-        <div className="rate-detail-item-wrapper">
-          <span className="rate-value">{shareOfPool}%</span>
+          <span className="rate-value">{getStrByDecimalPlaces(String(shareOfPool * 100))}%</span>
           <span className="rate-label">Share of pool</span>
         </div>
       </div>

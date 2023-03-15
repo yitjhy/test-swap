@@ -6,7 +6,7 @@ import { ConfirmBtn } from '@/components/button'
 import Modal from '@/components/modal'
 import NotTradedWaning from '@/business-components/currencyList/notTradedWaning'
 import { useEffect, useState, FC, ChangeEvent } from 'react'
-import { formatEther } from 'ethers/lib/utils'
+import { formatUnits } from 'ethers/lib/utils'
 import { useRemoteCurrencyList, TCurrencyListItem } from '@/context/remoteCurrencyListContext'
 import { judgeImgUrl } from '@/utils'
 
@@ -115,7 +115,9 @@ const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }
                 </div>
                 {index % 2 > -1 ? (
                   <div className="currency-balance-wrapper">
-                    <span className="currency-balance">{item.balance ? formatEther(item.balance) : 0}</span>
+                    <span className="currency-balance">
+                      {item.balance ? formatUnits(item.balance, item.decimals) : 0}
+                    </span>
                     {checkedCurrency?.address === item.address && (
                       <span className="currency-status">
                         <Check size={20} color="rgb(251, 17, 142)" />

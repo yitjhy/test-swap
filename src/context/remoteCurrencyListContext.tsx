@@ -46,7 +46,6 @@ export const RemoteCurrencyListProvider: FC<PropsWithChildren> = ({ children }) 
     if (account) {
       const balance = await provider?.getBalance(account)
       if (balance) {
-        console.log(balance)
         setPlatFormBalance(balance)
       }
     }

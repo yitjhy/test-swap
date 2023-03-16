@@ -27,7 +27,7 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
   const [inputValueByFrom, setInputValueByFrom] = useState<number>()
   const [inputValueByTo, setInputValueByTo] = useState<number>()
   const switchTokens = (value: string) => {
-    const res = data.tokens.map((item) => {
+    const res = data.tokens?.map((item) => {
       return {
         ...item,
         balanceOfPair: item.balanceOfPair.mul(parseUnits(value, 5)).div(parseUnits('1', 7)),

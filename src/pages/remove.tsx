@@ -24,11 +24,8 @@ const RemoveLP = () => {
   const [LPDetailData, setLPDetailData] = useState<TLPDetailProps>({} as any)
   const { query } = useRouter()
   const { getLPDetail } = useLPDetail()
-  const { openDialog, close } = useDialog()
 
   const { approved, approve } = useERC20Approved(LPDetailData.pairAddress, contractAddress.router)
-  console.log(approved)
-  console.log(!approved && LPDetailData.pairAddress)
   useEffect(() => {
     if (query.address) {
       getLPDetail(query.address as string).then((data) => {
@@ -43,29 +40,18 @@ const RemoveLP = () => {
   }
   const handleRemove = async () => {
     if (LPDetailData.tokens.length && !liquidity?.isZero() && approved && LPDetailData.pairAddress) {
-      openDialog({ title: 'Remove', desc: 'Waiting for signing.' })
       if (LPDetailData.tokens[0].address === contractAddress.weth) {
-        console.log(LPDetailData.tokens[0].address)
-        console.log(liquidity)
-        const operation = await removeLiquidityETH(LPDetailData.tokens[1].address, liquidity as BigNumber)
-        await operation.wait()
+        await removeLiquidityETH(LPDetailData.tokens[1].address, liquidity as BigNumber)
       }
       if (LPDetailData.tokens[1].address === contractAddress.weth) {
-        const operation = await removeLiquidityETH(LPDetailData.tokens[0].address, liquidity as BigNumber)
-        await operation.wait()
+        await removeLiquidityETH(LPDetailData.tokens[0].address, liquidity as BigNumber)
       }
       if (
         LPDetailData.tokens[0].address !== contractAddress.weth &&
         LPDetailData.tokens[1].address !== contractAddress.weth
       ) {
-        const operation = await removeLiquidity(
-          LPDetailData.tokens[0].address,
-          LPDetailData.tokens[1].address,
-          liquidity as BigNumber
-        )
-        await operation.wait()
+        await removeLiquidity(LPDetailData.tokens[0].address, LPDetailData.tokens[1].address, liquidity as BigNumber)
       }
-      close()
     }
   }
   return (

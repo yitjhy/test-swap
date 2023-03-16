@@ -115,41 +115,28 @@ const IncreaseLP = () => {
     checkedToCurrency.address,
     contractAddress.router
   )
-  const { close, openDialog } = useDialog()
   const handleSubmit = async () => {
-    openDialog({ title: 'Add Liquidity', desc: 'adding' })
     if (checkedFromCurrency.address === platFormAddress) {
-      const operation = await addLiquidityETH(
-        checkedToCurrency.address,
-        parseUnits(String(inputValueByTo), checkedToCurrency.decimals),
-        {
-          value: parseUnits(String(inputValueByFrom), checkedFromCurrency.decimals),
-        }
-      )
-      await operation.wait()
-      close()
+      await addLiquidityETH(checkedToCurrency.address, parseUnits(String(inputValueByTo), checkedToCurrency.decimals), {
+        value: parseUnits(String(inputValueByFrom), checkedFromCurrency.decimals),
+      })
     }
     if (checkedToCurrency.address === platFormAddress) {
-      debugger
-      const operation = await addLiquidityETH(
+      await addLiquidityETH(
         checkedFromCurrency.address,
         parseUnits(String(inputValueByFrom), checkedFromCurrency.decimals),
         {
           value: parseUnits(String(checkedToCurrency), checkedToCurrency.decimals),
         }
       )
-      await operation.wait()
-      close()
     }
     if (checkedToCurrency.address !== platFormAddress && checkedFromCurrency.address !== platFormAddress) {
-      const operation = await addLiquidity(
+      await addLiquidity(
         checkedFromCurrency.address,
         checkedToCurrency.address,
         parseUnits(String(inputValueByFrom), checkedFromCurrency.decimals),
         parseUnits(String(inputValueByTo), checkedToCurrency.decimals)
       )
-      await operation.wait()
-      close()
     }
   }
   const getSubmitBtnText = () => {

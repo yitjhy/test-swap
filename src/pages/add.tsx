@@ -74,7 +74,6 @@ const IncreaseLP = () => {
         const res = pairAmount._reserve1.mul(parseUnits(String(value), token0Decimal)).div(pairAmount._reserve0)
         setInputValueByTo(Number(formatUnits(res, token1Decimal)))
       } else {
-        debugger
         const res = pairAmount._reserve0.mul(parseUnits(String(value), token1Decimal)).div(pairAmount._reserve1)
         setInputValueByTo(Number(formatUnits(res, token0Decimal)))
       }
@@ -120,7 +119,6 @@ const IncreaseLP = () => {
   const handleSubmit = async () => {
     openDialog({ title: 'Add Liquidity', desc: 'adding' })
     if (checkedFromCurrency.address === platFormAddress) {
-      debugger
       const operation = await addLiquidityETH(
         checkedToCurrency.address,
         parseUnits(String(inputValueByTo), checkedToCurrency.decimals),
@@ -132,6 +130,7 @@ const IncreaseLP = () => {
       close()
     }
     if (checkedToCurrency.address === platFormAddress) {
+      debugger
       const operation = await addLiquidityETH(
         checkedFromCurrency.address,
         parseUnits(String(inputValueByFrom), checkedFromCurrency.decimals),
@@ -142,7 +141,7 @@ const IncreaseLP = () => {
       await operation.wait()
       close()
     }
-    if (checkedToCurrency.address !== platFormAddress || checkedFromCurrency.address !== platFormAddress) {
+    if (checkedToCurrency.address !== platFormAddress && checkedFromCurrency.address !== platFormAddress) {
       const operation = await addLiquidity(
         checkedFromCurrency.address,
         checkedToCurrency.address,
@@ -160,10 +159,16 @@ const IncreaseLP = () => {
     if (inputValueByFrom === 0 || inputValueByTo === 0) {
       return 'Enter the number of Token'
     }
-    if (checkedToCurrency.address && inputValueByTo > Number(formatEther(checkedToCurrency.balance))) {
+    if (
+      checkedToCurrency.address &&
+      parseUnits(String(inputValueByTo), checkedToCurrency.decimals).gt(checkedToCurrency.balance)
+    ) {
       return 'Insufficient balance'
     }
-    if (checkedFromCurrency.address && inputValueByFrom > Number(formatEther(checkedFromCurrency.balance))) {
+    if (
+      checkedFromCurrency.address &&
+      parseUnits(String(inputValueByFrom), checkedFromCurrency.decimals).gt(checkedFromCurrency.balance)
+    ) {
       return 'Insufficient balance'
     }
     return 'Supply'
@@ -174,8 +179,8 @@ const IncreaseLP = () => {
       checkedToCurrency.address &&
       inputValueByTo > 0 &&
       inputValueByFrom > 0 &&
-      inputValueByTo <= Number(formatEther(checkedToCurrency.balance)) &&
-      inputValueByFrom <= Number(formatEther(checkedFromCurrency.balance))
+      parseUnits(String(inputValueByTo), checkedToCurrency.decimals).lte(checkedToCurrency.balance) &&
+      parseUnits(String(inputValueByFrom), checkedFromCurrency.decimals).lte(checkedFromCurrency.balance)
     ) {
       return false
     }

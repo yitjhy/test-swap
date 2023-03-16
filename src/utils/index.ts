@@ -35,3 +35,8 @@ export const getAddress = (fromAddress: string, toAddress: string) => {
     toAddress: toAddress1,
   }
 }
+
+
+export function getErrorMsg(e: any) {
+  return e.reason || e.data?.message || e.message
+}

@@ -194,7 +194,7 @@ export function useSwap(tokenIn: string, tokenOut: string) {
             openDialog({title: 'Error', desc: 'Swap error'})
         }
 
-    }, [tokenIn, tokenOut, lock, inAmount, outAmount, router, approved])
+    }, [tokenIn, tokenOut, lock, inAmount, outAmount, router, approved, tokenInInfo, tokenOutInfo])
 
     return {inAmount, outAmount, rate, updateIn, updateOut, updateSlippage: setSlippage, updateDeadline: setDeadLine, swap, slippage, deadLine}
 }

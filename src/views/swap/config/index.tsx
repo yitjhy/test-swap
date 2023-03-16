@@ -14,9 +14,14 @@ const Config: FC<TConfig> = ({ onSlippageChange, onDeadlineChange }) => {
   const [isExpertModeModalOpen, handleExpertModeModalOpen] = useState(false)
   const [configData, setConfigData] = useState<{ isExpertMode: boolean }>({ isExpertMode: false })
   const [slippage, setSlippage] = useState<number>(0.5)
-  const handleSlippageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSlippage(Number(e.target.value))
-    onSlippageChange(Number(e.target.value))
+  const [deadline, setDeadline] = useState<number>(30)
+  const handleSlippageChange = (value: number) => {
+    setSlippage(value)
+    onSlippageChange(value)
+  }
+  const handleDeadline = (e: ChangeEvent<HTMLInputElement>) => {
+    setDeadline(Number(e.target.value))
+    onDeadlineChange(Number(e.target.value))
   }
   return (
     <ConfigWrapper>
@@ -43,9 +48,19 @@ const Config: FC<TConfig> = ({ onSlippageChange, onDeadlineChange }) => {
           </span>
         </ConfigLabelWrapper>
         <ConfigValueWrapper>
-          <SlippageToleranceBtn>0.1%</SlippageToleranceBtn>
-          <SlippageToleranceBtn>0.5%</SlippageToleranceBtn>
-          <SlippageToleranceBtn>1.0%</SlippageToleranceBtn>
+          {[0.1, 0.5, 1.0].map((item, index) => {
+            return (
+              <SlippageToleranceBtn
+                style={{ background: slippage === item ? '#383838' : '#262626' }}
+                key={index}
+                onClick={() => {
+                  handleSlippageChange(item)
+                }}
+              >
+                {item}%
+              </SlippageToleranceBtn>
+            )
+          })}
           <span
             style={{
               display: 'flex',
@@ -54,7 +69,13 @@ const Config: FC<TConfig> = ({ onSlippageChange, onDeadlineChange }) => {
             }}
           >
             <InputWrapper>
-              <InputNumber placeholder="0.50" onChange={handleSlippageChange} value={slippage} />
+              <InputNumber
+                placeholder="0.50"
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                  handleSlippageChange(Number(e.target.value))
+                }}
+                value={slippage}
+              />
             </InputWrapper>
             <span className="unit">&nbsp;%</span>
           </span>
@@ -77,7 +98,7 @@ const Config: FC<TConfig> = ({ onSlippageChange, onDeadlineChange }) => {
           </ConfigLabelWrapper>
           <ConfigValueWrapper style={{ justifyContent: 'start' }}>
             <InputWrapper>
-              <InputNumber placeholder="30" />
+              <InputNumber placeholder="30" value={deadline} onChange={handleDeadline} />
             </InputWrapper>
           </ConfigValueWrapper>
         </ExpertMode>
@@ -124,6 +145,7 @@ const SlippageToleranceBtn = styled.button`
   background: #262626;
   color: #d9d9d9;
   font-size: 13px;
+  cursor: pointer;
 `
 const ConfigWrapper = styled.div`
   display: grid;

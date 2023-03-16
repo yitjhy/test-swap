@@ -94,7 +94,7 @@ export function useSwap(tokenIn: string, tokenOut: string) {
         const reserveOutAmount = +formatUnits(reserveOut, tokenOutInfo.decimals)
         if (reserveInAmount > 0) return reserveOutAmount / reserveInAmount
         return 0
-    }, [reserveIn, reserveOut])
+    }, [reserveIn, reserveOut, tokenInInfo, tokenOutInfo])
 
     useDebounceEffect(() => {
         if (lock === SwapLock.In && router) {
@@ -102,10 +102,13 @@ export function useSwap(tokenIn: string, tokenOut: string) {
             if (inValue.eq(constants.Zero)) {
                 setOutAmount('0')
             } else {
-                router.getAmountOut(inValue, reserveIn, reserveOut).then(res => setOutAmount(formatUnits(res, tokenOutInfo.decimals)))
+                router.getAmountOut(inValue, reserveIn, reserveOut).then(res => {
+                    console.log('getAmount', res)
+                    setOutAmount(formatUnits(res, tokenOutInfo.decimals))
+                })
             }
         }
-    }, [lock, inAmount, reserveIn, reserveOut])
+    }, [lock, inAmount, reserveIn, reserveOut, tokenInInfo, tokenOutInfo])
     useDebounceEffect(() => {
         if (lock === SwapLock.Out && router) {
             const outValue = parseUnits(outAmount, tokenOutInfo.decimals)
@@ -115,7 +118,7 @@ export function useSwap(tokenIn: string, tokenOut: string) {
                 router.getAmountIn(outValue, reserveIn, reserveOut).then(res => setInAmount(formatUnits(res, tokenInInfo.decimals)))
             }
         }
-    }, [lock, outAmount, reserveOut, reserveIn])
+    }, [lock, outAmount, reserveOut, reserveIn, tokenInInfo, tokenOutInfo])
 
     const updateIn = useCallback((amount: number | string) => {
         setInAmount(amount + '')

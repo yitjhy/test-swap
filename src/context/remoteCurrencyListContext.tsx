@@ -40,6 +40,8 @@ export const RemoteCurrencyListProvider: FC<PropsWithChildren> = ({ children }) 
     // '0x3A60c560EdCb5ed75020132387Ef1B077d104454',
     // '0xBCcEDcEb835F98dAc6fa5a3564Bf164F9A527261',
     '0x30a2926428D33d5A6C0FB8892b89232a020991BE',
+    '0xD1056161F4DbdeF58Ea976dA4D67daf04D44E230',
+    '0x70167F357976Ec812536175FBA9D7665Cf71E737',
   ])
 
   const [platFormBalance, setPlatFormBalance] = useState<BigNumber | undefined>()

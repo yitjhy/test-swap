@@ -13,6 +13,8 @@ import PriceDetail from '@/views/swap/price-detail'
 import { TCurrencyListItem } from '@/context/remoteCurrencyListContext'
 import useERC20Approved from '@/hooks/contract/useERC20Approved'
 import { formatEther } from 'ethers/lib/utils'
+import {useSwap} from "@/hooks/useSwapRouter";
+import {constants} from "ethers";
 
 function Swap() {
   const [checkedFromCurrency, setCheckedFromCurrency] = useState<TCurrencyListItem>({} as TCurrencyListItem)
@@ -21,6 +23,9 @@ function Swap() {
   const [isConfigModalOpen, handleConfigModalOpen] = useState(false)
   const [inputValueByFrom, setInputValueByFrom] = useState(0)
   const [inputValueByTo, setInputValueByTo] = useState(0)
+  // const swap = useSwap('0x30a2926428D33d5A6C0FB8892b89232a020991BE', '0xD1056161F4DbdeF58Ea976dA4D67daf04D44E230')
+  const swap = useSwap(constants.AddressZero, '0x30a2926428D33d5A6C0FB8892b89232a020991BE')
+  console.log('swap', swap)
 
   const handleSubmit = () => {
     handleConfirmWrapModalOpen(true)

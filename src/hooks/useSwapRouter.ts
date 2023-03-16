@@ -38,7 +38,7 @@ function useReserves(factoryAddress: string, tokenIn: string, tokenOut: string) 
         }
     }, [factory, tokenIn, tokenOut])
     useEffect(() => {
-        if (provider && pair) {
+        if (provider && pair && !isSameAddress(pairAddress, constants.AddressZero)) {
             provider.all([
                 pair.token0(),
                 pair.token1(),
@@ -61,7 +61,7 @@ function useReserves(factoryAddress: string, tokenIn: string, tokenOut: string) 
 export function useSwap(tokenIn: string, tokenOut: string) {
     const [inAmount, setInAmount] = useState('0')
     const [outAmount, setOutAmount] = useState('0')
-    const [slippage, setSlippage] = useState(5) // 5-> 5/10000
+    const [slippage, setSlippage] = useState(500) // 5-> 5/10000
     const [lock, setLock] = useState(SwapLock.In)
     const tokenInInfo = useErc20Info(tokenIn)
     const tokenOutInfo = useErc20Info(tokenOut)
@@ -69,7 +69,7 @@ export function useSwap(tokenIn: string, tokenOut: string) {
     const [wethAddress, setWethAddress] = useState('')
     const {contract: router, multiCallContract: mulRouter} = useContracts<HunterswapRouter02>(routerAddress, ABI.router)
     // const factory = useContract<HunterswapFactory>(factoryAddress, ABI.Factory)
-    const {reserveIn, reserveOut} = useReserves(factoryAddress, tokenIn, tokenOut)
+    const {reserveIn, reserveOut} = useReserves(factoryAddress, isSameAddress(tokenIn , constants.AddressZero) ? wethAddress:tokenIn, tokenOut)
     const [deadLine, setDeadLine] = useState(300) // 5 min
     const provider = useMulProvider()
     const {account} = useWeb3React()
@@ -96,18 +96,18 @@ export function useSwap(tokenIn: string, tokenOut: string) {
         return 0
     }, [reserveIn, reserveOut])
 
-
     useDebounceEffect(() => {
-        // update inAmount or outAmount when inAmount or outAmount changed
-        if (!router) return
-        if (lock === SwapLock.In) {
+        if (lock === SwapLock.In && router) {
             const inValue = parseUnits(inAmount, tokenInInfo.decimals)
             if (inValue.eq(constants.Zero)) {
                 setOutAmount('0')
             } else {
                 router.getAmountOut(inValue, reserveIn, reserveOut).then(res => setOutAmount(formatUnits(res, tokenOutInfo.decimals)))
             }
-        } else {
+        }
+    }, [lock, inAmount, reserveIn, reserveOut])
+    useDebounceEffect(() => {
+        if (lock === SwapLock.Out && router) {
             const outValue = parseUnits(outAmount, tokenOutInfo.decimals)
             if (outValue.eq(constants.Zero)) {
                 setInAmount('0')
@@ -115,7 +115,7 @@ export function useSwap(tokenIn: string, tokenOut: string) {
                 router.getAmountIn(outValue, reserveIn, reserveOut).then(res => setInAmount(formatUnits(res, tokenInInfo.decimals)))
             }
         }
-    }, [lock, router, reserveIn, reserveOut])
+    }, [lock, outAmount, reserveOut, reserveIn])
 
     const updateIn = useCallback((amount: number | string) => {
         setInAmount(amount + '')
@@ -132,39 +132,45 @@ export function useSwap(tokenIn: string, tokenOut: string) {
         const outValue = parseUnits(outAmount, tokenOutInfo.decimals)
         const _deadline = moment().add(deadLine, 'second').unix()
         const maxInValue = inValue.add(inValue.mul(slippage).div(10000))
-        const minOutValue = outValue.add(outValue.mul(slippage).div(10000))
-        if (!approved && !await approve()) {
-            openDialog({title: 'Error', desc: 'Approval error.'})
-            return
-        }
-        let tx:TransactionResponse|null = null
-        openDialog({title: 'Swap', desc: 'Waiting for signature'})
-        if (isSameAddress(tokenIn, constants.AddressZero)) {
-            // eth for erc20
-            if (lock === SwapLock.In) {
-                tx= await router.swapExactETHForTokens(minOutValue, [wethAddress, tokenOut], account, _deadline, {value: inValue})
-            } else {
-                tx = await router.swapETHForExactTokens(outValue, [wethAddress, tokenOut], account, _deadline, {value: maxInValue})
+        const minOutValue = outValue.sub(outValue.mul(slippage).div(10000))
+        try {
+            if (!approved && !await approve()) {
+                openDialog({title: 'Error', desc: 'Approval error.'})
+                return
             }
+            let tx:TransactionResponse|null = null
+            openDialog({title: 'Swap', desc: 'Waiting for signature'})
+            if (isSameAddress(tokenIn, constants.AddressZero)) {
+                // eth for erc20
+                if (lock === SwapLock.In) {
+                    console.log('minOutValue', minOutValue)
+                    tx= await router.swapExactETHForTokens(minOutValue, [wethAddress, tokenOut], account, _deadline, {value: inValue})
+                } else {
+                    tx = await router.swapETHForExactTokens(outValue, [wethAddress, tokenOut], account, _deadline, {value: maxInValue})
+                }
 
-        } else if (isSameAddress(tokenOut, constants.AddressZero)) {
-            // erc20 for eth
-            if (lock === SwapLock.In) {
-                tx = await router.swapExactTokensForETH(inValue, minOutValue, [tokenIn, wethAddress], account, _deadline)
+            } else if (isSameAddress(tokenOut, constants.AddressZero)) {
+                // erc20 for eth
+                if (lock === SwapLock.In) {
+                    tx = await router.swapExactTokensForETH(inValue, minOutValue, [tokenIn, wethAddress], account, _deadline)
+                } else {
+                    tx = await router.swapTokensForExactETH(outValue, maxInValue, [tokenIn, wethAddress], account, _deadline)
+                }
             } else {
-                tx = await router.swapTokensForExactETH(outValue, maxInValue, [tokenIn, wethAddress], account, _deadline)
+                // erc20 for erc20
+                if (lock === SwapLock.In) {
+                    tx = await router.swapExactTokensForTokens(inValue, minOutValue, [tokenIn, tokenOut], account, _deadline)
+                } else {
+                    tx = await router.swapTokensForExactTokens(outValue, maxInValue, [tokenIn, tokenOut], account, _deadline)
+                }
             }
-        } else {
-            // erc20 for erc20
-            if (lock === SwapLock.In) {
-                tx = await router.swapExactTokensForTokens(inValue, minOutValue, [tokenIn, tokenOut], account, _deadline)
-            } else {
-                tx = await router.swapTokensForExactTokens(outValue, maxInValue, [tokenIn, tokenOut], account, _deadline)
-            }
+            openDialog({title: 'Swap', desc: 'Waiting for blockchain confirmation'})
+            await tx.wait()
+            openDialog({title: 'Success', desc: 'Swap success'})
+        } catch (e) {
+            openDialog({title: 'Error', desc: 'Swap error'})
         }
-        openDialog({title: 'Swap', desc: 'Waiting for blockchain confirmation'})
-        await tx.wait()
-        openDialog({title: 'Success', desc: 'Swap success'})
+
     }, [tokenIn, tokenOut, lock, inAmount, outAmount, router, approved])
 
     return {inAmount, outAmount, rate, updateIn, updateOut, updateSlippage: setSlippage, updateDeadline: setDeadLine, swap}

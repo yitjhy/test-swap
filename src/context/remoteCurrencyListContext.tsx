@@ -18,6 +18,7 @@ export type TRemoteCurrencyListItem = {
 export type TCurrencyListItem = TErc20InfoItem & {
   logoURI: TRemoteCurrencyListItem['logoURI']
   chainId: TRemoteCurrencyListItem['chainId']
+  balanceOfPair: BigNumber
 }
 type TRemoteCurrencyListContext = {
   remoteCurrencyList: TRemoteCurrencyListItem[]

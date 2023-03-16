@@ -39,7 +39,12 @@ const PairDetail: FC<{ data: TPairDetail }> = ({ data }) => {
         <div className="lp-detail-item-value">{formatUnits(data.LPShare, 4)}%</div>
       </div>
       <div className="operation-wrapper">
-        <ConfirmBtn style={{ padding: '0 27px', height: '2.5rem' }} onClick={goIncreaseLP}>
+        <ConfirmBtn
+          style={{ padding: '0 27px', height: '2.5rem' }}
+          onClick={() => {
+            router.push(`/add?address=${data.pairAddress}`)
+          }}
+        >
           Add
         </ConfirmBtn>
         <ConfirmBtn

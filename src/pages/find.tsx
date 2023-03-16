@@ -7,6 +7,7 @@ import { TCurrencyListItem } from '@/context/remoteCurrencyListContext'
 import useGetPairContract from '@/hooks/useGetPairContract'
 import { invalidAddress } from '@/utils/enum'
 import { useRouter } from 'next/router'
+import { getAddress } from '@/utils'
 
 function Find() {
   const router = useRouter()
@@ -28,7 +29,8 @@ function Find() {
     setToCurrency(data)
   }
   const getPairAddress = async () => {
-    const pairAddress = await getPairContractAddress(fromCurrency.address, toCurrency.address)
+    const { fromAddress, toAddress } = getAddress(fromCurrency.address, toCurrency.address)
+    const pairAddress = await getPairContractAddress(fromAddress, toAddress)
     if (pairAddress !== invalidAddress) {
       setPairAddress(pairAddress)
     } else {

@@ -17,7 +17,6 @@ export type TSwapSectionProps = {
   onInput?: (value: number) => void
   onMax?: (value: number) => void
   onSelectedCurrency?: (balance: number, currency: TCurrencyListItem) => void
-
   type?: TInputCurrency
   readonly?: boolean
   style?: React.CSSProperties
@@ -79,6 +78,7 @@ const SwapSection: FC<TSwapSectionProps> = ({
           onChange={handleInput}
         />
         <button
+          style={{ cursor: readonly ? 'default' : 'pointer' }}
           className="currency-button"
           onClick={() => {
             if (!readonly) {
@@ -108,7 +108,7 @@ const SwapSection: FC<TSwapSectionProps> = ({
         <div className="swap-currency-fiat-row">
           <div className="currency-balance">
             Balance: {currencyData?.balance ? formatUnits(currencyData.balance, currencyData.decimals) : '0'}{' '}
-            {currencyData?.balance && (
+            {currencyData?.balance && !readonly && (
               <button className="comparative-btn" onClick={handleMax}>
                 Max
               </button>

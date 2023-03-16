@@ -126,6 +126,27 @@ export function useSwap(tokenIn: string, tokenOut: string) {
         setLock(SwapLock.Out)
     }, [])
 
+    /**
+     * newOut / newIn < rate(1 + slippage)
+     *  newOut < newIn * rate(1+slippage)
+     *  newIn > newOut / (rate(1+slippage))
+     *
+     *
+     *  newReserveOut = oldReserveOut - outValue
+     *  newReserveIn = oldReserveIn + inValue
+     *  newPrice = newReserveIn / newReserveOut
+     *  oldPrice = reserveIn / reserveOut
+     *  (newPrice - oldPrice) / oldPrice < slippage
+     *  newPrice < (1 + slippage)*oldPrice
+     *  newReserveIn < (1 + slippage)*oldPrice*newReserveOut
+     *  inValue < (1 + slippage)*oldPrice*newReserveOut - oldReserveIn
+     *  inValue < (1 + slippage)*reserveIn/reserveOut*newReserveOut - oldReserveIn
+     *
+     *  newReserveOut > newReserveIn / (1 + slippage) / oldPrice
+     *  outValue < odlReserveOut - newReserveIn / (1 + slippage) / oldPrice
+     *
+     */
+
     const swap = useCallback(async () => {
         if (!router || !account) return
         const inValue = parseUnits(inAmount, tokenInInfo.decimals)

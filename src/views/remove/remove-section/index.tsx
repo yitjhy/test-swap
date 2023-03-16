@@ -68,7 +68,14 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
     const inputValueByTo = parseUnits(String(value), data.tokens[0].decimals)
       .mul(data.tokens[1].balanceOfPair)
       .div(data.tokens[0].balanceOfPair)
-    setInputValueByTo(Number(formatUnits(inputValueByTo, data.tokens[0].decimals)))
+    setInputValueByTo(Number(formatUnits(inputValueByTo, data.tokens[1].decimals)))
+
+    const token0 = changeTokens[0]
+    const token1 = changeTokens[1]
+    token0.balanceOfPair = parseUnits(String(value), data.tokens[0].decimals)
+    token1.balanceOfPair = inputValueByTo
+    setChangeTokens([token0, token1])
+
     const liquidity = parseUnits(String(value), data.tokens[0].decimals)
       .mul(data.accountPairBalance)
       .div(data.tokens[0].balanceOfPair)
@@ -84,7 +91,14 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
     const inputValueByFrom = parseUnits(String(value), data.tokens[1].decimals)
       .mul(data.tokens[0].balanceOfPair)
       .div(data.tokens[1].balanceOfPair)
-    setInputValueByFrom(Number(formatUnits(inputValueByFrom, data.tokens[1].decimals)))
+    setInputValueByFrom(Number(formatUnits(inputValueByFrom, data.tokens[0].decimals)))
+
+    const token0 = changeTokens[0]
+    const token1 = changeTokens[1]
+    token0.balanceOfPair = inputValueByFrom
+    token1.balanceOfPair = parseUnits(String(value), data.tokens[1].decimals)
+    setChangeTokens([token0, token1])
+
     const liquidity = parseUnits(String(value), data.tokens[1].decimals)
       .mul(data.accountPairBalance)
       .div(data.tokens[1].balanceOfPair)
@@ -114,7 +128,7 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
               amount={Number(formatUnits(liquidity as BigNumber, data.pairDecimals))}
               checkedCurrency={{
                 name: `${data.tokens[0].symbol.slice(0, 3)} / ${data.tokens[1].symbol.slice(0, 3)}`,
-                chainId: 8979,
+                chainId: 5,
                 symbol: `${data.tokens[0].symbol.slice(0, 3)} / ${data.tokens[1].symbol.slice(0, 3)}`,
                 address: data.pairAddress,
                 decimals: data.pairDecimals,

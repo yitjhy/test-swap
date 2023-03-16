@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import Image from 'next/image'
 import { Settings } from 'react-feather'
-import Config from '@/views/swap/config'
+import Config, { TConfig } from '@/views/swap/config'
 import Modal from '@/components/modal'
 import Header from '@/components/header'
 import SubmitBtn from '@/components/submitBtn'
@@ -12,9 +12,9 @@ import SwapDetail from '@/views/swap/swap-detail'
 import PriceDetail from '@/views/swap/price-detail'
 import { TCurrencyListItem } from '@/context/remoteCurrencyListContext'
 import useERC20Approved from '@/hooks/contract/useERC20Approved'
-import { formatEther } from 'ethers/lib/utils'
-import {useSwap} from "@/hooks/useSwapRouter";
-import {constants} from "ethers";
+import { formatEther, parseUnits } from 'ethers/lib/utils'
+import { useSwap } from '@/hooks/useSwapRouter'
+import { constants } from 'ethers'
 
 function Swap() {
   const [checkedFromCurrency, setCheckedFromCurrency] = useState<TCurrencyListItem>({} as TCurrencyListItem)
@@ -28,7 +28,9 @@ function Swap() {
   console.log('swap', swap)
 
   const handleSubmit = () => {
-    handleConfirmWrapModalOpen(true)
+    // handleConfirmWrapModalOpen(true)
+    // swap()
+    swap.swap().then()
   }
   const onSelectedCurrencyByFrom: TSwapSectionProps['onSelectedCurrency'] = (balance, currency) => {
     setCheckedFromCurrency(currency)
@@ -43,28 +45,42 @@ function Swap() {
     setInputValueByTo(inputValueByFrom)
   }
   const onInputByFrom: TSwapSectionProps['onInput'] = (value) => {
-    setInputValueByFrom(value)
+    // setInputValueByFrom(value)
+    swap.updateIn(value)
   }
   const onInputByTo: TSwapSectionProps['onInput'] = (value) => {
-    setInputValueByTo(value)
+    // setInputValueByTo(value)
+    swap.updateOut(value)
   }
   const handleMaxByFrom: TSwapSectionProps['onMax'] = (value) => {
-    setInputValueByFrom(value)
+    // setInputValueByFrom(value)
+    swap.updateIn(String(value))
   }
   const handleMaxByTo: TSwapSectionProps['onMax'] = (value) => {
-    setInputValueByTo(value)
+    // setInputValueByTo(value)
+    swap.updateOut(String(value))
   }
   const getSubmitBtnText = () => {
     if (!checkedFromCurrency.address || !checkedToCurrency.address) {
       return 'Select Token'
     }
-    if (inputValueByFrom === 0 || inputValueByTo === 0) {
+    if (
+      parseUnits(swap.outAmount, checkedToCurrency.decimals).eq(constants.Zero) ||
+      parseUnits(swap.inAmount, checkedFromCurrency.decimals).eq(constants.Zero)
+    ) {
       return 'Enter the number of Token'
     }
-    if (checkedToCurrency.address && inputValueByTo > Number(formatEther(checkedToCurrency.balance))) {
+    if (
+      checkedToCurrency.address &&
+      parseUnits(swap.outAmount, checkedToCurrency.decimals).gt(checkedToCurrency.balance)
+    ) {
       return 'Insufficient balance'
     }
-    if (checkedFromCurrency.address && inputValueByFrom > Number(formatEther(checkedFromCurrency.balance))) {
+    console.log(parseUnits(swap.inAmount, checkedFromCurrency.decimals).gt(checkedFromCurrency.balance))
+    if (
+      checkedFromCurrency.address &&
+      parseUnits(swap.inAmount, checkedFromCurrency.decimals).gt(checkedFromCurrency.balance)
+    ) {
       return 'Insufficient balance'
     }
     return 'Supply'
@@ -73,14 +89,17 @@ function Swap() {
     if (
       checkedFromCurrency.address &&
       checkedToCurrency.address &&
-      inputValueByTo > 0 &&
-      inputValueByFrom > 0 &&
-      inputValueByTo <= Number(formatEther(checkedToCurrency.balance)) &&
-      inputValueByFrom <= Number(formatEther(checkedFromCurrency.balance))
+      parseUnits(swap.outAmount, checkedToCurrency.decimals).gt(constants.Zero) &&
+      parseUnits(swap.inAmount, checkedFromCurrency.decimals).gt(constants.Zero) &&
+      parseUnits(swap.outAmount, checkedToCurrency.decimals).lte(checkedToCurrency.balance) &&
+      parseUnits(swap.inAmount, checkedFromCurrency.decimals).lte(checkedFromCurrency.balance)
     ) {
       return false
     }
     return true
+  }
+  const onSlippageChange: TConfig['onSlippageChange'] = (value) => {
+    swap.updateSlippage(value)
   }
   return (
     <div style={{ maxWidth: 480, margin: '0 auto' }}>
@@ -95,7 +114,7 @@ function Swap() {
         <Modal
           contentStyle={{ width: 480 }}
           title="Settings"
-          content={<Config />}
+          content={<Config onSlippageChange={onSlippageChange} onDeadlineChange={() => {}} />}
           open={isConfigModalOpen}
           onClose={handleConfigModalOpen}
         />
@@ -109,7 +128,7 @@ function Swap() {
         />
         <div style={{ position: 'relative' }}>
           <SwapSection
-            amount={inputValueByFrom}
+            amount={Number(swap.inAmount)}
             onMax={handleMaxByFrom}
             checkedCurrency={checkedFromCurrency}
             onSelectedCurrency={onSelectedCurrencyByFrom}
@@ -120,16 +139,16 @@ function Swap() {
           </button>
         </div>
         <SwapSection
-          amount={inputValueByTo}
+          amount={Number(swap.outAmount)}
           onMax={handleMaxByTo}
           checkedCurrency={checkedToCurrency}
           onSelectedCurrency={onSelectedCurrencyByTo}
           onInput={onInputByTo}
         />
-        <PriceDetail />
+        <PriceDetail from={checkedFromCurrency.symbol} to={checkedToCurrency.symbol} rate={swap.rate} />
         <SubmitBtn text={getSubmitBtnText()} onSubmit={handleSubmit} disabled={getSubmitBtnStatus()} />
       </SwapWrapper>
-      <SwapDetail />
+      {/*<SwapDetail />*/}
     </div>
   )
 }

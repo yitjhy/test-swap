@@ -3,12 +3,21 @@ import Popover from '@/components/popover'
 import { HelpCircle } from 'react-feather'
 import Switch from '@/components/switch'
 import Modal from '@/components/modal'
-import { useState } from 'react'
+import { useState, FC, ChangeEvent } from 'react'
 import ExpertModeCom from '@/views/swap/config/expertMode'
 
-const Config = () => {
+export type TConfig = {
+  onSlippageChange: (value: number) => void
+  onDeadlineChange: (value: number) => void
+}
+const Config: FC<TConfig> = ({ onSlippageChange, onDeadlineChange }) => {
   const [isExpertModeModalOpen, handleExpertModeModalOpen] = useState(false)
   const [configData, setConfigData] = useState<{ isExpertMode: boolean }>({ isExpertMode: false })
+  const [slippage, setSlippage] = useState<number>(0.5)
+  const handleSlippageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSlippage(Number(e.target.value))
+    onSlippageChange(Number(e.target.value))
+  }
   return (
     <ConfigWrapper>
       <Modal
@@ -45,7 +54,7 @@ const Config = () => {
             }}
           >
             <InputWrapper>
-              <InputNumber placeholder="0.50" />
+              <InputNumber placeholder="0.50" onChange={handleSlippageChange} value={slippage} />
             </InputWrapper>
             <span className="unit">&nbsp;%</span>
           </span>

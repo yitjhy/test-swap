@@ -26,18 +26,14 @@ function LP() {
     const pairAddressListFromStorage = localStorage.getItem('pairAddressList')
     if (pairAddressListFromStorage) {
       const pairAddressList = JSON.parse(pairAddressListFromStorage) as string[]
-      pairAddressList.map((item) => {
-        getPairDetail(item).then((data) => {
-          console.log(data)
-          setPairDetailList([...pairDetailList, data])
-        })
+      const promiseList = pairAddressList.map((item) => {
+        return getPairDetail(item)
       })
-      // getPairDetail().then((data) => {
-      //   console.log(data)
-      // })
+      Promise.all(promiseList).then((values) => {
+        setPairDetailList(values)
+      })
     }
   }
-  console.log(pairDetailList)
   const getPairDetail = async (pairContractAddress = '0xf0ff33fc2F245fCCe7723f9246fEe981d2c77fAF') => {
     const pairContract = await getContract(pairContractAddress, ABI.pair, signer)
     const pairDecimals = await pairContract?.decimals()

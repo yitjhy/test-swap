@@ -19,7 +19,7 @@ const Slider: FC<TSliderProps> = ({ onChange, value: sliderValue = 50 }) => {
       type="range"
       min="0"
       max="100"
-      step="0.1"
+      step="0.01"
       onChange={onSliderChange}
       value={value}
       sliderValue={value}

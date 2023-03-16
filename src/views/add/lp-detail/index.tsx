@@ -43,19 +43,11 @@ const LPDetail: FC<{ data: TLPDetailProps }> = ({ data }) => {
           return (
             <div className="lp-share-item-wrapper" key={item.address}>
               <span className="lp-share-label">{item.symbol}</span>
-              <span className="lp-share-value">{formatUnits(item.balance, item.decimals)}</span>
+              <span className="lp-share-value">{formatUnits(item.balanceOfPair, item.decimals)}</span>
             </div>
           )
         })}
       </>
-      {/*<div className="lp-detail-item-wrapper">*/}
-      {/*  <span className="lp-detail-label">UNI</span>*/}
-      {/*  <span className="lp-detail-value">0.141722</span>*/}
-      {/*</div>*/}
-      {/*<div className="lp-detail-item-wrapper">*/}
-      {/*  <span className="lp-detail-label">ETH</span>*/}
-      {/*  <span className="lp-detail-value">0.0216772</span>*/}
-      {/*</div>*/}
     </LPShareWrapper>
   )
 }

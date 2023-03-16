@@ -11,7 +11,7 @@ export type RateItem = {
 }
 export type TRateProps = {
   rate: [RateItem, RateItem]
-  shareOfPool: number
+  shareOfPool: string
 }
 
 const getStrByDecimalPlaces = (val: string, decimalPlaces = 4) => {
@@ -40,20 +40,8 @@ const Rate: FC<TRateProps> = ({ rate, shareOfPool }) => {
             </div>
           )
         })}
-        {/*<div className="rate-detail-item-wrapper">*/}
-        {/*  <span className="rate-value">{getStrByDecimalPlaces(formatUnits(rateFrom2To, 18))}</span>*/}
-        {/*  <span className="rate-label">*/}
-        {/*    {fromCurrency?.symbol?.slice(0, 3)} per {toCurrency?.symbol?.slice(0, 3)}*/}
-        {/*  </span>*/}
-        {/*</div>*/}
-        {/*<div className="rate-detail-item-wrapper">*/}
-        {/*  <span className="rate-value">{getStrByDecimalPlaces(formatUnits(rateTo2From, 18))}</span>*/}
-        {/*  <span className="rate-label">*/}
-        {/*    {toCurrency?.symbol?.slice(0, 3)} per {fromCurrency?.symbol?.slice(0, 3)}*/}
-        {/*  </span>*/}
-        {/*</div>*/}
         <div className="rate-detail-item-wrapper">
-          <span className="rate-value">{getStrByDecimalPlaces(String(shareOfPool * 100))}%</span>
+          <span className="rate-value">{getStrByDecimalPlaces(String(shareOfPool))}%</span>
           <span className="rate-label">Share of pool</span>
         </div>
       </div>

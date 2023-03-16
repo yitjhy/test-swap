@@ -21,75 +21,36 @@ import { useDialog } from '@/components/dialog'
 import { useSigner } from '@/hooks/contract/useSigner'
 import { contractAddress, invalidAddress, platFormAddress } from '@/utils/enum'
 import useLPDetail from '@/hooks/usePaireDetail'
-import { BigNumber } from 'ethers'
-import { useWeb3React } from '@web3-react/core'
+import useLiquidityRate from '@/hooks/useLiquidityRate'
+import { useRouter } from 'next/router'
+import { getAddress } from '@/utils'
 
 const IncreaseLP = () => {
+  const router = useRouter()
+  const { query } = useRouter()
   const [isConfigModalOpen, handleConfigModalOpen] = useState(false)
   const [checkedFromCurrency, setCheckedFromCurrency] = useState<TCurrencyListItem>({} as TCurrencyListItem)
   const [checkedToCurrency, setCheckedToCurrency] = useState<TCurrencyListItem>({} as TCurrencyListItem)
   const [inputValueByTo, setInputValueByTo] = useState(0)
   const [inputValueByFrom, setInputValueByFrom] = useState(0)
-  const [shareOfPool, setShareOfPool] = useState(0)
+  const [shareOfPool, setShareOfPool] = useState('0')
   const [LPDetailData, setLPDetailData] = useState<TLPDetailProps & { rate: TRateProps['rate']; pairAddress: string }>(
     {} as any
   )
-  const [pairContractAddress, setPairContractAddress] = useState('')
   const { getLPDetail } = useLPDetail()
+  const { getLiquidityRate } = useLiquidityRate(
+    {
+      address: checkedFromCurrency.address,
+      inputValue: inputValueByFrom,
+    },
+    {
+      address: checkedToCurrency.address,
+      inputValue: inputValueByTo,
+    }
+  )
   const { addLiquidity, addLiquidityETH } = useCreatePair()
   const { getPairContractAddress } = useGetPairContract()
   const signer = useSigner()
-  const { account } = useWeb3React()
-  const getLiquidityRate = async () => {
-    const pairContractAddress = await getPairContractAddress(checkedFromCurrency.address, checkedToCurrency.address)
-    if (pairContractAddress !== invalidAddress) {
-      const pairContract = await getContract(pairContractAddress, ABI.pair, signer)
-      const pairAmount = await pairContract?.getReserves()
-      const totalSupplyBigNumber = await pairContract?.totalSupply()
-      const poolTotalSupply = formatEther(totalSupplyBigNumber)
-      if (!totalSupplyBigNumber.isZero()) {
-        // 已经有人添加过流动性
-        const token0Address = await pairContract?.token0()
-        const token1Address = await pairContract?.token1()
-        const token0Contract = await getContract(token0Address, ABI.ERC20, signer)
-        const token1Contract = await getContract(token1Address, ABI.ERC20, signer)
-        const token0Decimal = await token0Contract?.decimals()
-        const token1Decimal = await token1Contract?.decimals()
-        let liquidity = 0
-        if (token1Address === checkedFromCurrency.address) {
-          // const aa = BigNumber.from(inputValueByFrom).mul(totalSupplyBigNumber).div(pairAmount._reserve0)
-          // const bb = BigNumber.from(inputValueByTo).mul(totalSupplyBigNumber).div(pairAmount._reserve1)
-          // console.log(aa.toNumber())
-          // console.log(bb.toNumber())
-          // console.log((inputValueByFrom * Number(poolTotalSupply)) / Number(formatEther(pairAmount._reserve0)))
-          // console.log((inputValueByTo * Number(poolTotalSupply)) / Number(formatEther(pairAmount._reserve1)))
-          // console.log(
-          //   parseUnits('1', 18)
-          //     .mul(BigNumber.from(100))
-          //     .div(totalSupplyBigNumber.add(BigNumber.from(100)))
-          //     .toNumber()
-          // )
-          liquidity = Math.min(
-            (inputValueByFrom * Number(poolTotalSupply)) / Number(formatEther(pairAmount._reserve0)),
-            (inputValueByTo * Number(poolTotalSupply)) / Number(formatEther(pairAmount._reserve1))
-          )
-        } else {
-          liquidity = Math.min(
-            (inputValueByFrom * Number(poolTotalSupply)) / Number(formatEther(pairAmount._reserve1)),
-            (inputValueByTo * Number(poolTotalSupply)) / Number(formatEther(pairAmount._reserve0))
-          )
-        }
-        setShareOfPool(liquidity / (Number(poolTotalSupply) + liquidity))
-      } else {
-        // 还没人添加过流动性
-        const liquidity = Math.sqrt(inputValueByFrom * inputValueByTo) - 1000
-        setShareOfPool(liquidity / (Number(poolTotalSupply) + liquidity))
-      }
-    } else {
-      console.log('pair不存在')
-      console.log(pairContractAddress)
-    }
-  }
   const onSelectedCurrencyByFrom: TSwapSectionProps['onSelectedCurrency'] = (balance, currency) => {
     setCheckedFromCurrency(currency)
   }
@@ -98,47 +59,46 @@ const IncreaseLP = () => {
   }
   const onInputByFrom: TSwapSectionProps['onInput'] = async (value) => {
     setInputValueByFrom(value)
-    if (checkedFromCurrency.address && checkedToCurrency.address) {
-      const pairContractAddress = await getPairContractAddress(checkedFromCurrency.address, checkedToCurrency.address)
-      if (pairContractAddress !== invalidAddress) {
-        const pairContract = await getContract(pairContractAddress, ABI.pair, signer)
-        const pairAmount = await pairContract?.getReserves()
-        const token0Address = await pairContract?.token0()
-        const token1Address = await pairContract?.token1()
-        const token0Contract = await getContract(token0Address, ABI.ERC20, signer)
-        const token1Contract = await getContract(token1Address, ABI.ERC20, signer)
-        const token0Decimal = await token0Contract?.decimals()
-        const token1Decimal = await token1Contract?.decimals()
-        if (token0Address === checkedFromCurrency.address) {
-          const res = pairAmount._reserve1.mul(parseUnits(String(value), token0Decimal)).div(pairAmount._reserve0)
-          setInputValueByTo(Number(formatUnits(res, token1Decimal)))
-        } else {
-          const res = pairAmount._reserve0.mul(parseUnits(String(value), token1Decimal)).div(pairAmount._reserve1)
-          setInputValueByTo(Number(formatUnits(res, token0Decimal)))
-        }
+    const { fromAddress, toAddress } = getAddress(checkedFromCurrency.address, checkedToCurrency.address)
+    const pairContractAddress = await getPairContractAddress(fromAddress, toAddress)
+    if (pairContractAddress !== invalidAddress) {
+      const pairContract = await getContract(pairContractAddress, ABI.pair, signer)
+      const pairAmount = await pairContract?.getReserves()
+      const token0Address = await pairContract?.token0()
+      const token1Address = await pairContract?.token1()
+      const token0Contract = await getContract(token0Address, ABI.ERC20, signer)
+      const token1Contract = await getContract(token1Address, ABI.ERC20, signer)
+      const token0Decimal = await token0Contract?.decimals()
+      const token1Decimal = await token1Contract?.decimals()
+      if (token0Address === fromAddress) {
+        const res = pairAmount._reserve1.mul(parseUnits(String(value), token0Decimal)).div(pairAmount._reserve0)
+        setInputValueByTo(Number(formatUnits(res, token1Decimal)))
+      } else {
+        debugger
+        const res = pairAmount._reserve0.mul(parseUnits(String(value), token1Decimal)).div(pairAmount._reserve1)
+        setInputValueByTo(Number(formatUnits(res, token0Decimal)))
       }
     }
   }
   const onInputByTo: TSwapSectionProps['onInput'] = async (value) => {
     setInputValueByTo(value)
-    if (checkedFromCurrency.address && checkedToCurrency.address) {
-      const pairContractAddress = await getPairContractAddress(checkedFromCurrency.address, checkedToCurrency.address)
-      if (pairContractAddress !== invalidAddress) {
-        const pairContract = await getContract(pairContractAddress, ABI.pair, signer)
-        const pairAmount = await pairContract?.getReserves()
-        const token0Address = await pairContract?.token0()
-        const token1Address = await pairContract?.token1()
-        const token0Contract = await getContract(token0Address, ABI.ERC20, signer)
-        const token1Contract = await getContract(token1Address, ABI.ERC20, signer)
-        const token0Decimal = await token0Contract?.decimals()
-        const token1Decimal = await token1Contract?.decimals()
-        if (token0Address === checkedFromCurrency.address) {
-          const res = pairAmount._reserve0.mul(parseUnits(String(value), token1Decimal)).div(pairAmount._reserve1)
-          setInputValueByFrom(Number(formatUnits(res, token0Decimal)))
-        } else {
-          const res = pairAmount._reserve1.mul(parseUnits(String(value), token0Decimal)).div(pairAmount._reserve0)
-          setInputValueByFrom(Number(formatUnits(res, token1Decimal)))
-        }
+    const { fromAddress, toAddress } = getAddress(checkedFromCurrency.address, checkedToCurrency.address)
+    const pairContractAddress = await getPairContractAddress(fromAddress, toAddress)
+    if (pairContractAddress !== invalidAddress) {
+      const pairContract = await getContract(pairContractAddress, ABI.pair, signer)
+      const pairAmount = await pairContract?.getReserves()
+      const token0Address = await pairContract?.token0()
+      const token1Address = await pairContract?.token1()
+      const token0Contract = await getContract(token0Address, ABI.ERC20, signer)
+      const token1Contract = await getContract(token1Address, ABI.ERC20, signer)
+      const token0Decimal = await token0Contract?.decimals()
+      const token1Decimal = await token1Contract?.decimals()
+      if (token0Address === fromAddress) {
+        const res = pairAmount._reserve0.mul(parseUnits(String(value), token1Decimal)).div(pairAmount._reserve1)
+        setInputValueByFrom(Number(formatUnits(res, token0Decimal)))
+      } else {
+        const res = pairAmount._reserve1.mul(parseUnits(String(value), token0Decimal)).div(pairAmount._reserve0)
+        setInputValueByFrom(Number(formatUnits(res, token1Decimal)))
       }
     }
   }
@@ -160,6 +120,7 @@ const IncreaseLP = () => {
   const handleSubmit = async () => {
     openDialog({ title: 'Add Liquidity', desc: 'adding' })
     if (checkedFromCurrency.address === platFormAddress) {
+      debugger
       const operation = await addLiquidityETH(
         checkedToCurrency.address,
         parseUnits(String(inputValueByTo), checkedToCurrency.decimals),
@@ -222,12 +183,19 @@ const IncreaseLP = () => {
   }
   useEffect(() => {
     if (checkedFromCurrency.address && checkedToCurrency.address && inputValueByFrom && inputValueByTo) {
-      getLiquidityRate().then()
+      getLiquidityRate().then((data) => {
+        console.log(data)
+        setShareOfPool(data)
+      })
     }
   }, [checkedFromCurrency.address, checkedToCurrency.address, inputValueByFrom, inputValueByTo, getLiquidityRate])
   useEffect(() => {
     if (checkedFromCurrency.address && checkedToCurrency.address) {
-      getPairContractAddress(checkedFromCurrency.address, checkedToCurrency.address).then((address: string) => {
+      console.log(checkedFromCurrency.address, checkedToCurrency.address)
+      const { fromAddress, toAddress } = getAddress(checkedFromCurrency.address, checkedToCurrency.address)
+      setLPDetailData({} as any)
+      getPairContractAddress(fromAddress, toAddress).then((address: string) => {
+        console.log(address)
         getLPDetail(address).then((data) => {
           console.log(data)
           setLPDetailData(data)
@@ -235,6 +203,18 @@ const IncreaseLP = () => {
       })
     }
   }, [checkedFromCurrency.address, checkedToCurrency.address, getLPDetail])
+  useEffect(() => {
+    if (query.address) {
+      getLPDetail(query.address as string).then((data) => {
+        console.log(data)
+        setLPDetailData(data)
+        setCheckedFromCurrency(data.tokens[0])
+        setCheckedToCurrency(data.tokens[1])
+        // setInputValueByFrom(Number(formatUnits(data.tokens[0].balance, data.tokens[0].decimals)))
+        // setInputValueByTo(Number(formatUnits(data.tokens[1].balance, data.tokens[1].decimals)))
+      })
+    }
+  }, [query.address, getLPDetail])
   return (
     <IncreaseLPWrapper>
       <Modal
@@ -246,7 +226,12 @@ const IncreaseLP = () => {
       />
       <div style={{ background: '#1a1a1a', padding: '1rem' }}>
         <div className="header">
-          <span className="back-btn">
+          <span
+            className="back-btn"
+            onClick={() => {
+              router.push('/lp').then()
+            }}
+          >
             <ChevronLeft size={30} />
           </span>
           <span>Increase Liquidity</span>

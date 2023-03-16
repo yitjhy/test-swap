@@ -41,17 +41,22 @@ const useLPDetail = () => {
         const token0Name = await token0Contract?.name()
         const token1Name = await token1Contract?.name()
 
+        const token0balance = await token0Contract?.balanceOf(account)
+        const token1balance = await token1Contract?.balanceOf(account)
+
         const token0 = {
           symbol: token0symbol,
           decimals: token0Decimal,
-          balance: accountToken0Balance,
+          balance: token0balance,
+          balanceOfPair: accountToken0Balance,
           name: token0Name,
           address: token0Address,
         }
         const token1 = {
           symbol: token1symbol,
           decimals: token1Decimal,
-          balance: accountToken1Balance,
+          balance: token1balance,
+          balanceOfPair: accountToken1Balance,
           name: token1Name,
           address: token1Address,
         }

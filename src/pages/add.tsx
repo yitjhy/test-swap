@@ -74,6 +74,7 @@ const IncreaseLP = () => {
         const res = pairAmount._reserve1.mul(parseUnits(String(value), token0Decimal)).div(pairAmount._reserve0)
         setInputValueByTo(Number(formatUnits(res, token1Decimal)))
       } else {
+        debugger
         const res = pairAmount._reserve0.mul(parseUnits(String(value), token1Decimal)).div(pairAmount._reserve1)
         setInputValueByTo(Number(formatUnits(res, token0Decimal)))
       }
@@ -119,6 +120,7 @@ const IncreaseLP = () => {
   const handleSubmit = async () => {
     openDialog({ title: 'Add Liquidity', desc: 'adding' })
     if (checkedFromCurrency.address === platFormAddress) {
+      debugger
       const operation = await addLiquidityETH(
         checkedToCurrency.address,
         parseUnits(String(inputValueByTo), checkedToCurrency.decimals),

@@ -5,6 +5,7 @@ import { formatEther, formatUnits, parseUnits } from 'ethers/lib/utils'
 import useGetPairContract from '@/hooks/useGetPairContract'
 import { useSigner } from '@/hooks/contract/useSigner'
 import { useCallback, useState } from 'react'
+import { getAddress } from '@/utils'
 
 const useLiquidityRate = (
   from: { inputValue: number; address: string },
@@ -14,7 +15,8 @@ const useLiquidityRate = (
   const { getPairContractAddress } = useGetPairContract()
   const signer = useSigner()
   const getLiquidityRate = useCallback(async () => {
-    const pairContractAddress = await getPairContractAddress(from.address, to.address)
+    const { fromAddress, toAddress } = getAddress(from.address, to.address)
+    const pairContractAddress = await getPairContractAddress(fromAddress, toAddress)
     if (pairContractAddress !== invalidAddress) {
       const pairContract = await getContract(pairContractAddress, ABI.pair, signer)
       const pairAmount = await pairContract?.getReserves()
@@ -28,7 +30,7 @@ const useLiquidityRate = (
         const token1Contract = await getContract(token1Address, ABI.ERC20, signer)
         const token0Decimal = await token0Contract?.decimals()
         const token1Decimal = await token1Contract?.decimals()
-        if (token0Address === from.address) {
+        if (token0Address === fromAddress) {
           const aa = parseUnits(String(from.inputValue), token0Decimal)
             .mul(totalSupplyBigNumber)
             .div(pairAmount._reserve0)

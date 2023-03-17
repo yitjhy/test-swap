@@ -4,7 +4,7 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head />
-      <body>
+      <body className="Home_HUNTERSWAP___HHGB ">
         <Main />
         <NextScript />
       </body>

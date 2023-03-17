@@ -37,7 +37,7 @@ const Header = () => {
           {routerMenu.map((item) => {
             return (
               <div
-                style={{ color: checkedMenu === item.route ? '#00FFD1' : '#FFFFFF' }}
+                style={{ color: checkedMenu === item.route ? '#BFFF37' : '#FFFFFF' }}
                 className="menu-item"
                 key={item.key}
                 onClick={() => {

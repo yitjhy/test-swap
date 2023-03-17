@@ -30,7 +30,6 @@ export default function useErc20InfoList(addressList: string[]) {
       return pre
     }, [])
   useEffect(() => {
-    console.log(111)
     if (!addressList) return
     // if (_cache.length) {
     //   return

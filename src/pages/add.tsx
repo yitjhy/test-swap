@@ -151,29 +151,33 @@ const IncreaseLP = () => {
       Number(inputValueByFrom) <= Number(formatUnits(checkedFromCurrency.balance, checkedFromCurrency.decimals))
     )
   }
+  const [addressListOfQuery, setAddressListOfQuery] = useState<string[]>([])
+  const currencyListFromQuery = useErc20InfoList(addressListOfQuery)
   useEffect(() => {
     setPairAddress(pairAddressFromHook)
   }, [pairAddressFromHook])
   useEffect(() => {
     if (query.address) setPairAddress(query.address as string)
   }, [query.address])
-  // const data = useErc20Info(query.addressOut as string)
-  const onSlippageChange: TConfig['onSlippageChange'] = (value) => {}
-  const onDeadlineChange: TConfig['onDeadlineChange'] = (value) => {}
-
-  const [addressListOfQuery, setAddressListOfQuery] = useState<string[]>([])
   useEffect(() => {
     if (query.addressIn && query.addressOut) {
       setAddressListOfQuery([query.addressIn as string, query.addressOut as string])
     }
   }, [query])
-  const currencyListFromQuery = useErc20InfoList(addressListOfQuery)
   useEffect(() => {
     if (currencyListFromQuery.length) {
       setCheckedFromCurrency(currencyListFromQuery[0] as TCurrencyListItem)
       setCheckedToCurrency(currencyListFromQuery[1] as TCurrencyListItem)
     }
   }, [currencyListFromQuery])
+  useEffect(() => {
+    if (pairDetail.tokens && pairDetail.tokens.length) {
+      setCheckedFromCurrency(pairDetail.tokens[0] as TCurrencyListItem)
+      setCheckedToCurrency(pairDetail.tokens[1] as TCurrencyListItem)
+    }
+  }, [pairDetail])
+  const onSlippageChange: TConfig['onSlippageChange'] = (value) => {}
+  const onDeadlineChange: TConfig['onDeadlineChange'] = (value) => {}
   return (
     <IncreaseLPWrapper>
       <Modal

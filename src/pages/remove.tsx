@@ -1,14 +1,14 @@
 import styled from 'styled-components'
 import { ChevronLeft } from 'react-feather'
 import { Settings } from 'react-feather'
-import LPDetail, { TLPDetailProps } from '@/views/add/lp-detail'
+import LPDetail from '@/views/add/lp-detail'
 import { ConfirmBtn } from '@/components/button'
 import Modal from '@/components/modal'
 import Config from '@/views/swap/config'
 import RemoveSection, { TRemoveSection } from '@/views/remove/remove-section'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/router'
-import useLPDetail from '@/hooks/usePairDetail'
+import usePairDetail from '@/hooks/usePairDetail'
 import { formatUnits } from 'ethers/lib/utils'
 import useRemoveLiquidity from '@/hooks/useRemoveLiquidity'
 import { BigNumber } from 'ethers'
@@ -20,37 +20,29 @@ const RemoveLP = () => {
   const { removeLiquidity, removeLiquidityETH } = useRemoveLiquidity()
   const [isConfigModalOpen, handleConfigModalOpen] = useState(false)
   const [liquidity, setLiquidity] = useState<BigNumber>()
-  const [LPDetailData, setLPDetailData] = useState<TLPDetailProps>({} as any)
   const { query } = useRouter()
-  const { getLPDetail } = useLPDetail()
+  const { pairDetail, updatePairDetail } = usePairDetail(query.address as string)
+  console.log(pairDetail)
 
-  const { approved, approve } = useERC20Approved(LPDetailData.pairAddress, contractAddress.router)
-  useEffect(() => {
-    if (query.address) {
-      getLPDetail(query.address as string).then((data) => {
-        console.log(data)
-        setLPDetailData(data)
-      })
-    }
-  }, [query.address, getLPDetail])
-
+  const { approved, approve } = useERC20Approved(pairDetail.pairAddress, contractAddress.router)
   const onLiquidityChange: TRemoveSection['onLiquidityChange'] = (data) => {
     setLiquidity(data)
   }
   const handleRemove = async () => {
-    if (LPDetailData.tokens.length && !liquidity?.isZero() && approved && LPDetailData.pairAddress) {
-      if (LPDetailData.tokens[0].address === contractAddress.weth) {
-        await removeLiquidityETH(LPDetailData.tokens[1].address, liquidity as BigNumber)
+    if (pairDetail.tokens.length && !liquidity?.isZero() && approved && pairDetail.pairAddress) {
+      if (pairDetail.tokens[0].address === contractAddress.weth) {
+        await removeLiquidityETH(pairDetail.tokens[1].address, liquidity as BigNumber)
       }
-      if (LPDetailData.tokens[1].address === contractAddress.weth) {
-        await removeLiquidityETH(LPDetailData.tokens[0].address, liquidity as BigNumber)
+      if (pairDetail.tokens[1].address === contractAddress.weth) {
+        await removeLiquidityETH(pairDetail.tokens[0].address, liquidity as BigNumber)
       }
       if (
-        LPDetailData.tokens[0].address !== contractAddress.weth &&
-        LPDetailData.tokens[1].address !== contractAddress.weth
+        pairDetail.tokens[0].address !== contractAddress.weth &&
+        pairDetail.tokens[1].address !== contractAddress.weth
       ) {
-        await removeLiquidity(LPDetailData.tokens[0].address, LPDetailData.tokens[1].address, liquidity as BigNumber)
+        await removeLiquidity(pairDetail.tokens[0].address, pairDetail.tokens[1].address, liquidity as BigNumber)
       }
+      updatePairDetail()
     }
   }
   return (
@@ -82,11 +74,11 @@ const RemoveLP = () => {
             }}
           />
         </div>
-        <RemoveSection data={LPDetailData} onLiquidityChange={onLiquidityChange} />
+        <RemoveSection data={pairDetail} onLiquidityChange={onLiquidityChange} />
         <div className="price-wrapper">
           <div className="label">Price</div>
           <div className="rate-wrapper">
-            {LPDetailData.rate?.map((item, index) => {
+            {pairDetail.rate?.map((item, index) => {
               return (
                 <div className="rate-item" key={index}>
                   1{item.fromCurrency.symbol}={formatUnits(item.rate, item.toCurrency.decimals)}
@@ -97,14 +89,14 @@ const RemoveLP = () => {
           </div>
         </div>
         <div className="button-wrapper">
-          {(!approved || !LPDetailData.pairAddress) && (
+          {(!approved || !pairDetail.pairAddress) && (
             <>
               <ApproveBtn onClick={approve}>Approve</ApproveBtn>
               <div className="triangle" />
             </>
           )}
           <RemoveBtn
-            className={`${liquidity?.isZero() || !approved || !LPDetailData.pairAddress ? 'disabledOther' : ''}`}
+            className={`${liquidity?.isZero() || !approved || !pairDetail.pairAddress ? 'disabledOther' : ''}`}
             onClick={handleRemove}
             disabled={liquidity?.isZero()}
           >
@@ -113,7 +105,7 @@ const RemoveLP = () => {
         </div>
       </div>
       <div style={{ padding: '0.3rem 0.7rem' }}>
-        {LPDetailData.tokens && LPDetailData.tokens.length > 0 && <LPDetail data={LPDetailData} />}
+        {pairDetail.tokens && pairDetail.tokens.length > 0 && <LPDetail data={pairDetail} />}
       </div>
     </RemoveLPWrapper>
   )

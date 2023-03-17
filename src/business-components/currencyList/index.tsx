@@ -219,8 +219,11 @@ const SelectCurrencyWrapper = styled.div`
       .currency-balance-wrapper {
         display: flex;
         column-gap: 8px;
+        align-items: center;
         .currency-balance {
           font-size: 14px;
+          max-width: 200px;
+          overflow-wrap: anywhere;
         }
         .currency-status {
         }

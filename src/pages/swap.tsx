@@ -25,8 +25,6 @@ function Swap() {
   const [checkedToCurrency, setCheckedToCurrency] = useState<TCurrencyListItem>({} as TCurrencyListItem)
   const [isConfirmWrapModalOpen, handleConfirmWrapModalOpen] = useState(false)
   const [isConfigModalOpen, handleConfigModalOpen] = useState(false)
-  const [inputValueByFrom, setInputValueByFrom] = useState(0)
-  const [inputValueByTo, setInputValueByTo] = useState(0)
   const { openDialog, close } = useDialog()
   // isSameAddress(checkedFromCurrency.address, constants.AddressZero)
   const swap = useSwap(
@@ -52,8 +50,7 @@ function Swap() {
   const handleSwitch = () => {
     setCheckedFromCurrency(checkedToCurrency)
     setCheckedToCurrency(checkedFromCurrency)
-    setInputValueByFrom(inputValueByTo)
-    setInputValueByTo(inputValueByFrom)
+    // swap.updateIn(swap.outAmount)
   }
   const onInputByFrom: TSwapSectionProps['onInput'] = (value) => {
     swap.updateIn(value)
@@ -89,17 +86,14 @@ function Swap() {
     return 'Supply'
   }
   const getSubmitBtnStatus = () => {
-    if (
+    return !(
       checkedFromCurrency.address &&
       checkedToCurrency.address &&
       Number(swap.outAmount) > 0 &&
       Number(swap.inAmount) > 0 &&
       Number(swap.outAmount) <= Number(formatUnits(checkedToCurrency.balance, checkedToCurrency.decimals)) &&
       Number(swap.inAmount) <= Number(formatUnits(checkedFromCurrency.balance, checkedFromCurrency.decimals))
-    ) {
-      return false
-    }
-    return true
+    )
   }
   const onSlippageChange: TConfig['onSlippageChange'] = (value) => {
     swap.updateSlippage(value * 100)
@@ -158,9 +152,10 @@ function Swap() {
         />
         <PriceDetail from={checkedFromCurrency.symbol} to={checkedToCurrency.symbol} rate={swap.rate} />
         <>
-          {swap.pairs.length > 0 && !isSameAddress(swap.pairs[0], constants.AddressZero) ? (
+          {swap.pairs.length > 0 && !isSameAddress(swap.pairs[0], constants.AddressZero) && (
             <SubmitBtn text={getSubmitBtnText()} onSubmit={handleSubmit} disabled={getSubmitBtnStatus()} />
-          ) : (
+          )}
+          {swap.pairs.length > 0 && isSameAddress(swap.pairs[0], constants.AddressZero) && (
             <SubmitBtn
               disabled={false}
               text="Create Pair"
@@ -171,9 +166,25 @@ function Swap() {
               }}
             />
           )}
+          {(!checkedFromCurrency.address || !checkedToCurrency.address) && (
+            <SubmitBtn disabled={true} text="Select Token" onSubmit={() => {}} />
+          )}
+          {/*{swap.pairs.length > 0 && !isSameAddress(swap.pairs[0], constants.AddressZero) ? (*/}
+          {/*  <SubmitBtn text={getSubmitBtnText()} onSubmit={handleSubmit} disabled={getSubmitBtnStatus()} />*/}
+          {/*) : (*/}
+          {/*  <SubmitBtn*/}
+          {/*    disabled={false}*/}
+          {/*    text="Create Pair"*/}
+          {/*    onSubmit={() => {*/}
+          {/*      router*/}
+          {/*        .push(`/add?addressIn=${checkedFromCurrency.address}&addressOut=${checkedToCurrency.address}`)*/}
+          {/*        .then()*/}
+          {/*    }}*/}
+          {/*  />*/}
+          {/*)}*/}
         </>
       </SwapWrapper>
-      <SwapDetail />
+      {/*<SwapDetail />*/}
     </div>
   )
 }

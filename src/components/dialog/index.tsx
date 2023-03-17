@@ -1,5 +1,5 @@
 import Modal from './../modal'
-import { createContext, FC, PropsWithChildren, useContext, useState } from 'react'
+import { createContext, FC, PropsWithChildren, ReactNode, useContext, useState } from 'react'
 import styled from 'styled-components'
 import { LoadingOutlined } from '@ant-design/icons'
 
@@ -8,7 +8,7 @@ type TDialogContext = {
   // currencyList: TErc20InfoItem[]
   isDialogOpen: boolean
   close: () => void
-  openDialog: (data: { title: string; desc: string; loading: boolean }) => void
+  openDialog: (data: { title: string; desc: string; loading?: boolean }) => void
   loading: boolean
 }
 
@@ -62,7 +62,7 @@ const DialogProvider: FC<PropsWithChildren> = ({ children }) => {
   const close = () => {
     setIsDialogOpen(false)
   }
-  const openDialog: TDialogContext['openDialog'] = ({ title, desc, loading }) => {
+  const openDialog: TDialogContext['openDialog'] = ({ title, desc, loading = true }) => {
     setIsDialogOpen(true)
     setTitle(title)
     setDesc(desc)

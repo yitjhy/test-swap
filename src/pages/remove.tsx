@@ -1,18 +1,17 @@
 import styled from 'styled-components'
-import { ChevronLeft, Plus } from 'react-feather'
+import { ChevronLeft } from 'react-feather'
 import { Settings } from 'react-feather'
 import LPDetail, { TLPDetailProps } from '@/views/add/lp-detail'
-import { CancelBtn, ConfirmBtn } from '@/components/button'
+import { ConfirmBtn } from '@/components/button'
 import Modal from '@/components/modal'
 import Config from '@/views/swap/config'
 import RemoveSection, { TRemoveSection } from '@/views/remove/remove-section'
-import { FC, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import useLPDetail from '@/hooks/usePairDetail'
 import { formatUnits } from 'ethers/lib/utils'
 import useRemoveLiquidity from '@/hooks/useRemoveLiquidity'
 import { BigNumber } from 'ethers'
-import { useDialog } from '@/components/dialog'
 import useERC20Approved from '@/hooks/contract/useERC20Approved'
 import { contractAddress } from '@/utils/enum'
 
@@ -56,13 +55,13 @@ const RemoveLP = () => {
   }
   return (
     <RemoveLPWrapper>
-      <Modal
-        contentStyle={{ width: 480 }}
-        title="Settings"
-        content={<Config />}
-        open={isConfigModalOpen}
-        onClose={handleConfigModalOpen}
-      />
+      {/*<Modal*/}
+      {/*  contentStyle={{ width: 480 }}*/}
+      {/*  title="Settings"*/}
+      {/*  content={<Config />}*/}
+      {/*  open={isConfigModalOpen}*/}
+      {/*  onClose={handleConfigModalOpen}*/}
+      {/*/>*/}
       <div style={{ background: '#1a1a1a', padding: '1rem 1rem 2rem' }}>
         <div className="header">
           <span

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import Image from 'next/image'
 import { Settings } from 'react-feather'
@@ -17,6 +17,7 @@ import { useSwap } from '@/hooks/useSwapRouter'
 import { constants } from 'ethers'
 import { isSameAddress } from '@/utils/address'
 import { useRouter } from 'next/router'
+import { useDialog } from '@/components/dialog'
 
 function Swap() {
   const router = useRouter()
@@ -26,6 +27,7 @@ function Swap() {
   const [isConfigModalOpen, handleConfigModalOpen] = useState(false)
   const [inputValueByFrom, setInputValueByFrom] = useState(0)
   const [inputValueByTo, setInputValueByTo] = useState(0)
+  const { openDialog, close } = useDialog()
   // isSameAddress(checkedFromCurrency.address, constants.AddressZero)
   const swap = useSwap(
     isSameAddress(checkedFromCurrency.address, constants.AddressZero)
@@ -100,12 +102,16 @@ function Swap() {
     return true
   }
   const onSlippageChange: TConfig['onSlippageChange'] = (value) => {
-    swap.updateSlippage(value * 10000)
+    swap.updateSlippage(value * 100)
   }
   const onDeadlineChange: TConfig['onDeadlineChange'] = (value) => {
-    console.log(value)
     swap.updateDeadline(value * 60)
   }
+  useEffect(() => {
+    if (swap.currentSlippage > swap.slippage) {
+      openDialog({ title: 'Warning', desc: 'Had Out Of Slippage, Please ReInput Or Reset Slippage', loading: false })
+    }
+  }, [swap.inAmount, swap.outAmount])
   return (
     <div style={{ maxWidth: 480, margin: '0 auto' }}>
       <SwapWrapper>

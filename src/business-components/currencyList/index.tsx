@@ -94,7 +94,7 @@ const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }
                   {judgeImgUrl(item.logoURI) ? (
                     <img src={item.logoURI} alt="" width={40} height={40} />
                   ) : (
-                    <div className="logo-wrapper">{item.symbol.slice(0, 3)}</div>
+                    <div className="logo-wrapper">{item.symbol?.slice(0, 3)}</div>
                   )}
 
                   <div className="currency-name-symbol-wrapper">

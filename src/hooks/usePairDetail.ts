@@ -22,7 +22,6 @@ export type TPairDetail = TLPDetailProps & {
 }
 const usePairDetail = (pairAddress: string) => {
   const [pairDetail, setPairDetail] = useState<TPairDetail>({} as TPairDetail)
-  // const { getPairContractAddress } = useGetPairContract()
   const { account } = useWeb3React()
   const signer = useSigner()
   const { getAmountOut } = useAmountOut()

@@ -8,7 +8,8 @@ type TDialogContext = {
   // currencyList: TErc20InfoItem[]
   isDialogOpen: boolean
   close: () => void
-  openDialog: (data: { title: string; desc: string }) => void
+  openDialog: (data: { title: string; desc: string; loading: boolean }) => void
+  loading: boolean
 }
 
 const DialogContext = createContext({} as TDialogContext)
@@ -17,14 +18,16 @@ export function useDialog() {
   return useContext(DialogContext)
 }
 
-const DialogContent: FC<{ title: string; desc: string }> = ({ title, desc }) => {
+const DialogContent: FC<{ title: string; desc: string; loading?: boolean }> = ({ title, desc, loading = true }) => {
   return (
     <DialogContentWrapper>
       <div className="title">{title}</div>
       <div className="desc">{desc}</div>
-      <div className="loading-wrapper">
-        <LoadingOutlined />
-      </div>
+      {loading && (
+        <div className="loading-wrapper">
+          <LoadingOutlined />
+        </div>
+      )}
     </DialogContentWrapper>
   )
 }
@@ -55,21 +58,23 @@ const DialogProvider: FC<PropsWithChildren> = ({ children }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [title, setTitle] = useState('')
   const [desc, setDesc] = useState('')
+  const [loading, setLoading] = useState(true)
   const close = () => {
     setIsDialogOpen(false)
   }
-  const openDialog: TDialogContext['openDialog'] = ({ title, desc }) => {
+  const openDialog: TDialogContext['openDialog'] = ({ title, desc, loading }) => {
     setIsDialogOpen(true)
     setTitle(title)
     setDesc(desc)
+    setLoading(loading)
   }
   return (
-    <DialogContext.Provider value={{ isDialogOpen, openDialog, close }}>
+    <DialogContext.Provider value={{ isDialogOpen, openDialog, close, loading }}>
       <Modal
         maskClosable={false}
         contentStyle={{ width: 480 }}
         title=""
-        content={<DialogContent title={title} desc={desc} />}
+        content={<DialogContent title={title} desc={desc} loading={loading} />}
         open={isDialogOpen}
         onClose={close}
       />

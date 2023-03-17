@@ -22,6 +22,8 @@ import { useRouter } from 'next/router'
 import { getAddress } from '@/utils'
 import { constants } from 'ethers'
 import useValueByInput from '@/hooks/useOutValueByInputIn'
+import useErc20InfoList from '@/hooks/useErc20InfoList'
+import { isSameAddress } from '@/utils/address'
 
 const IncreaseLP = () => {
   const router = useRouter()
@@ -62,23 +64,31 @@ const IncreaseLP = () => {
   }
   const onInputByFrom: TSwapSectionProps['onInput'] = async (value) => {
     setInputValueByFrom(value)
-    const res = await getOutValueByInputIn(value)
-    setInputValueByTo(res?.value as number)
+    if (!isSameAddress(pairAddress, constants.AddressZero)) {
+      const res = await getOutValueByInputIn(value)
+      setInputValueByTo(res?.value as number)
+    }
   }
   const onInputByTo: TSwapSectionProps['onInput'] = async (value) => {
     setInputValueByTo(value)
-    const res = await getInValueByInputOut(value)
-    setInputValueByFrom(res?.value as number)
+    if (!isSameAddress(pairAddress, constants.AddressZero)) {
+      const res = await getInValueByInputOut(value)
+      setInputValueByFrom(res?.value as number)
+    }
   }
   const handleMaxByFrom: TSwapSectionProps['onMax'] = async (value) => {
     setInputValueByFrom(value)
-    const res = await getOutValueByInputIn(value)
-    setInputValueByTo(res?.value as number)
+    if (!isSameAddress(pairAddress, constants.AddressZero)) {
+      const res = await getOutValueByInputIn(value)
+      setInputValueByTo(res?.value as number)
+    }
   }
   const handleMaxByTo: TSwapSectionProps['onMax'] = async (value) => {
     setInputValueByTo(value)
-    const res = await getInValueByInputOut(value)
-    setInputValueByFrom(res?.value as number)
+    if (!isSameAddress(pairAddress, constants.AddressZero)) {
+      const res = await getInValueByInputOut(value)
+      setInputValueByFrom(res?.value as number)
+    }
   }
   const addCallback = async () => {
     updatePairDetail()
@@ -132,17 +142,14 @@ const IncreaseLP = () => {
     return 'Supply'
   }
   const getSubmitBtnStatus = () => {
-    if (
+    return !(
       checkedFromCurrency.address &&
       checkedToCurrency.address &&
       Number(inputValueByTo) > 0 &&
       Number(inputValueByFrom) > 0 &&
       Number(inputValueByTo) <= Number(formatUnits(checkedToCurrency.balance, checkedToCurrency.decimals)) &&
       Number(inputValueByFrom) <= Number(formatUnits(checkedFromCurrency.balance, checkedFromCurrency.decimals))
-    ) {
-      return false
-    }
-    return true
+    )
   }
   useEffect(() => {
     setPairAddress(pairAddressFromHook)
@@ -153,6 +160,20 @@ const IncreaseLP = () => {
   // const data = useErc20Info(query.addressOut as string)
   const onSlippageChange: TConfig['onSlippageChange'] = (value) => {}
   const onDeadlineChange: TConfig['onDeadlineChange'] = (value) => {}
+
+  const [addressListOfQuery, setAddressListOfQuery] = useState<string[]>([])
+  useEffect(() => {
+    if (query.addressIn && query.addressOut) {
+      setAddressListOfQuery([query.addressIn as string, query.addressOut as string])
+    }
+  }, [query])
+  const currencyListFromQuery = useErc20InfoList(addressListOfQuery)
+  useEffect(() => {
+    if (currencyListFromQuery.length) {
+      setCheckedFromCurrency(currencyListFromQuery[0] as TCurrencyListItem)
+      setCheckedToCurrency(currencyListFromQuery[1] as TCurrencyListItem)
+    }
+  }, [currencyListFromQuery])
   return (
     <IncreaseLPWrapper>
       <Modal
@@ -167,7 +188,7 @@ const IncreaseLP = () => {
           <span
             className="back-btn"
             onClick={() => {
-              router.push('/lp').then()
+              router.back()
             }}
           >
             <ChevronLeft size={30} />

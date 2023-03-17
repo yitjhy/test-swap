@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import { useWeb3React } from '@web3-react/core'
 import { constants } from 'ethers'
 import { useContracts } from './useContracts'
@@ -44,5 +44,5 @@ export default function useErc20Info(address: string) {
       _cache[address] = promise
     }
   }, [active, multiCallContract, provider, address])
-  return { name, symbol, decimals }
+  return useMemo(() => ({ name, symbol, decimals }), [name, symbol, decimals])
 }

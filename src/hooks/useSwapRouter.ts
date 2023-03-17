@@ -73,7 +73,8 @@ function useReserves(factoryAddress: string, tokenIn: string, tokenOut: string) 
             }
         }
     }, [pair, pairAddress, contract])
-    return {reserveIn, reserveOut}
+    const pairs = useMemo(() => !!pairAddress ? [pairAddress]: [],[pairAddress])
+    return {reserveIn, reserveOut, pairs}
 }
 
 export function useSwap(tokenIn: string, tokenOut: string) {
@@ -88,7 +89,8 @@ export function useSwap(tokenIn: string, tokenOut: string) {
     const {contract: router, multiCallContract: mulRouter} = useContracts<HunterswapRouter02>(routerAddress, ABI.router)
     const {
         reserveIn,
-        reserveOut
+        reserveOut,
+        pairs
     } = useReserves(factoryAddress, isSameAddress(tokenIn, constants.AddressZero) ? wethAddress : tokenIn, tokenOut)
     const [deadLine, setDeadLine] = useState(300) // 5 min
     const provider = useMulProvider()
@@ -214,6 +216,7 @@ export function useSwap(tokenIn: string, tokenOut: string) {
         reserveOut,
         tokenInInfo,
         tokenOutInfo,
-        currentSlippage
+        currentSlippage,
+        pairs
     }
 }

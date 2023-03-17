@@ -34,13 +34,17 @@ function useReserves(factoryAddress: string, tokenIn: string, tokenOut: string) 
     const [reserveIn, setReserveIn] = useState(constants.Zero)
     const [reserveOut, setReserveOut] = useState(constants.Zero)
     useEffect(() => {
-        if (factory) {
+        if (factory && tokenIn && tokenOut) {
             factory.getPair(tokenIn, tokenOut).then(setPairAddress)
         }
     }, [factory, tokenIn, tokenOut])
     useEffect(() => {
         if (provider && pair && !isSameAddress(pairAddress, constants.AddressZero) && contract) {
-            const syncListener = {callback: function(reserve0: BigNumber, reserve1:BigNumber) {console.log(reserve0, reserve1)}}
+            const syncListener = {
+                callback: function (reserve0: BigNumber, reserve1: BigNumber) {
+                    console.log(reserve0, reserve1)
+                }
+            }
             provider.all([
                 pair.token0(),
                 pair.token1(),
@@ -50,7 +54,7 @@ function useReserves(factoryAddress: string, tokenIn: string, tokenOut: string) 
                 if (isSameAddress(token0, tokenIn)) {
                     setReserveIn(reserves[0])
                     setReserveOut(reserves[1])
-                    syncListener.callback = (reserve0: BigNumber, reserve1:BigNumber) => {
+                    syncListener.callback = (reserve0: BigNumber, reserve1: BigNumber) => {
                         setReserveIn(reserve0)
                         setReserveOut(reserve1)
                     }
@@ -82,7 +86,10 @@ export function useSwap(tokenIn: string, tokenOut: string) {
     const [factoryAddress, setFactoryAddress] = useState('')
     const [wethAddress, setWethAddress] = useState('')
     const {contract: router, multiCallContract: mulRouter} = useContracts<HunterswapRouter02>(routerAddress, ABI.router)
-    const {reserveIn, reserveOut} = useReserves(factoryAddress, isSameAddress(tokenIn , constants.AddressZero) ? wethAddress:tokenIn, tokenOut)
+    const {
+        reserveIn,
+        reserveOut
+    } = useReserves(factoryAddress, isSameAddress(tokenIn, constants.AddressZero) ? wethAddress : tokenIn, tokenOut)
     const [deadLine, setDeadLine] = useState(300) // 5 min
     const provider = useMulProvider()
     const {account} = useWeb3React()
@@ -140,6 +147,13 @@ export function useSwap(tokenIn: string, tokenOut: string) {
         setLock(SwapLock.Out)
     }, [tokenOutInfo])
 
+    const currentSlippage = useMemo(() => {
+        const currentPrice = reserveOut.gt(constants.Zero) ? +formatUnits(reserveIn, tokenInInfo.decimals) / +formatUnits(reserveOut, tokenOutInfo.decimals) : 0
+        const swapPrice = +outAmount > 0 ? +inAmount / +outAmount : 0
+        if (currentPrice === 0) return 0
+        return Math.floor((swapPrice - currentPrice) / currentPrice * 10000)
+    }, [reserveIn, reserveOut, inAmount, outAmount, tokenInInfo, tokenOutInfo])
+
 
     const swap = useCallback(async () => {
         if (!router || !account) return
@@ -147,16 +161,16 @@ export function useSwap(tokenIn: string, tokenOut: string) {
         const outValue = parseUnits(outAmount, tokenOutInfo.decimals)
         const _deadline = moment().add(deadLine, 'second').unix()
         const price = +formatUnits(reserveIn, tokenInInfo.decimals) / +formatUnits(reserveOut, tokenOutInfo.decimals)
-        const maxPrice = price * (1+ slippage / 10000)
+        const maxPrice = price * (1 + slippage / 10000)
         const maxInValue = parseUnits((maxPrice * +formatUnits(outValue, tokenOutInfo.decimals)).toFixed(tokenInInfo.decimals), tokenInInfo.decimals)
         const minOutValue = parseUnits((+formatUnits(inValue, tokenInInfo.decimals) / maxPrice).toFixed(tokenOutInfo.decimals), tokenOutInfo.decimals)
         try {
-            let tx:TransactionResponse|null = null
+            let tx: TransactionResponse | null = null
             openDialog({title: 'Swap', desc: 'Waiting for signature'})
             if (isSameAddress(tokenIn, constants.AddressZero)) {
                 // eth for erc20
                 if (lock === SwapLock.In) {
-                    tx= await router.swapExactETHForTokens(minOutValue, [wethAddress, tokenOut], account, _deadline, {value: inValue})
+                    tx = await router.swapExactETHForTokens(minOutValue, [wethAddress, tokenOut], account, _deadline, {value: inValue})
                 } else {
                     tx = await router.swapETHForExactTokens(outValue, [wethAddress, tokenOut], account, _deadline, {value: maxInValue})
                 }
@@ -179,11 +193,27 @@ export function useSwap(tokenIn: string, tokenOut: string) {
             openDialog({title: 'Swap', desc: 'Waiting for blockchain confirmation'})
             await tx.wait()
             openDialog({title: 'Success', desc: 'Swap success'})
-        } catch (e:any) {
+        } catch (e: any) {
             openDialog({title: 'Error', desc: getErrorMsg(e)})
         }
 
     }, [tokenIn, tokenOut, lock, inAmount, outAmount, router, tokenInInfo, tokenOutInfo])
 
-    return {inAmount, outAmount, rate, updateIn, updateOut, updateSlippage: setSlippage, updateDeadline: setDeadLine, swap, slippage, deadLine, reserveIn, reserveOut, tokenInInfo, tokenOutInfo}
+    return {
+        inAmount,
+        outAmount,
+        rate,
+        updateIn,
+        updateOut,
+        updateSlippage: setSlippage,
+        updateDeadline: setDeadLine,
+        swap,
+        slippage,
+        deadLine,
+        reserveIn,
+        reserveOut,
+        tokenInInfo,
+        tokenOutInfo,
+        currentSlippage
+    }
 }

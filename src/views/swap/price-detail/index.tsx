@@ -1,8 +1,14 @@
 import { RefreshCw, AlertCircle } from 'react-feather'
 import styled from 'styled-components'
 import Popover from '@/components/popover'
+import { FC } from 'react'
 
-const PriceDetail = () => {
+type TPriceDetailProps = {
+  rate: number
+  from: string
+  to: string
+}
+const PriceDetail: FC<TPriceDetailProps> = ({ rate, from, to }) => {
   return (
     <PriceDetailWrapper>
       <div className="price-label">
@@ -19,8 +25,10 @@ const PriceDetail = () => {
         </span>
       </div>
       <div className="price-value">
-        <span className="value">1 USDT ≈ 0.00064 ETH</span>
-        <RefreshCw color="#9C9C9C" size={15} cursor="pointer" />
+        <span className="value">
+          1 {from} ≈ {rate} {to}
+        </span>
+        {/*<RefreshCw color="#9C9C9C" size={15} cursor="pointer" />*/}
       </div>
     </PriceDetailWrapper>
   )

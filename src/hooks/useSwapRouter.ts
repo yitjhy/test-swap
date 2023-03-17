@@ -16,6 +16,7 @@ import {useWeb3React} from "@web3-react/core";
 import moment from "moment";
 import {useDialog} from "@/components/dialog";
 import {TransactionResponse} from "@ethersproject/abstract-provider";
+import {getErrorMsg} from "@/utils";
 
 const routerAddress = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'
 
@@ -94,7 +95,7 @@ export function useSwap(tokenIn: string, tokenOut: string) {
         const reserveOutAmount = +formatUnits(reserveOut, tokenOutInfo.decimals)
         if (reserveInAmount > 0) return reserveOutAmount / reserveInAmount
         return 0
-    }, [reserveIn, reserveOut])
+    }, [reserveIn, reserveOut, tokenInInfo, tokenOutInfo])
 
     useDebounceEffect(() => {
         if (lock === SwapLock.In && router) {
@@ -102,10 +103,12 @@ export function useSwap(tokenIn: string, tokenOut: string) {
             if (inValue.eq(constants.Zero)) {
                 setOutAmount('0')
             } else {
-                router.getAmountOut(inValue, reserveIn, reserveOut).then(res => setOutAmount(formatUnits(res, tokenOutInfo.decimals)))
+                router.getAmountOut(inValue, reserveIn, reserveOut).then(res => {
+                    setOutAmount(formatUnits(res, tokenOutInfo.decimals))
+                })
             }
         }
-    }, [lock, inAmount, reserveIn, reserveOut])
+    }, [lock, inAmount, reserveIn, reserveOut, tokenInInfo, tokenOutInfo])
     useDebounceEffect(() => {
         if (lock === SwapLock.Out && router) {
             const outValue = parseUnits(outAmount, tokenOutInfo.decimals)
@@ -115,45 +118,27 @@ export function useSwap(tokenIn: string, tokenOut: string) {
                 router.getAmountIn(outValue, reserveIn, reserveOut).then(res => setInAmount(formatUnits(res, tokenInInfo.decimals)))
             }
         }
-    }, [lock, outAmount, reserveOut, reserveIn])
+    }, [lock, outAmount, reserveOut, reserveIn, tokenInInfo, tokenOutInfo])
 
     const updateIn = useCallback((amount: number | string) => {
-        setInAmount(amount + '')
+        setInAmount(+(+amount).toFixed(tokenInInfo.decimals) + '')
         setLock(SwapLock.In)
-    }, [])
+    }, [tokenInInfo])
     const updateOut = useCallback((amount: number | string) => {
-        setOutAmount(amount + '')
+        setOutAmount(+(+amount).toFixed(tokenOutInfo.decimals) + '')
         setLock(SwapLock.Out)
-    }, [])
+    }, [tokenOutInfo])
 
-    /**
-     * newOut / newIn < rate(1 + slippage)
-     *  newOut < newIn * rate(1+slippage)
-     *  newIn > newOut / (rate(1+slippage))
-     *
-     *
-     *  newReserveOut = oldReserveOut - outValue
-     *  newReserveIn = oldReserveIn + inValue
-     *  newPrice = newReserveIn / newReserveOut
-     *  oldPrice = reserveIn / reserveOut
-     *  (newPrice - oldPrice) / oldPrice < slippage
-     *  newPrice < (1 + slippage)*oldPrice
-     *  newReserveIn < (1 + slippage)*oldPrice*newReserveOut
-     *  inValue < (1 + slippage)*oldPrice*newReserveOut - oldReserveIn
-     *  inValue < (1 + slippage)*reserveIn/reserveOut*newReserveOut - oldReserveIn
-     *
-     *  newReserveOut > newReserveIn / (1 + slippage) / oldPrice
-     *  outValue < odlReserveOut - newReserveIn / (1 + slippage) / oldPrice
-     *
-     */
 
     const swap = useCallback(async () => {
         if (!router || !account) return
         const inValue = parseUnits(inAmount, tokenInInfo.decimals)
         const outValue = parseUnits(outAmount, tokenOutInfo.decimals)
         const _deadline = moment().add(deadLine, 'second').unix()
-        const maxInValue = inValue.add(inValue.mul(slippage).div(10000))
-        const minOutValue = outValue.sub(outValue.mul(slippage).div(10000))
+        const price = +formatUnits(reserveIn, tokenInInfo.decimals) / +formatUnits(reserveOut, tokenOutInfo.decimals)
+        const maxPrice = price * (1+ slippage / 10000)
+        const maxInValue = parseUnits((maxPrice * +formatUnits(outValue, tokenOutInfo.decimals)).toFixed(tokenInInfo.decimals), tokenInInfo.decimals)
+        const minOutValue = parseUnits((+formatUnits(inValue, tokenInInfo.decimals) / maxPrice).toFixed(tokenOutInfo.decimals), tokenOutInfo.decimals)
         try {
             if (!approved && !await approve()) {
                 openDialog({title: 'Error', desc: 'Approval error.'})
@@ -187,11 +172,11 @@ export function useSwap(tokenIn: string, tokenOut: string) {
             openDialog({title: 'Swap', desc: 'Waiting for blockchain confirmation'})
             await tx.wait()
             openDialog({title: 'Success', desc: 'Swap success'})
-        } catch (e) {
-            openDialog({title: 'Error', desc: 'Swap error'})
+        } catch (e:any) {
+            openDialog({title: 'Error', desc: getErrorMsg(e)})
         }
 
-    }, [tokenIn, tokenOut, lock, inAmount, outAmount, router, approved])
+    }, [tokenIn, tokenOut, lock, inAmount, outAmount, router, approved, tokenInInfo, tokenOutInfo])
 
     return {inAmount, outAmount, rate, updateIn, updateOut, updateSlippage: setSlippage, updateDeadline: setDeadLine, swap, slippage, deadLine}
 }

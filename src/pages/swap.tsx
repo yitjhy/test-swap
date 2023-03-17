@@ -151,7 +151,7 @@ function Swap() {
         <PriceDetail from={checkedFromCurrency.symbol} to={checkedToCurrency.symbol} rate={swap.rate} />
         <SubmitBtn text={getSubmitBtnText()} onSubmit={handleSubmit} disabled={getSubmitBtnStatus()} />
       </SwapWrapper>
-      {/*<SwapDetail />*/}
+      <SwapDetail />
     </div>
   )
 }

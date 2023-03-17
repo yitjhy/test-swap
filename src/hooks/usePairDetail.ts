@@ -1,0 +1,132 @@
+import { invalidAddress } from '@/utils/enum'
+import { getContract } from '@/hooks/contract/useContract'
+import { ABI } from '@/utils/abis'
+import { parseUnits } from 'ethers/lib/utils'
+import { TLPDetailProps } from '@/views/add/lp-detail'
+import { TRateProps } from '@/views/add/rate'
+import useGetPairContract from '@/hooks/usePairAddress'
+import { useWeb3React } from '@web3-react/core'
+import { useSigner } from '@/hooks/contract/useSigner'
+import useAmountOut from '@/hooks/useAmountOut'
+import { useCallback, useEffect, useState } from 'react'
+import { useDialog } from '@/components/dialog'
+import { isSameAddress } from '@/utils/address'
+import { BigNumber, constants } from 'ethers'
+import { HunterswapPair } from '@/utils/abis/HunterswapPair'
+
+type TPairAmount = GetPromiseType<ReturnType<HunterswapPair['getReserves']>>
+export type TPairDetail = TLPDetailProps & {
+  rate: TRateProps['rate']
+  pairAddress: string
+  pairAmount: TPairAmount
+}
+const usePairDetail = (pairAddress: string) => {
+  const [pairDetail, setPairDetail] = useState<TPairDetail>({} as TPairDetail)
+  // const { getPairContractAddress } = useGetPairContract()
+  const { account } = useWeb3React()
+  const signer = useSigner()
+  const { getAmountOut } = useAmountOut()
+  const { openDialog, close } = useDialog()
+
+  const getPairDetail = useCallback(
+    async (pairAddress: string) => {
+      if (pairAddress && !isSameAddress(pairAddress, constants.AddressZero)) {
+        openDialog({ title: 'Fetch', desc: 'Waiting for Fetch Liquidity Detail' })
+        const pairContract = await getContract<HunterswapPair>(pairAddress, ABI.pair, signer)
+
+        // const pairListener = (_reserve0: BigNumber, _reserve1: BigNumber) => {
+        //   console.log(_reserve0)
+        //   console.log(_reserve1)
+        // }
+        // pairContract?.on('Sync', pairListener)
+
+        const pairDecimals = await pairContract?.decimals()
+        const accountPairBalance = await pairContract?.balanceOf(account as string)
+        const pairAmount = await pairContract?.getReserves()
+        const poolLPBalance = await pairContract?.totalSupply()
+        const LPShare = parseUnits('1', 8)
+          .mul(accountPairBalance as BigNumber)
+          .div(poolLPBalance as BigNumber)
+        const accountToken0Balance = pairAmount?._reserve0
+          .mul(accountPairBalance as BigNumber)
+          .div(poolLPBalance as BigNumber)
+        const accountToken1Balance = pairAmount?._reserve1
+          .mul(accountPairBalance as BigNumber)
+          .div(poolLPBalance as BigNumber)
+
+        const token0Address = await pairContract?.token0()
+        const token1Address = await pairContract?.token1()
+        const token0Contract = await getContract(token0Address as string, ABI.ERC20, signer)
+        const token1Contract = await getContract(token1Address as string, ABI.ERC20, signer)
+        const token0symbol = await token0Contract?.symbol()
+        const token1symbol = await token1Contract?.symbol()
+        const token0Decimal = await token0Contract?.decimals()
+        const token1Decimal = await token1Contract?.decimals()
+        const token0Name = await token0Contract?.name()
+        const token1Name = await token1Contract?.name()
+
+        const token0balance = await token0Contract?.balanceOf(account)
+        const token1balance = await token1Contract?.balanceOf(account)
+
+        const token0 = {
+          symbol: token0symbol,
+          decimals: token0Decimal,
+          balance: token0balance,
+          balanceOfPair: accountToken0Balance,
+          name: token0Name,
+          address: token0Address,
+        }
+        const token1 = {
+          symbol: token1symbol,
+          decimals: token1Decimal,
+          balance: token1balance,
+          balanceOfPair: accountToken1Balance,
+          name: token1Name,
+          address: token1Address,
+        }
+        const tokens: TLPDetailProps['tokens'] = [token0, token1] as any
+
+        let rateOfToken0 = await getAmountOut(
+          parseUnits('1', token0Decimal),
+          pairAmount?._reserve0,
+          pairAmount?._reserve1
+        )
+        let rateOfToken1 = await getAmountOut(
+          parseUnits('1', token1Decimal),
+          pairAmount?._reserve1,
+          pairAmount?._reserve0
+        )
+        let rate: TRateProps['rate'] = [
+          { rate: rateOfToken0, fromCurrency: token0, toCurrency: token1 },
+          { rate: rateOfToken1, fromCurrency: token1, toCurrency: token0 },
+        ] as any
+        close()
+        const pairDetail = {
+          pairAmount,
+          accountPairBalance,
+          pairDecimals,
+          LPShare,
+          tokens,
+          rate,
+          pairAddress: pairAddress,
+        }
+        setPairDetail(pairDetail as TPairDetail)
+        return pairDetail
+      } else {
+        setPairDetail({} as TPairDetail)
+        return {} as TPairDetail
+      }
+    },
+    [account, signer, getAmountOut]
+  )
+  const updatePairDetail = () => {
+    getPairDetail(pairAddress).then()
+  }
+  useEffect(() => {
+    if (pairAddress && account && signer && getAmountOut) {
+      getPairDetail(pairAddress).then()
+    }
+  }, [pairAddress, account, signer, getAmountOut, getPairDetail])
+  return { getPairDetail, pairDetail, updatePairDetail }
+}
+export default usePairDetail

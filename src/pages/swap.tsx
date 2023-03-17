@@ -16,8 +16,10 @@ import { formatEther, formatUnits, parseUnits } from 'ethers/lib/utils'
 import { useSwap } from '@/hooks/useSwapRouter'
 import { constants } from 'ethers'
 import { isSameAddress } from '@/utils/address'
+import { useRouter } from 'next/router'
 
 function Swap() {
+  const router = useRouter()
   const [checkedFromCurrency, setCheckedFromCurrency] = useState<TCurrencyListItem>({} as TCurrencyListItem)
   const [checkedToCurrency, setCheckedToCurrency] = useState<TCurrencyListItem>({} as TCurrencyListItem)
   const [isConfirmWrapModalOpen, handleConfirmWrapModalOpen] = useState(false)
@@ -149,7 +151,21 @@ function Swap() {
           onInput={onInputByTo}
         />
         <PriceDetail from={checkedFromCurrency.symbol} to={checkedToCurrency.symbol} rate={swap.rate} />
-        <SubmitBtn text={getSubmitBtnText()} onSubmit={handleSubmit} disabled={getSubmitBtnStatus()} />
+        <>
+          {swap.pairs.length > 0 && !isSameAddress(swap.pairs[0], constants.AddressZero) ? (
+            <SubmitBtn text={getSubmitBtnText()} onSubmit={handleSubmit} disabled={getSubmitBtnStatus()} />
+          ) : (
+            <SubmitBtn
+              disabled={false}
+              text="Create Pair"
+              onSubmit={() => {
+                router
+                  .push(`/add?addressIn=${checkedFromCurrency.address}&addressOut=${checkedToCurrency.address}`)
+                  .then()
+              }}
+            />
+          )}
+        </>
       </SwapWrapper>
       <SwapDetail />
     </div>

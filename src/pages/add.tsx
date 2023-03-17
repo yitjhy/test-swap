@@ -3,27 +3,25 @@ import { ChevronLeft, Plus } from 'react-feather'
 import { Settings } from 'react-feather'
 import SwapSection, { TSwapSectionProps } from '@/business-components/swap-section'
 import SubmitBtn from '@/components/submitBtn'
-import Rate, { TRateProps } from '@/views/add/rate'
+import Rate from '@/views/add/rate'
 import Tip from '@/views/add/tip'
-import LPDetail, { TLPDetailProps } from '@/views/add/lp-detail'
+import LPDetail from '@/views/add/lp-detail'
 import { ConfirmBtn } from '@/components/button'
 import Modal from '@/components/modal'
-import Config from '@/views/swap/config'
+import Config, { TConfig } from '@/views/swap/config'
 import { useEffect, useState } from 'react'
 import useERC20Approved from '@/hooks/contract/useERC20Approved'
 import { TCurrencyListItem } from '@/context/remoteCurrencyListContext'
 import useCreatePair from '@/hooks/useCreatePair'
-import { formatEther, parseUnits, formatUnits } from 'ethers/lib/utils'
-import useGetPairContract from '@/hooks/useGetPairContract'
-import { ABI } from '@/utils/abis'
-import { getContract } from '@/hooks/contract/useContract'
-import { useDialog } from '@/components/dialog'
-import { useSigner } from '@/hooks/contract/useSigner'
+import { parseUnits, formatUnits } from 'ethers/lib/utils'
+import usePairAddress from '@/hooks/usePairAddress'
 import { contractAddress, invalidAddress, platFormAddress } from '@/utils/enum'
-import useLPDetail from '@/hooks/usePaireDetail'
+import usePairDetail from '@/hooks/usePairDetail'
 import useLiquidityRate from '@/hooks/useLiquidityRate'
 import { useRouter } from 'next/router'
 import { getAddress } from '@/utils'
+import { constants } from 'ethers'
+import useValueByInput from '@/hooks/useOutValueByInputIn'
 
 const IncreaseLP = () => {
   const router = useRouter()
@@ -33,80 +31,17 @@ const IncreaseLP = () => {
   const [checkedToCurrency, setCheckedToCurrency] = useState<TCurrencyListItem>({} as TCurrencyListItem)
   const [inputValueByTo, setInputValueByTo] = useState(0)
   const [inputValueByFrom, setInputValueByFrom] = useState(0)
-  const [shareOfPool, setShareOfPool] = useState('0')
-  const [LPDetailData, setLPDetailData] = useState<TLPDetailProps & { rate: TRateProps['rate']; pairAddress: string }>(
-    {} as any
-  )
-  const { getLPDetail } = useLPDetail()
-  const { getLiquidityRate } = useLiquidityRate(
-    {
-      address: checkedFromCurrency.address,
-      inputValue: inputValueByFrom,
-    },
-    {
-      address: checkedToCurrency.address,
-      inputValue: inputValueByTo,
-    }
-  )
+  const [pairAddress, setPairAddress] = useState(constants.AddressZero)
+  const { pairDetail, updatePairDetail } = usePairDetail(pairAddress)
   const { addLiquidity, addLiquidityETH } = useCreatePair()
-  const { getPairContractAddress } = useGetPairContract()
-  const signer = useSigner()
-  const onSelectedCurrencyByFrom: TSwapSectionProps['onSelectedCurrency'] = (balance, currency) => {
-    setCheckedFromCurrency(currency)
-  }
-  const onSelectedCurrencyByTo: TSwapSectionProps['onSelectedCurrency'] = (balance, currency) => {
-    setCheckedToCurrency(currency)
-  }
-  const onInputByFrom: TSwapSectionProps['onInput'] = async (value) => {
-    setInputValueByFrom(value)
-    const { fromAddress, toAddress } = getAddress(checkedFromCurrency.address, checkedToCurrency.address)
-    const pairContractAddress = await getPairContractAddress(fromAddress, toAddress)
-    if (pairContractAddress !== invalidAddress) {
-      const pairContract = await getContract(pairContractAddress, ABI.pair, signer)
-      const pairAmount = await pairContract?.getReserves()
-      const token0Address = await pairContract?.token0()
-      const token1Address = await pairContract?.token1()
-      const token0Contract = await getContract(token0Address, ABI.ERC20, signer)
-      const token1Contract = await getContract(token1Address, ABI.ERC20, signer)
-      const token0Decimal = await token0Contract?.decimals()
-      const token1Decimal = await token1Contract?.decimals()
-      if (token0Address === fromAddress) {
-        const res = pairAmount._reserve1.mul(parseUnits(String(value), token0Decimal)).div(pairAmount._reserve0)
-        setInputValueByTo(Number(formatUnits(res, token1Decimal)))
-      } else {
-        const res = pairAmount._reserve0.mul(parseUnits(String(value), token1Decimal)).div(pairAmount._reserve1)
-        setInputValueByTo(Number(formatUnits(res, token0Decimal)))
-      }
-    }
-  }
-  const onInputByTo: TSwapSectionProps['onInput'] = async (value) => {
-    setInputValueByTo(value)
-    const { fromAddress, toAddress } = getAddress(checkedFromCurrency.address, checkedToCurrency.address)
-    const pairContractAddress = await getPairContractAddress(fromAddress, toAddress)
-    if (pairContractAddress !== invalidAddress) {
-      const pairContract = await getContract(pairContractAddress, ABI.pair, signer)
-      const pairAmount = await pairContract?.getReserves()
-      const token0Address = await pairContract?.token0()
-      const token1Address = await pairContract?.token1()
-      const token0Contract = await getContract(token0Address, ABI.ERC20, signer)
-      const token1Contract = await getContract(token1Address, ABI.ERC20, signer)
-      const token0Decimal = await token0Contract?.decimals()
-      const token1Decimal = await token1Contract?.decimals()
-      if (token0Address === fromAddress) {
-        const res = pairAmount._reserve0.mul(parseUnits(String(value), token1Decimal)).div(pairAmount._reserve1)
-        setInputValueByFrom(Number(formatUnits(res, token0Decimal)))
-      } else {
-        const res = pairAmount._reserve1.mul(parseUnits(String(value), token0Decimal)).div(pairAmount._reserve0)
-        setInputValueByFrom(Number(formatUnits(res, token1Decimal)))
-      }
-    }
-  }
-  const handleMaxByFrom: TSwapSectionProps['onMax'] = (value) => {
-    setInputValueByFrom(value)
-  }
-  const handleMaxByTo: TSwapSectionProps['onMax'] = (value) => {
-    setInputValueByTo(value)
-  }
+  const { getOutValueByInputIn, getInValueByInputOut } = useValueByInput(
+    getAddress(checkedFromCurrency.address, checkedToCurrency.address).fromAddress,
+    getAddress(checkedFromCurrency.address, checkedToCurrency.address).toAddress
+  )
+  const { pairAddress: pairAddressFromHook } = usePairAddress(
+    getAddress(checkedFromCurrency.address, checkedToCurrency.address).fromAddress,
+    getAddress(checkedFromCurrency.address, checkedToCurrency.address).toAddress
+  )
   const { approved: isApprovedCurrencyFrom, approve: approveCurrencyFrom } = useERC20Approved(
     checkedFromCurrency.address,
     contractAddress.router
@@ -115,11 +50,45 @@ const IncreaseLP = () => {
     checkedToCurrency.address,
     contractAddress.router
   )
+  const { shareOfPool } = useLiquidityRate(
+    { address: checkedFromCurrency.address, inputValue: inputValueByFrom },
+    { address: checkedToCurrency.address, inputValue: inputValueByTo }
+  )
+  const onSelectedCurrencyByFrom: TSwapSectionProps['onSelectedCurrency'] = (balance, currency) => {
+    setCheckedFromCurrency(currency)
+  }
+  const onSelectedCurrencyByTo: TSwapSectionProps['onSelectedCurrency'] = (balance, currency) => {
+    setCheckedToCurrency(currency)
+  }
+  const onInputByFrom: TSwapSectionProps['onInput'] = async (value) => {
+    setInputValueByFrom(value)
+    const res = await getOutValueByInputIn(value)
+    setInputValueByTo(res?.value as number)
+  }
+  const onInputByTo: TSwapSectionProps['onInput'] = async (value) => {
+    setInputValueByTo(value)
+    const res = await getInValueByInputOut(value)
+    setInputValueByFrom(res?.value as number)
+  }
+  const handleMaxByFrom: TSwapSectionProps['onMax'] = async (value) => {
+    setInputValueByFrom(value)
+    const res = await getOutValueByInputIn(value)
+    setInputValueByTo(res?.value as number)
+  }
+  const handleMaxByTo: TSwapSectionProps['onMax'] = async (value) => {
+    setInputValueByTo(value)
+    const res = await getInValueByInputOut(value)
+    setInputValueByFrom(res?.value as number)
+  }
+  const addCallback = async () => {
+    updatePairDetail()
+  }
   const handleSubmit = async () => {
     if (checkedFromCurrency.address === platFormAddress) {
       await addLiquidityETH(checkedToCurrency.address, parseUnits(String(inputValueByTo), checkedToCurrency.decimals), {
         value: parseUnits(String(inputValueByFrom), checkedFromCurrency.decimals),
       })
+      addCallback().then()
     }
     if (checkedToCurrency.address === platFormAddress) {
       await addLiquidityETH(
@@ -129,6 +98,7 @@ const IncreaseLP = () => {
           value: parseUnits(String(checkedToCurrency), checkedToCurrency.decimals),
         }
       )
+      addCallback().then()
     }
     if (checkedToCurrency.address !== platFormAddress && checkedFromCurrency.address !== platFormAddress) {
       await addLiquidity(
@@ -137,24 +107,25 @@ const IncreaseLP = () => {
         parseUnits(String(inputValueByFrom), checkedFromCurrency.decimals),
         parseUnits(String(inputValueByTo), checkedToCurrency.decimals)
       )
+      addCallback().then()
     }
   }
   const getSubmitBtnText = () => {
     if (!checkedFromCurrency.address || !checkedToCurrency.address) {
       return 'Select Token'
     }
-    if (inputValueByFrom === 0 || inputValueByTo === 0) {
+    if (Number(inputValueByFrom) === 0 || Number(inputValueByTo) === 0) {
       return 'Enter the number of Token'
     }
     if (
       checkedToCurrency.address &&
-      parseUnits(String(inputValueByTo), checkedToCurrency.decimals).gt(checkedToCurrency.balance)
+      Number(inputValueByTo) > Number(formatUnits(checkedToCurrency.balance, checkedToCurrency.decimals))
     ) {
       return 'Insufficient balance'
     }
     if (
       checkedFromCurrency.address &&
-      parseUnits(String(inputValueByFrom), checkedFromCurrency.decimals).gt(checkedFromCurrency.balance)
+      Number(inputValueByFrom) > Number(formatUnits(checkedFromCurrency.balance, checkedFromCurrency.decimals))
     ) {
       return 'Insufficient balance'
     }
@@ -164,55 +135,30 @@ const IncreaseLP = () => {
     if (
       checkedFromCurrency.address &&
       checkedToCurrency.address &&
-      inputValueByTo > 0 &&
-      inputValueByFrom > 0 &&
-      parseUnits(String(inputValueByTo), checkedToCurrency.decimals).lte(checkedToCurrency.balance) &&
-      parseUnits(String(inputValueByFrom), checkedFromCurrency.decimals).lte(checkedFromCurrency.balance)
+      Number(inputValueByTo) > 0 &&
+      Number(inputValueByFrom) > 0 &&
+      Number(inputValueByTo) <= Number(formatUnits(checkedToCurrency.balance, checkedToCurrency.decimals)) &&
+      Number(inputValueByFrom) <= Number(formatUnits(checkedFromCurrency.balance, checkedFromCurrency.decimals))
     ) {
       return false
     }
     return true
   }
   useEffect(() => {
-    if (checkedFromCurrency.address && checkedToCurrency.address && inputValueByFrom && inputValueByTo) {
-      getLiquidityRate().then((data) => {
-        console.log(data)
-        setShareOfPool(data)
-      })
-    }
-  }, [checkedFromCurrency.address, checkedToCurrency.address, inputValueByFrom, inputValueByTo, getLiquidityRate])
+    setPairAddress(pairAddressFromHook)
+  }, [pairAddressFromHook])
   useEffect(() => {
-    if (checkedFromCurrency.address && checkedToCurrency.address) {
-      console.log(checkedFromCurrency.address, checkedToCurrency.address)
-      const { fromAddress, toAddress } = getAddress(checkedFromCurrency.address, checkedToCurrency.address)
-      setLPDetailData({} as any)
-      getPairContractAddress(fromAddress, toAddress).then((address: string) => {
-        console.log(address)
-        getLPDetail(address).then((data) => {
-          console.log(data)
-          setLPDetailData(data)
-        })
-      })
-    }
-  }, [checkedFromCurrency.address, checkedToCurrency.address, getLPDetail])
-  useEffect(() => {
-    if (query.address) {
-      getLPDetail(query.address as string).then((data) => {
-        console.log(data)
-        setLPDetailData(data)
-        setCheckedFromCurrency(data.tokens[0])
-        setCheckedToCurrency(data.tokens[1])
-        // setInputValueByFrom(Number(formatUnits(data.tokens[0].balance, data.tokens[0].decimals)))
-        // setInputValueByTo(Number(formatUnits(data.tokens[1].balance, data.tokens[1].decimals)))
-      })
-    }
-  }, [query.address, getLPDetail])
+    if (query.address) setPairAddress(query.address as string)
+  }, [query.address])
+  // const data = useErc20Info(query.addressOut as string)
+  const onSlippageChange: TConfig['onSlippageChange'] = (value) => {}
+  const onDeadlineChange: TConfig['onDeadlineChange'] = (value) => {}
   return (
     <IncreaseLPWrapper>
       <Modal
         contentStyle={{ width: 480 }}
         title="Settings"
-        content={<Config />}
+        content={<Config onDeadlineChange={onDeadlineChange} onSlippageChange={onSlippageChange} />}
         open={isConfigModalOpen}
         onClose={handleConfigModalOpen}
       />
@@ -254,13 +200,13 @@ const IncreaseLP = () => {
           onSelectedCurrency={onSelectedCurrencyByTo}
           onInput={onInputByTo}
         />
-        {LPDetailData.pairAddress &&
-        LPDetailData.pairAddress !== invalidAddress &&
-        LPDetailData.rate &&
-        LPDetailData.rate.length > 0 &&
+        {pairDetail.pairAddress &&
+        pairDetail.pairAddress !== invalidAddress &&
+        pairDetail.rate &&
+        pairDetail.rate.length > 0 &&
         checkedFromCurrency.address &&
         checkedToCurrency.address ? (
-          <Rate shareOfPool={shareOfPool} rate={LPDetailData.rate} />
+          <Rate shareOfPool={shareOfPool} rate={pairDetail.rate} />
         ) : null}
         <div className="approve-wrapper">
           {!isApprovedCurrencyFrom && checkedFromCurrency.address && (
@@ -273,7 +219,7 @@ const IncreaseLP = () => {
         <SubmitBtn text={getSubmitBtnText()} onSubmit={handleSubmit} disabled={getSubmitBtnStatus()} />
       </div>
       <div style={{ padding: '0 0.7rem' }}>
-        {LPDetailData.tokens && LPDetailData.tokens.length > 0 && <LPDetail data={LPDetailData} />}
+        {pairDetail.tokens && pairDetail.tokens.length > 0 && <LPDetail data={pairDetail} />}
       </div>
     </IncreaseLPWrapper>
   )

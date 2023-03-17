@@ -1,24 +1,24 @@
-import { invalidAddress } from '@/utils/enum'
 import { getContract } from '@/hooks/contract/useContract'
 import { ABI } from '@/utils/abis'
 import { formatEther, formatUnits, parseUnits } from 'ethers/lib/utils'
-import useGetPairContract from '@/hooks/useGetPairContract'
+import usePairAddress from '@/hooks/usePairAddress'
 import { useSigner } from '@/hooks/contract/useSigner'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { getAddress } from '@/utils'
+import { isSameAddress } from '@/utils/address'
+import { constants } from 'ethers'
 
 const useLiquidityRate = (
   from: { inputValue: number; address: string },
   to: { inputValue: number; address: string }
 ) => {
   const [shareOfPool, setShareOfPool] = useState('0')
-  const { getPairContractAddress } = useGetPairContract()
+  const { fromAddress, toAddress } = getAddress(from.address, to.address)
+  const { pairAddress } = usePairAddress(fromAddress, toAddress)
   const signer = useSigner()
   const getLiquidityRate = useCallback(async () => {
-    const { fromAddress, toAddress } = getAddress(from.address, to.address)
-    const pairContractAddress = await getPairContractAddress(fromAddress, toAddress)
-    if (pairContractAddress !== invalidAddress) {
-      const pairContract = await getContract(pairContractAddress, ABI.pair, signer)
+    if (!isSameAddress(pairAddress, constants.AddressZero)) {
+      const pairContract = await getContract(pairAddress, ABI.pair, signer)
       const pairAmount = await pairContract?.getReserves()
       const totalSupplyBigNumber = await pairContract?.totalSupply()
       const poolTotalSupply = formatEther(totalSupplyBigNumber)
@@ -59,11 +59,16 @@ const useLiquidityRate = (
         setShareOfPool(String(liquidity / (Number(poolTotalSupply) + liquidity)))
       }
     } else {
-      console.log('pair不存在')
-      console.log(pairContractAddress)
+      console.log(pairAddress)
+      setShareOfPool('0')
     }
     return shareOfPool
-  }, [from, to, signer])
-  return { getLiquidityRate }
+  }, [from, to, signer, pairAddress])
+  useEffect(() => {
+    if (pairAddress && from.address && to.address && from.inputValue && to.inputValue) {
+      getLiquidityRate().then()
+    }
+  }, [from, to, getLiquidityRate, pairAddress])
+  return { getLiquidityRate, shareOfPool }
 }
 export default useLiquidityRate

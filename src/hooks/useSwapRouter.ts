@@ -5,7 +5,7 @@ import useErc20Info from "@/hooks/contract/useERC20Info";
 import {HunterswapRouter02} from "@/utils/abis/HunterswapRouter02";
 import {HunterswapFactory} from "@/utils/abis/HunterswapFactory";
 import {HunterswapPair} from "@/utils/abis/HunterswapPair";
-import {constants} from "ethers";
+import {BigNumber, constants} from "ethers";
 import {isSameAddress} from "@/utils/address";
 import {useMulProvider} from "@/hooks/contract/useMulProvider";
 import {useContracts} from "@/hooks/contract/useContracts";
@@ -29,7 +29,7 @@ enum SwapLock {
 function useReserves(factoryAddress: string, tokenIn: string, tokenOut: string) {
     const [pairAddress, setPairAddress] = useState('')
     const factory = useContract<HunterswapFactory>(factoryAddress, ABI.Factory)
-    const {multiCallContract: pair} = useContracts<HunterswapPair>(pairAddress, ABI.pair)
+    const {multiCallContract: pair, contract} = useContracts<HunterswapPair>(pairAddress, ABI.pair)
     const provider = useMulProvider()
     const [reserveIn, setReserveIn] = useState(constants.Zero)
     const [reserveOut, setReserveOut] = useState(constants.Zero)
@@ -39,7 +39,8 @@ function useReserves(factoryAddress: string, tokenIn: string, tokenOut: string) 
         }
     }, [factory, tokenIn, tokenOut])
     useEffect(() => {
-        if (provider && pair && !isSameAddress(pairAddress, constants.AddressZero)) {
+        if (provider && pair && !isSameAddress(pairAddress, constants.AddressZero) && contract) {
+            const syncListener = {callback: function(reserve0: BigNumber, reserve1:BigNumber) {console.log(reserve0, reserve1)}}
             provider.all([
                 pair.token0(),
                 pair.token1(),
@@ -49,13 +50,25 @@ function useReserves(factoryAddress: string, tokenIn: string, tokenOut: string) 
                 if (isSameAddress(token0, tokenIn)) {
                     setReserveIn(reserves[0])
                     setReserveOut(reserves[1])
+                    syncListener.callback = (reserve0: BigNumber, reserve1:BigNumber) => {
+                        setReserveIn(reserve0)
+                        setReserveOut(reserve1)
+                    }
                 } else {
                     setReserveIn(reserves[1])
                     setReserveOut(reserves[0])
+                    syncListener.callback = (reserve0, reserve1) => {
+                        setReserveIn(reserve1)
+                        setReserveOut(reserve0)
+                    }
                 }
+                contract.on('Sync', syncListener.callback)
             })
+            return () => {
+                contract.off('Sync', syncListener.callback)
+            }
         }
-    }, [pair, pairAddress])
+    }, [pair, pairAddress, contract])
     return {reserveIn, reserveOut}
 }
 
@@ -69,12 +82,10 @@ export function useSwap(tokenIn: string, tokenOut: string) {
     const [factoryAddress, setFactoryAddress] = useState('')
     const [wethAddress, setWethAddress] = useState('')
     const {contract: router, multiCallContract: mulRouter} = useContracts<HunterswapRouter02>(routerAddress, ABI.router)
-    // const factory = useContract<HunterswapFactory>(factoryAddress, ABI.Factory)
     const {reserveIn, reserveOut} = useReserves(factoryAddress, isSameAddress(tokenIn , constants.AddressZero) ? wethAddress:tokenIn, tokenOut)
     const [deadLine, setDeadLine] = useState(300) // 5 min
     const provider = useMulProvider()
     const {account} = useWeb3React()
-    const {approved, approve} = useERC20Approved(tokenIn, routerAddress)
     const {openDialog} = useDialog()
 
     useEffect(() => {
@@ -140,10 +151,6 @@ export function useSwap(tokenIn: string, tokenOut: string) {
         const maxInValue = parseUnits((maxPrice * +formatUnits(outValue, tokenOutInfo.decimals)).toFixed(tokenInInfo.decimals), tokenInInfo.decimals)
         const minOutValue = parseUnits((+formatUnits(inValue, tokenInInfo.decimals) / maxPrice).toFixed(tokenOutInfo.decimals), tokenOutInfo.decimals)
         try {
-            if (!approved && !await approve()) {
-                openDialog({title: 'Error', desc: 'Approval error.'})
-                return
-            }
             let tx:TransactionResponse|null = null
             openDialog({title: 'Swap', desc: 'Waiting for signature'})
             if (isSameAddress(tokenIn, constants.AddressZero)) {
@@ -176,7 +183,7 @@ export function useSwap(tokenIn: string, tokenOut: string) {
             openDialog({title: 'Error', desc: getErrorMsg(e)})
         }
 
-    }, [tokenIn, tokenOut, lock, inAmount, outAmount, router, approved, tokenInInfo, tokenOutInfo])
+    }, [tokenIn, tokenOut, lock, inAmount, outAmount, router, tokenInInfo, tokenOutInfo])
 
-    return {inAmount, outAmount, rate, updateIn, updateOut, updateSlippage: setSlippage, updateDeadline: setDeadLine, swap, slippage, deadLine}
+    return {inAmount, outAmount, rate, updateIn, updateOut, updateSlippage: setSlippage, updateDeadline: setDeadLine, swap, slippage, deadLine, reserveIn, reserveOut, tokenInInfo, tokenOutInfo}
 }

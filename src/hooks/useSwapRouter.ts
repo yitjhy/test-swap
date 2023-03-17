@@ -91,7 +91,7 @@ export function useSwap(tokenIn: string, tokenOut: string) {
         reserveIn,
         reserveOut,
         pairs
-    } = useReserves(factoryAddress, isSameAddress(tokenIn, constants.AddressZero) ? wethAddress : tokenIn, tokenOut)
+    } = useReserves(factoryAddress, isSameAddress(tokenIn, constants.AddressZero) ? wethAddress : tokenIn, isSameAddress(tokenOut, constants.AddressZero) ? wethAddress : tokenOut)
     const [deadLine, setDeadLine] = useState(300) // 5 min
     const provider = useMulProvider()
     const {account} = useWeb3React()

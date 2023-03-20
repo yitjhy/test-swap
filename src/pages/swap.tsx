@@ -102,7 +102,7 @@ function Swap() {
     if (swap.currentSlippage > swap.slippage && openDialog) {
       openDialog({ title: 'Warning', desc: 'Had Out Of Slippage, Please ReInput Or Reset Slippage', loading: false })
     }
-  }, [swap.inAmount, swap.outAmount, openDialog, swap.currentSlippage, swap.slippage])
+  }, [swap.inAmount, swap.outAmount, swap.currentSlippage, swap.slippage])
   return (
     <div style={{ maxWidth: 480, margin: '0 auto' }}>
       <SwapWrapper>

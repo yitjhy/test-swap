@@ -32,7 +32,6 @@ function Swap() {
       : checkedFromCurrency.address,
     checkedToCurrency.address
   )
-  console.log(swap)
   const handleSubmit = () => {
     // handleConfirmWrapModalOpen(true)
     // swap()
@@ -59,8 +58,6 @@ function Swap() {
     swap.updateIn(String(value))
   }
   const handleMaxByTo: TSwapSectionProps['onMax'] = (value) => {
-    console.log(value)
-    console.log(typeof value)
     swap.updateOut(String(value))
   }
   const getSubmitBtnText = () => {

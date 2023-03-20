@@ -16,7 +16,6 @@ function LP() {
   const signer = useSigner()
   const [pairAddressList, setPairAddressList] = useState<string[]>([])
   const pairDetailList = usePairInfoList(pairAddressList)
-  console.log(pairDetailList)
   const goIncreaseLP = () => {
     router.push('/add').then()
   }

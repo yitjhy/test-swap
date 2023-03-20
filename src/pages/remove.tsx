@@ -23,7 +23,6 @@ const RemoveLP = () => {
   const [liquidity, setLiquidity] = useState<BigNumber>()
   const { query } = useRouter()
   const { pairDetail, updatePairDetail } = usePairInfo(query.address as string)
-  console.log(pairDetail)
 
   const { approved, approve } = useERC20Approved(pairDetail.pairAddress, contractAddress.router)
   const onLiquidityChange: TRemoveSection['onLiquidityChange'] = (data) => {

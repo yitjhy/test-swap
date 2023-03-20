@@ -27,8 +27,6 @@ const usePairInfo = (pairAddress: string) => {
         const pairContract = await getContract<HunterswapPair>(pairAddress, ABI.pair, signer)
 
         // const pairListener = (_reserve0: BigNumber, _reserve1: BigNumber) => {
-        //   console.log(_reserve0)
-        //   console.log(_reserve1)
         // }
         // pairContract?.on('Sync', pairListener)
 

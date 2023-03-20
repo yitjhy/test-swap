@@ -68,7 +68,6 @@ export const RemoteCurrencyListProvider: FC<PropsWithChildren> = ({ children }) 
   // //     })
   // //     setRemoteCurrencyList(addressList)
   // //   } catch (error) {
-  // //     console.log('Request Failed', error)
   // //   }
   // // }
   // // useEffect(() => {

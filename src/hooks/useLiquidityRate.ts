@@ -59,7 +59,6 @@ const useLiquidityRate = (
         setShareOfPool(String(liquidity / (Number(poolTotalSupply) + liquidity)))
       }
     } else {
-      console.log(pairAddress)
       setShareOfPool('0')
     }
     return shareOfPool

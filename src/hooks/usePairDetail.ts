@@ -11,7 +11,6 @@ import { useDialog } from '@/components/dialog'
 import { isSameAddress } from '@/utils/address'
 import { BigNumber, constants } from 'ethers'
 import { HunterswapPair } from '@/utils/abis/HunterswapPair'
-import { router } from 'next/client'
 import { contractAddress, platformCurrencyData } from '@/utils/enum'
 
 type TPairAmount = GetPromiseType<ReturnType<HunterswapPair['getReserves']>>

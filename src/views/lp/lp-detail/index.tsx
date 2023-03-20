@@ -4,14 +4,8 @@ import { ConfirmBtn } from '@/components/button'
 import { BigNumber } from 'ethers'
 import { FC } from 'react'
 import { formatUnits } from 'ethers/lib/utils'
+import { TPairDetail } from '@/hooks/usePairDetail'
 
-export type TPairDetail = {
-  accountPairBalance: BigNumber
-  pairDecimals: number
-  LPShare: BigNumber
-  pairAddress: string
-  tokens: { symbol: string; decimals: number; balance: BigNumber }[]
-}
 const PairDetail: FC<{ data: TPairDetail }> = ({ data }) => {
   const router = useRouter()
   return (

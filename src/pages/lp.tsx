@@ -3,13 +3,9 @@ import { useRouter } from 'next/router'
 import Image from 'next/image'
 import styled from 'styled-components'
 import Collapse from '@/components/collapse'
-import PairDetail, { TPairDetail } from '@/views/lp/lp-detail'
-import { getContract } from '@/hooks/contract/useContract'
-import { ABI } from '@/utils/abis'
+import PairDetail from '@/views/lp/lp-detail'
 import { useSigner } from '@/hooks/contract/useSigner'
 import { useWeb3React } from '@web3-react/core'
-import { parseUnits } from 'ethers/lib/utils'
-import { useDialog } from '@/components/dialog'
 import usePairDetailList from '@/hooks/usePairDetailList'
 
 const imgSrc =
@@ -18,63 +14,21 @@ function LP() {
   const router = useRouter()
   const { account } = useWeb3React()
   const signer = useSigner()
-  // const { openDialog, close } = useDialog()
   const [pairAddressList, setPairAddressList] = useState<string[]>([])
-  // const [pairDetailList, setPairDetailList] = useState<TPairDetail[]>([])
   const pairDetailList = usePairDetailList(pairAddressList)
   console.log(pairDetailList)
   const goIncreaseLP = () => {
     router.push('/add').then()
   }
-
   const getPairAddressList = () => {
     const pairAddressListFromStorage = localStorage.getItem('pairAddressList')
     if (pairAddressListFromStorage) {
       const pairAddressList = JSON.parse(pairAddressListFromStorage) as string[]
       setPairAddressList(pairAddressList)
-      // const promiseList = pairAddressList.map((item) => {
-      //   return getPairDetail(item)
-      // })
-      // openDialog({ title: 'Fetch Liquidity List', desc: 'Wating...' })
-      // Promise.all(promiseList).then((values) => {
-      //   setPairDetailList(values)
-      //   close()
-      // })
-    }
-  }
-  const getPairDetail = async (pairContractAddress = '0xf0ff33fc2F245fCCe7723f9246fEe981d2c77fAF') => {
-    const pairContract = await getContract(pairContractAddress, ABI.pair, signer)
-    const pairDecimals = await pairContract?.decimals()
-    const accountPairBalance = await pairContract?.balanceOf(account)
-    const pairAmount = await pairContract?.getReserves()
-    const poolLPBalance = await pairContract?.totalSupply()
-    const LPShare = parseUnits('1', 6).mul(accountPairBalance).div(poolLPBalance)
-    const accountToken0Balance = pairAmount._reserve0.mul(accountPairBalance).div(poolLPBalance)
-    const accountToken1Balance = pairAmount._reserve1.mul(accountPairBalance).div(poolLPBalance)
-    const token0Address = await pairContract?.token0()
-    const token1Address = await pairContract?.token1()
-    const token0Contract = await getContract(token0Address, ABI.ERC20, signer)
-    const token1Contract = await getContract(token1Address, ABI.ERC20, signer)
-    const token0symbol = await token0Contract?.symbol()
-    const token1symbol = await token1Contract?.symbol()
-    const token0decimals = await token0Contract?.decimals()
-    const token1decimals = await token1Contract?.decimals()
-
-    return {
-      accountPairBalance,
-      pairDecimals,
-      LPShare,
-      tokens: [
-        { symbol: token0symbol, decimals: token0decimals, balance: accountToken0Balance },
-        { symbol: token1symbol, decimals: token1decimals, balance: accountToken1Balance },
-      ],
-      pairAddress: pairContractAddress,
     }
   }
   useEffect(() => {
-    if (account && signer) {
-      getPairAddressList()
-    }
+    if (account && signer) getPairAddressList()
   }, [signer, account])
   return (
     <LPWrapper>

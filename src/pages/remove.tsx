@@ -11,9 +11,10 @@ import { useRouter } from 'next/router'
 import usePairDetail from '@/hooks/usePairDetail'
 import { formatUnits } from 'ethers/lib/utils'
 import useRemoveLiquidity from '@/hooks/useRemoveLiquidity'
-import { BigNumber } from 'ethers'
+import { BigNumber, constants } from 'ethers'
 import useERC20Approved from '@/hooks/contract/useERC20Approved'
 import { contractAddress } from '@/utils/enum'
+import { isSameAddress } from '@/utils/address'
 
 const RemoveLP = () => {
   const router = useRouter()
@@ -30,15 +31,15 @@ const RemoveLP = () => {
   }
   const handleRemove = async () => {
     if (pairDetail.tokens.length && !liquidity?.isZero() && approved && pairDetail.pairAddress) {
-      if (pairDetail.tokens[0].address === contractAddress.weth) {
+      if (isSameAddress(pairDetail.tokens[0].address, constants.AddressZero)) {
         await removeLiquidityETH(pairDetail.tokens[1].address, liquidity as BigNumber)
       }
-      if (pairDetail.tokens[1].address === contractAddress.weth) {
+      if (isSameAddress(pairDetail.tokens[1].address, constants.AddressZero)) {
         await removeLiquidityETH(pairDetail.tokens[0].address, liquidity as BigNumber)
       }
       if (
-        pairDetail.tokens[0].address !== contractAddress.weth &&
-        pairDetail.tokens[1].address !== contractAddress.weth
+        !isSameAddress(pairDetail.tokens[0].address, constants.AddressZero) &&
+        !isSameAddress(pairDetail.tokens[1].address, constants.AddressZero)
       ) {
         await removeLiquidity(pairDetail.tokens[0].address, pairDetail.tokens[1].address, liquidity as BigNumber)
       }

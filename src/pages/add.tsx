@@ -31,8 +31,8 @@ const IncreaseLP = () => {
   const [isConfigModalOpen, handleConfigModalOpen] = useState(false)
   const [checkedFromCurrency, setCheckedFromCurrency] = useState<TCurrencyListItem>({} as TCurrencyListItem)
   const [checkedToCurrency, setCheckedToCurrency] = useState<TCurrencyListItem>({} as TCurrencyListItem)
-  const [inputValueByTo, setInputValueByTo] = useState(0)
-  const [inputValueByFrom, setInputValueByFrom] = useState(0)
+  const [inputValueByTo, setInputValueByTo] = useState<string | undefined>()
+  const [inputValueByFrom, setInputValueByFrom] = useState<string | undefined>()
   const [pairAddress, setPairAddress] = useState(constants.AddressZero)
   const { pairDetail, updatePairDetail } = usePairDetail(pairAddress)
   const { addLiquidity, addLiquidityETH } = useCreatePair()
@@ -66,28 +66,28 @@ const IncreaseLP = () => {
     setInputValueByFrom(value)
     if (!isSameAddress(pairAddress, constants.AddressZero)) {
       const res = await getOutValueByInputIn(value)
-      setInputValueByTo(res?.value as number)
+      setInputValueByTo(res?.value)
     }
   }
   const onInputByTo: TSwapSectionProps['onInput'] = async (value) => {
     setInputValueByTo(value)
     if (!isSameAddress(pairAddress, constants.AddressZero)) {
       const res = await getInValueByInputOut(value)
-      setInputValueByFrom(res?.value as number)
+      setInputValueByFrom(res?.value)
     }
   }
   const handleMaxByFrom: TSwapSectionProps['onMax'] = async (value) => {
     setInputValueByFrom(value)
     if (!isSameAddress(pairAddress, constants.AddressZero)) {
       const res = await getOutValueByInputIn(value)
-      setInputValueByTo(res?.value as number)
+      setInputValueByTo(res?.value)
     }
   }
   const handleMaxByTo: TSwapSectionProps['onMax'] = async (value) => {
     setInputValueByTo(value)
     if (!isSameAddress(pairAddress, constants.AddressZero)) {
       const res = await getInValueByInputOut(value)
-      setInputValueByFrom(res?.value as number)
+      setInputValueByFrom(res?.value)
     }
   }
   const addCallback = async () => {

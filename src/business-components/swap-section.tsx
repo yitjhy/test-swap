@@ -12,10 +12,10 @@ export enum TInputCurrency {
   normal = 'normal',
 }
 export type TSwapSectionProps = {
-  amount?: number
+  amount?: string
   checkedCurrency: TCurrencyListItem
-  onInput?: (value: number) => void
-  onMax?: (value: number) => void
+  onInput?: (value: string) => void
+  onMax?: (value: string | undefined) => void
   onSelectedCurrency?: (balance: number, currency: TCurrencyListItem) => void
   type?: TInputCurrency
   readonly?: boolean
@@ -32,7 +32,7 @@ const SwapSection: FC<TSwapSectionProps> = ({
   onInput,
   checkedCurrency,
 }) => {
-  const [inputAmount, setInputAmount] = useState<number | undefined>()
+  const [inputAmount, setInputAmount] = useState<string | undefined>()
   const [isCurrencyListModalOpen, handleCurrencyListModalOpen] = useState(false)
   const [currencyData, setCurrencyData] = useState<TCurrencyListItem>(checkedCurrency || {})
   const goSelectCurrency = () => {
@@ -45,13 +45,13 @@ const SwapSection: FC<TSwapSectionProps> = ({
     onSelectedCurrency?.(balance, data)
   }
   const handleMax = () => {
-    const balance = currencyData?.balance ? Number(formatUnits(currencyData.balance, currencyData.decimals)) : 0
+    const balance = currencyData?.balance ? formatUnits(currencyData.balance, currencyData.decimals) : undefined
     setInputAmount(balance)
     onMax?.(balance)
   }
   const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
-    setInputAmount(e.target.value ? Number(e.target.value) : undefined)
-    onInput?.(Number(e.target.value))
+    setInputAmount(e.target.value ? e.target.value : undefined)
+    onInput?.(e.target.value)
   }
   useEffect(() => {
     setCurrencyData(checkedCurrency)
@@ -71,7 +71,6 @@ const SwapSection: FC<TSwapSectionProps> = ({
       <div className="swap-currency-input-row">
         <input
           className="numerical-input"
-          type="number"
           placeholder="0"
           disabled={readonly}
           value={inputAmount}

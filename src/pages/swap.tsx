@@ -8,11 +8,9 @@ import Header from '@/components/header'
 import SubmitBtn from '@/components/submitBtn'
 import SwapSection, { TSwapSectionProps } from '@/business-components/swap-section'
 import ConfirmWrap from '@/views/swap/confirmSwap'
-import SwapDetail from '@/views/swap/swap-detail'
 import PriceDetail from '@/views/swap/price-detail'
 import { TCurrencyListItem } from '@/context/remoteCurrencyListContext'
-import useERC20Approved from '@/hooks/contract/useERC20Approved'
-import { formatEther, formatUnits, parseUnits } from 'ethers/lib/utils'
+import { formatUnits } from 'ethers/lib/utils'
 import { useSwap } from '@/hooks/useSwapRouter'
 import { constants } from 'ethers'
 import { isSameAddress } from '@/utils/address'
@@ -25,8 +23,7 @@ function Swap() {
   const [checkedToCurrency, setCheckedToCurrency] = useState<TCurrencyListItem>({} as TCurrencyListItem)
   const [isConfirmWrapModalOpen, handleConfirmWrapModalOpen] = useState(false)
   const [isConfigModalOpen, handleConfigModalOpen] = useState(false)
-  const { openDialog, close } = useDialog()
-  // isSameAddress(checkedFromCurrency.address, constants.AddressZero)
+  const { openDialog } = useDialog()
   const swap = useSwap(
     isSameAddress(checkedFromCurrency.address, constants.AddressZero)
       ? constants.AddressZero
@@ -34,8 +31,6 @@ function Swap() {
     checkedToCurrency.address
   )
   console.log(swap)
-  // const swap = useSwap(constants.AddressZero, '0x30a2926428D33d5A6C0FB8892b89232a020991BE')
-  // const swap = useSwap('0x30a2926428D33d5A6C0FB8892b89232a020991BE', '0xD1056161F4DbdeF58Ea976dA4D67daf04D44E230')
   const handleSubmit = () => {
     // handleConfirmWrapModalOpen(true)
     // swap()
@@ -62,6 +57,8 @@ function Swap() {
     swap.updateIn(String(value))
   }
   const handleMaxByTo: TSwapSectionProps['onMax'] = (value) => {
+    console.log(value)
+    console.log(typeof value)
     swap.updateOut(String(value))
   }
   const getSubmitBtnText = () => {
@@ -102,10 +99,10 @@ function Swap() {
     swap.updateDeadline(value * 60)
   }
   useEffect(() => {
-    if (swap.currentSlippage > swap.slippage) {
+    if (swap.currentSlippage > swap.slippage && openDialog) {
       openDialog({ title: 'Warning', desc: 'Had Out Of Slippage, Please ReInput Or Reset Slippage', loading: false })
     }
-  }, [swap.inAmount, swap.outAmount])
+  }, [swap.inAmount, swap.outAmount, openDialog, swap.currentSlippage, swap.slippage])
   return (
     <div style={{ maxWidth: 480, margin: '0 auto' }}>
       <SwapWrapper>
@@ -133,7 +130,7 @@ function Swap() {
         />
         <div style={{ position: 'relative' }}>
           <SwapSection
-            amount={Number(swap.inAmount)}
+            amount={swap.inAmount}
             onMax={handleMaxByFrom}
             checkedCurrency={checkedFromCurrency}
             onSelectedCurrency={onSelectedCurrencyByFrom}
@@ -144,7 +141,7 @@ function Swap() {
           </button>
         </div>
         <SwapSection
-          amount={Number(swap.outAmount)}
+          amount={swap.outAmount}
           onMax={handleMaxByTo}
           checkedCurrency={checkedToCurrency}
           onSelectedCurrency={onSelectedCurrencyByTo}

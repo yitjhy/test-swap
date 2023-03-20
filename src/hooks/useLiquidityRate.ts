@@ -9,8 +9,8 @@ import { isSameAddress } from '@/utils/address'
 import { constants } from 'ethers'
 
 const useLiquidityRate = (
-  from: { inputValue: number; address: string },
-  to: { inputValue: number; address: string }
+  from: { inputValue: string | undefined; address: string },
+  to: { inputValue: string | undefined; address: string }
 ) => {
   const [shareOfPool, setShareOfPool] = useState('0')
   const { fromAddress, toAddress } = getAddress(from.address, to.address)

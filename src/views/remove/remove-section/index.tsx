@@ -24,8 +24,8 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
   const [percentRate, setPercentRate] = useState(50)
   const [changeTokens, setChangeTokens] = useState<TLPDetailProps['tokens']>([] as any)
   const [swapSectionTokens, setSwapSectionTokens] = useState<TLPDetailProps['tokens']>([] as any)
-  const [inputValueByFrom, setInputValueByFrom] = useState<number>()
-  const [inputValueByTo, setInputValueByTo] = useState<number>()
+  const [inputValueByFrom, setInputValueByFrom] = useState<string | undefined>()
+  const [inputValueByTo, setInputValueByTo] = useState<string | undefined>()
   const switchTokens = (value: string) => {
     const res = data.tokens?.map((item) => {
       return {
@@ -34,8 +34,8 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
       }
     })
     setChangeTokens(res as TLPDetailProps['tokens'])
-    setInputValueByFrom(Number(formatUnits(res[0].balanceOfPair, res[0].decimals)))
-    setInputValueByTo(Number(formatUnits(res[1].balanceOfPair, res[1].decimals)))
+    setInputValueByFrom(formatUnits(res[0].balanceOfPair, res[0].decimals))
+    setInputValueByTo(formatUnits(res[1].balanceOfPair, res[1].decimals))
 
     const liquidity = data.accountPairBalance.mul(parseUnits(String(value), 5)).div(parseUnits('1', 7))
     onLiquidityChange(liquidity)
@@ -68,7 +68,7 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
     const inputValueByTo = parseUnits(String(value), data.tokens[0].decimals)
       .mul(data.tokens[1].balanceOfPair)
       .div(data.tokens[0].balanceOfPair)
-    setInputValueByTo(Number(formatUnits(inputValueByTo, data.tokens[1].decimals)))
+    setInputValueByTo(formatUnits(inputValueByTo, data.tokens[1].decimals))
 
     const token0 = changeTokens[0]
     const token1 = changeTokens[1]
@@ -91,7 +91,7 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
     const inputValueByFrom = parseUnits(String(value), data.tokens[1].decimals)
       .mul(data.tokens[0].balanceOfPair)
       .div(data.tokens[1].balanceOfPair)
-    setInputValueByFrom(Number(formatUnits(inputValueByFrom, data.tokens[0].decimals)))
+    setInputValueByFrom(formatUnits(inputValueByFrom, data.tokens[0].decimals))
 
     const token0 = changeTokens[0]
     const token1 = changeTokens[1]
@@ -125,7 +125,7 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
             <SwapSection
               readonly={true}
               style={{ marginTop: 7 }}
-              amount={Number(formatUnits(liquidity as BigNumber, data.pairDecimals))}
+              amount={formatUnits(liquidity as BigNumber, data.pairDecimals)}
               checkedCurrency={{
                 name: `${data.tokens[0].symbol.slice(0, 3)} / ${data.tokens[1].symbol.slice(0, 3)}`,
                 chainId: 5,

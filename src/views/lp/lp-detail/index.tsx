@@ -14,10 +14,6 @@ export type TPairDetail = {
 }
 const PairDetail: FC<{ data: TPairDetail }> = ({ data }) => {
   const router = useRouter()
-  const goIncreaseLP = () => {
-    router.push('/add')
-  }
-
   return (
     <LPDetailWrapper>
       <div className="lp-detail-item-wrapper">
@@ -29,7 +25,7 @@ const PairDetail: FC<{ data: TPairDetail }> = ({ data }) => {
           return (
             <div className="lp-detail-item-wrapper" key={index}>
               <div className="lp-detail-item-label">Pooled {item.symbol}:</div>
-              <div className="lp-detail-item-value">{formatUnits(item.balance, item.decimals)}</div>
+              <div className="lp-detail-item-value">{formatUnits(item.balanceOfPair, item.decimals)}</div>
             </div>
           )
         })}

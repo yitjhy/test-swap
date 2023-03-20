@@ -11,6 +11,8 @@ import { useDialog } from '@/components/dialog'
 import { isSameAddress } from '@/utils/address'
 import { BigNumber, constants } from 'ethers'
 import { HunterswapPair } from '@/utils/abis/HunterswapPair'
+import { router } from 'next/client'
+import { contractAddress, platformCurrencyData } from '@/utils/enum'
 
 type TPairAmount = GetPromiseType<ReturnType<HunterswapPair['getReserves']>>
 export type TPairDetail = TLPDetailProps & {
@@ -20,7 +22,7 @@ export type TPairDetail = TLPDetailProps & {
 }
 const usePairDetail = (pairAddress: string) => {
   const [pairDetail, setPairDetail] = useState<TPairDetail>({} as TPairDetail)
-  const { account } = useWeb3React()
+  const { account, provider } = useWeb3React()
   const signer = useSigner()
   const { getAmountOut } = useAmountOut()
   const { openDialog, close } = useDialog()
@@ -65,21 +67,23 @@ const usePairDetail = (pairAddress: string) => {
         const token0balance = await token0Contract?.balanceOf(account)
         const token1balance = await token1Contract?.balanceOf(account)
 
+        const platformBalance = await provider?.getBalance(account as string)
+
         const token0 = {
-          symbol: token0symbol,
+          symbol: isSameAddress(token0Address, contractAddress.weth) ? platformCurrencyData.symbol : token0symbol,
           decimals: token0Decimal,
-          balance: token0balance,
+          balance: isSameAddress(token0Address, contractAddress.weth) ? platformBalance : token0balance,
           balanceOfPair: accountToken0Balance,
-          name: token0Name,
-          address: token0Address,
+          name: isSameAddress(token0Address, contractAddress.weth) ? platformCurrencyData.name : token0Name,
+          address: isSameAddress(token0Address, contractAddress.weth) ? platformCurrencyData.address : token0Address,
         }
         const token1 = {
-          symbol: token1symbol,
+          symbol: isSameAddress(token1Address, contractAddress.weth) ? platformCurrencyData.symbol : token1symbol,
           decimals: token1Decimal,
-          balance: token1balance,
+          balance: isSameAddress(token1Address, contractAddress.weth) ? platformBalance : token1balance,
           balanceOfPair: accountToken1Balance,
-          name: token1Name,
-          address: token1Address,
+          name: isSameAddress(token1Address, contractAddress.weth) ? platformCurrencyData.name : token1Name,
+          address: isSameAddress(token1Address, contractAddress.weth) ? platformCurrencyData.address : token1Address,
         }
         const tokens: TLPDetailProps['tokens'] = [token0, token1] as any
 

@@ -172,8 +172,13 @@ const IncreaseLP = () => {
   }, [currencyListFromQuery])
   useEffect(() => {
     if (pairDetail.tokens && pairDetail.tokens.length) {
-      setCheckedFromCurrency(pairDetail.tokens[0] as TCurrencyListItem)
-      setCheckedToCurrency(pairDetail.tokens[1] as TCurrencyListItem)
+      if (pairDetail.tokens[0] === checkedFromCurrency) {
+        setCheckedFromCurrency(pairDetail.tokens[0] as TCurrencyListItem)
+        setCheckedToCurrency(pairDetail.tokens[1] as TCurrencyListItem)
+      } else {
+        setCheckedFromCurrency(pairDetail.tokens[1] as TCurrencyListItem)
+        setCheckedToCurrency(pairDetail.tokens[0] as TCurrencyListItem)
+      }
     }
   }, [pairDetail])
   const onSlippageChange: TConfig['onSlippageChange'] = (value) => {}

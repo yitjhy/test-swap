@@ -1,10 +1,8 @@
 import useLPDetail from '@/hooks/usePairInfo'
 import { formatUnits, parseUnits } from 'ethers/lib/utils'
-import { getAddress } from '@/utils'
 import { isSameAddress } from '@/utils/address'
 import { constants } from 'ethers'
 import useGetPairContract from '@/hooks/usePairAddress'
-import { useEffect } from 'react'
 
 const useValueByInput = (fromAddress: string, toAddress: string) => {
   const { pairAddress } = useGetPairContract(fromAddress, toAddress)

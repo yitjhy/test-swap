@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 import { TextInput } from '@/components/input'
 import { Check, RotateCw } from 'react-feather'
+import { SyncOutlined } from '@ant-design/icons'
 import { ConfirmBtn } from '@/components/button'
 import Modal from '@/components/modal'
 import NotTradedWaning from '@/business-components/currencyList/notTradedWaning'
@@ -35,6 +36,11 @@ const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }
       setCurrencyList(currencyListByContext)
     }
   }
+  const onClose = () => {
+    handleWarningModalOpen(false)
+    setCurrencyList(currencyListByContext)
+    setSearchValue('')
+  }
   useEffect(() => {
     setCurrencyList(currencyListByContext)
   }, [currencyListByContext])
@@ -45,7 +51,7 @@ const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }
         content={<NotTradedWaning />}
         open={isWarningModalOpen}
         contentStyle={{ width: 480 }}
-        onClose={handleWarningModalOpen}
+        onClose={onClose}
       />
       <TextInput
         value={searchValue}
@@ -126,14 +132,14 @@ const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }
             )
           })
         ) : (
-          <div className="rotate-wrapper">
-            <div>
-              <RotateCw color="#383838" />
-            </div>
-          </div>
+          <>
+            {/*<div className="rotate-wrapper">*/}
+            {/*  <SyncOutlined spin />*/}
+            {/*</div>*/}
+            <span className="no-data">No Results Found</span>
+          </>
         )}
       </div>
-      <span className="no-data">No Results Found</span>
     </SelectCurrencyWrapper>
   )
 }
@@ -228,26 +234,29 @@ const SelectCurrencyWrapper = styled.div`
       display: flex;
       justify-content: center;
       align-items: center;
-      div {
-        animation: wave 1.5s infinite;
-        @keyframes wave {
-          0% {
-            transform: rotate(0);
-          }
-          50% {
-            transform: rotate(180deg);
-          }
-          100% {
-            transform: rotate(360deg);
-          }
-        }
-      }
+      color: #383838;
+      //div {
+      //  animation: wave 1.5s infinite;
+      //  @keyframes wave {
+      //    0% {
+      //      transform: rotate(0);
+      //    }
+      //    50% {
+      //      transform: rotate(180deg);
+      //    }
+      //    100% {
+      //      transform: rotate(360deg);
+      //    }
+      //  }
+      //}
     }
   }
   .no-data {
     font-size: 16px;
     color: #d9d9d9;
     padding: 4rem 0;
+    display: block;
+    text-align: center;
   }
   .split-line {
     border-top: 1px solid #262626;

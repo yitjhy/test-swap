@@ -58,6 +58,7 @@ const RateWrapper = styled.div`
         font-size: 12px;
         display: block;
         text-transform: lowercase;
+        text-align: center;
       }
     }
   }

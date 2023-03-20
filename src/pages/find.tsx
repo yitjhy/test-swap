@@ -1,25 +1,24 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
-import { CaretDownOutlined, PlusCircleOutlined } from '@ant-design/icons'
+import { CaretDownOutlined, PlusCircleOutlined, LeftOutlined } from '@ant-design/icons'
 import CurrencyList, { TSelectCurrencyProps } from '@/business-components/currencyList'
 import Modal from '@/components/modal'
 import { TCurrencyListItem } from '@/context/remoteCurrencyListContext'
-import useGetPairContract from '@/hooks/usePairAddress'
+import usePairAddress from '@/hooks/usePairAddress'
 import { invalidAddress } from '@/utils/enum'
 import { useRouter } from 'next/router'
 import { getAddress } from '@/utils'
 
 function Find() {
   const router = useRouter()
-  const goLP = () => {
-    router.push('/lp').then()
-  }
   const [isFromCurrencyListModalOpen, handleFromCurrencyListModalOpen] = useState(false)
   const [isToCurrencyListModalOpen, handleToCurrencyListModalOpen] = useState(false)
   const [fromCurrency, setFromCurrency] = useState<TCurrencyListItem>({} as TCurrencyListItem)
   const [toCurrency, setToCurrency] = useState<TCurrencyListItem>({} as TCurrencyListItem)
-  const { getPairContractAddress } = useGetPairContract()
-  const [pairAddress, setPairAddress] = useState('')
+  const { pairAddress } = usePairAddress(
+    getAddress(fromCurrency.address, toCurrency.address).fromAddress,
+    getAddress(fromCurrency.address, toCurrency.address).toAddress
+  )
   const handleSelectedFromCurrency: TSelectCurrencyProps['onChecked'] = (data) => {
     handleFromCurrencyListModalOpen(false)
     setFromCurrency(data)
@@ -27,17 +26,6 @@ function Find() {
   const handleSelectedToCurrency: TSelectCurrencyProps['onChecked'] = (data) => {
     handleToCurrencyListModalOpen(false)
     setToCurrency(data)
-  }
-  const getPairAddress = async () => {
-    const { fromAddress, toAddress } = getAddress(fromCurrency.address, toCurrency.address)
-    const pairAddress = await getPairContractAddress(fromAddress, toAddress)
-    if (pairAddress !== invalidAddress) {
-      setPairAddress(pairAddress)
-    } else {
-      console.log('pair不存在')
-      console.log(pairAddress)
-      setPairAddress(pairAddress)
-    }
   }
   const submit = () => {
     const pairAddressListFromStorage = localStorage.getItem('pairAddressList')
@@ -47,13 +35,8 @@ function Find() {
     } else {
       localStorage.setItem('pairAddressList', JSON.stringify([pairAddress]))
     }
-    goLP()
+    router.push('/lp').then()
   }
-  useEffect(() => {
-    if (fromCurrency.address && toCurrency.address) {
-      getPairAddress().then()
-    }
-  }, [fromCurrency, toCurrency])
   return (
     <LPWrapper>
       <Modal
@@ -70,7 +53,12 @@ function Find() {
         open={isToCurrencyListModalOpen}
         onClose={handleToCurrencyListModalOpen}
       />
-      <div className="collapse-header">Import Pool</div>
+      <div className="collapse-header">
+        <span className="back-icon" onClick={() => router.back()}>
+          <LeftOutlined />
+        </span>
+        <div className="title">Import Pool</div>
+      </div>
       <div
         className="select-currency-wrapper"
         onClick={() => {
@@ -129,9 +117,20 @@ const LPWrapper = styled.div`
     display: flex;
     column-gap: 1rem;
     align-items: center;
-    justify-content: center;
+    //justify-content: center;
     font-size: 20px;
     margin-bottom: 40px;
+    position: relative;
+    .back-icon {
+      cursor: pointer;
+      z-index: 1;
+    }
+    .title {
+      width: 100%;
+      position: absolute;
+      text-align: center;
+      z-index: 0;
+    }
   }
   .select-currency-wrapper {
     display: flex;

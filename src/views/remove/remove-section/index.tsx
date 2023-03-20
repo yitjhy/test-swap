@@ -134,6 +134,7 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
                 decimals: data.pairDecimals,
                 balance: data.accountPairBalance,
                 logoURI: '',
+                balanceOfPair: constants.Zero,
               }}
             />
             <div className="arrow-wrapper">

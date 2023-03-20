@@ -43,7 +43,7 @@ const LPDetail: FC<{ data: TLPDetailProps }> = ({ data }) => {
           return (
             <div className="lp-share-item-wrapper" key={item.address}>
               <span className="lp-share-label">{item.symbol}</span>
-              <span className="lp-share-value">{formatUnits(item.balanceOfPair, item.decimals)}</span>
+              <span className="lp-share-value">{formatUnits(item.balanceOfPair as BigNumber, item.decimals)}</span>
             </div>
           )
         })}

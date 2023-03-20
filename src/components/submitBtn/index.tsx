@@ -1,7 +1,7 @@
 import { FC, ReactNode, CSSProperties } from 'react'
 import styled from 'styled-components'
 
-const SubmitBtn: FC<{ text: ReactNode; onSubmit: () => void; disabled: boolean; style?: CSSProperties }> = ({
+const SubmitBtn: FC<{ text: ReactNode; onSubmit: () => void; disabled?: boolean; style?: CSSProperties }> = ({
   text,
   onSubmit,
   disabled,

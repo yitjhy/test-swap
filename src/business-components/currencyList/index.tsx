@@ -35,13 +35,13 @@ const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }
       const filterCurrencyList = currencyListByContext.filter((item) => {
         return item.name.toLowerCase().includes(lowerCaseValue) || item.symbol.toLowerCase().includes(lowerCaseValue)
       })
-      setCurrencyList(filterCurrencyList)
+      setCurrencyList(filterCurrencyList as TCurrencyListItem[])
     } else {
-      setCurrencyList(currencyListByContext)
+      setCurrencyList(currencyListByContext as TCurrencyListItem[])
     }
   }
   useEffect(() => {
-    setCurrencyList(currencyListByContext)
+    setCurrencyList(currencyListByContext as TCurrencyListItem[])
   }, [currencyListByContext])
   return (
     <SelectCurrencyWrapper>
@@ -72,9 +72,9 @@ const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }
               className="currency-btn"
               key={index}
               style={{ opacity: checkedCurrency?.address === item.address ? 0.5 : 1 }}
-              onClick={() => handleChecked(item)}
+              onClick={() => handleChecked(item as TCurrencyListItem)}
             >
-              <img src={item.logoURI} alt="" width={24} height={24} />
+              <img src="" alt="" width={24} height={24} />
               <span className="currency-symbol">{item.symbol}</span>
             </div>
           ))}

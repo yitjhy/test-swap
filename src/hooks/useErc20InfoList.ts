@@ -35,6 +35,7 @@ export default function useErc20InfoList(addressList: string[]) {
     //   return
     // }
     if (multiCallContractList && provider && active) {
+      // @ts-ignore
       const promise: Promise<TErc20InfoItem[]> = provider.all(multiCallContractList).then((res) => {
         const res2 = addressList
           .filter((address) => {

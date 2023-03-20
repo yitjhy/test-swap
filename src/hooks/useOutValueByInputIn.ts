@@ -1,4 +1,4 @@
-import useLPDetail from '@/hooks/usePairDetail'
+import useLPDetail from '@/hooks/usePairInfo'
 import { formatUnits, parseUnits } from 'ethers/lib/utils'
 import { getAddress } from '@/utils'
 import { isSameAddress } from '@/utils/address'

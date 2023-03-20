@@ -1,10 +1,10 @@
 import React, { useState, FC, ChangeEvent, useEffect } from 'react'
 import styled from 'styled-components'
 import { ChevronDown } from 'react-feather'
+import { formatUnits } from 'ethers/lib/utils'
 import Modal from '@/components/modal'
 import CurrencyList, { TSelectCurrencyProps } from '@/business-components/currencyList'
 import { judgeImgUrl } from '@/utils'
-import { formatUnits } from 'ethers/lib/utils'
 import { Global } from '@/types/global'
 
 export enum TInputCurrency {
@@ -12,8 +12,8 @@ export enum TInputCurrency {
   normal = 'normal',
 }
 export type TSwapSectionProps = {
-  amount?: string
   checkedCurrency: Global.TErc20InfoWithPair
+  amount?: string
   onInput?: (value: string) => void
   onMax?: (value: string | undefined) => void
   onSelectedCurrency?: (balance: number, currency: Global.TErc20InfoWithPair) => void
@@ -34,7 +34,7 @@ const SwapSection: FC<TSwapSectionProps> = ({
 }) => {
   const [inputAmount, setInputAmount] = useState<string | undefined>()
   const [isCurrencyListModalOpen, handleCurrencyListModalOpen] = useState(false)
-  const [currencyData, setCurrencyData] = useState<Global.TErc20Info>(checkedCurrency || {})
+  const [currencyData, setCurrencyData] = useState<Global.TErc20InfoWithPair>(checkedCurrency || {})
   const goSelectCurrency = () => {
     handleCurrencyListModalOpen(true)
   }

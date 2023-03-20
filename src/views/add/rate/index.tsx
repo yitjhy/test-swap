@@ -2,19 +2,11 @@ import styled from 'styled-components'
 import { FC } from 'react'
 import { formatUnits } from 'ethers/lib/utils'
 import { Global } from '@/types/global'
+import { getStrByDecimalPlaces } from '@/utils'
 
 export type TRateProps = {
-  rate: Global.TPairDetail['rate']
+  rate: Global.TPairInfo['rate']
   shareOfPool: string
-}
-
-const getStrByDecimalPlaces = (val: string, decimalPlaces = 4) => {
-  if (val.includes('.')) {
-    const arr = val.split('.')
-    return arr[0] + '.' + arr[1].slice(0, decimalPlaces)
-  } else {
-    return val
-  }
 }
 
 const Rate: FC<TRateProps> = ({ rate, shareOfPool }) => {

@@ -14,7 +14,7 @@ declare namespace Global {
     toCurrency: TErc20InfoWithPair
   }
   type TPairAmount = GetPromiseType<ReturnType<HunterswapPair['getReserves']>>
-  type TPairDetail = {
+  type TPairInfo = {
     accountPairBalance: BigNumber
     pairDecimals: number
     LPShare: BigNumber

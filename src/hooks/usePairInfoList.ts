@@ -1,12 +1,12 @@
-import usePairDetail from '@/hooks/usePairDetail'
+import usePairInfo from '@/hooks/usePairInfo'
 import { constants } from 'ethers'
 import { useEffect, useState } from 'react'
 import { useDialog } from '@/components/dialog'
 import { Global } from '@/types/global'
 
-const usePairDetailList = (pairList: string[]) => {
-  const [pairDetailList, setPairDetailList] = useState<Global.TPairDetail[]>([])
-  const { getPairDetail } = usePairDetail(constants.AddressZero)
+const usePairInfoList = (pairList: string[]) => {
+  const [pairInfoList, setPairInfoList] = useState<Global.TPairInfo[]>([])
+  const { getPairDetail } = usePairInfo(constants.AddressZero)
   const { openDialog, close } = useDialog()
   useEffect(() => {
     openDialog({ title: 'Fetch Liquidity List', desc: 'Waiting...' })
@@ -14,10 +14,10 @@ const usePairDetailList = (pairList: string[]) => {
       return getPairDetail(item)
     })
     Promise.all(promiseList).then((values) => {
-      setPairDetailList(values as Global.TPairDetail[])
+      setPairInfoList(values as Global.TPairInfo[])
       close()
     })
   }, [pairList])
-  return pairDetailList
+  return pairInfoList
 }
-export default usePairDetailList
+export default usePairInfoList

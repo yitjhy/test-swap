@@ -13,8 +13,8 @@ import { HunterswapPair } from '@/utils/abis/HunterswapPair'
 import { contractAddress, platformCurrencyData } from '@/utils/enum'
 import { Global } from '@/types/global'
 
-const usePairDetail = (pairAddress: string) => {
-  const [pairDetail, setPairDetail] = useState<Global.TPairDetail>({} as Global.TPairDetail)
+const usePairInfo = (pairAddress: string) => {
+  const [pairDetail, setPairDetail] = useState<Global.TPairInfo>({} as Global.TPairInfo)
   const { account, provider } = useWeb3React()
   const signer = useSigner()
   const { getAmountOut } = useAmountOut()
@@ -82,7 +82,7 @@ const usePairDetail = (pairAddress: string) => {
             ? platformCurrencyData.address
             : (token1Address as string),
         }
-        const tokens: Global.TPairDetail['tokens'] = [token0, token1]
+        const tokens: Global.TPairInfo['tokens'] = [token0, token1]
 
         let rateOfToken0 = await getAmountOut(
           parseUnits('1', token0Decimal),
@@ -108,11 +108,11 @@ const usePairDetail = (pairAddress: string) => {
           rate,
           pairAddress: pairAddress,
         }
-        setPairDetail(pairDetail as Global.TPairDetail)
+        setPairDetail(pairDetail as Global.TPairInfo)
         return pairDetail
       } else {
-        setPairDetail({} as Global.TPairDetail)
-        return {} as Global.TPairDetail
+        setPairDetail({} as Global.TPairInfo)
+        return {} as Global.TPairInfo
       }
     },
     [account, signer, getAmountOut]
@@ -127,4 +127,4 @@ const usePairDetail = (pairAddress: string) => {
   }, [pairAddress, account, signer, getAmountOut, getPairDetail])
   return { getPairDetail, pairDetail, updatePairDetail }
 }
-export default usePairDetail
+export default usePairInfo

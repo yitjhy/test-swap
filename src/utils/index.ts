@@ -36,7 +36,15 @@ export const getAddress = (fromAddress: string, toAddress: string) => {
   }
 }
 
-
 export function getErrorMsg(e: any) {
   return e.reason || e.data?.message || e.message
+}
+
+export const getStrByDecimalPlaces = (val: string, decimalPlaces = 6) => {
+  if (val.includes('.')) {
+    const arr = val.split('.')
+    return arr[0] + '.' + arr[1].slice(0, decimalPlaces)
+  } else {
+    return val
+  }
 }

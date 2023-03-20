@@ -6,7 +6,7 @@ import { formatUnits } from 'ethers/lib/utils'
 import { Global } from '@/types/global'
 import { constants } from 'ethers'
 
-const PairDetail: FC<{ data: Global.TPairDetail }> = ({ data }) => {
+const PairDetail: FC<{ data: Global.TPairInfo }> = ({ data }) => {
   const router = useRouter()
   return (
     <LPDetailWrapper>
@@ -34,7 +34,7 @@ const PairDetail: FC<{ data: Global.TPairDetail }> = ({ data }) => {
         <ConfirmBtn
           style={{ padding: '0 27px', height: '2.5rem' }}
           onClick={() => {
-            router.push(`/add?address=${data.pairAddress}`)
+            router.push(`/add?address=${data.pairAddress}`).then()
           }}
         >
           Add
@@ -42,7 +42,7 @@ const PairDetail: FC<{ data: Global.TPairDetail }> = ({ data }) => {
         <ConfirmBtn
           style={{ padding: '0 27px', height: '2.5rem' }}
           onClick={() => {
-            router.push(`/remove?address=${data.pairAddress}`)
+            router.push(`/remove?address=${data.pairAddress}`).then()
           }}
         >
           Remove

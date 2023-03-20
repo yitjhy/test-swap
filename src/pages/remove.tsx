@@ -8,7 +8,7 @@ import Config from '@/views/swap/config'
 import RemoveSection, { TRemoveSection } from '@/views/remove/remove-section'
 import { useState } from 'react'
 import { useRouter } from 'next/router'
-import usePairDetail from '@/hooks/usePairDetail'
+import usePairInfo from '@/hooks/usePairInfo'
 import { formatUnits } from 'ethers/lib/utils'
 import useRemoveLiquidity from '@/hooks/useRemoveLiquidity'
 import { BigNumber, constants } from 'ethers'
@@ -22,7 +22,7 @@ const RemoveLP = () => {
   const [isConfigModalOpen, handleConfigModalOpen] = useState(false)
   const [liquidity, setLiquidity] = useState<BigNumber>()
   const { query } = useRouter()
-  const { pairDetail, updatePairDetail } = usePairDetail(query.address as string)
+  const { pairDetail, updatePairDetail } = usePairInfo(query.address as string)
   console.log(pairDetail)
 
   const { approved, approve } = useERC20Approved(pairDetail.pairAddress, contractAddress.router)

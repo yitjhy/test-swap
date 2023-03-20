@@ -1,6 +1,9 @@
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
+import { constants } from 'ethers'
+import { parseUnits, formatUnits } from 'ethers/lib/utils'
 import styled from 'styled-components'
-import { ChevronLeft, Plus } from 'react-feather'
-import { Settings } from 'react-feather'
+import { ChevronLeft, Plus, Settings } from 'react-feather'
 import SwapSection, { TSwapSectionProps } from '@/business-components/swap-section'
 import SubmitBtn from '@/components/submitBtn'
 import Rate from '@/views/add/rate'
@@ -9,18 +12,14 @@ import LPDetail from '@/views/add/lp-detail'
 import { ConfirmBtn } from '@/components/button'
 import Modal from '@/components/modal'
 import Config, { TConfig } from '@/views/swap/config'
-import { useEffect, useState } from 'react'
 import useERC20Approved from '@/hooks/contract/useERC20Approved'
 import { TCurrencyListItem } from '@/context/remoteCurrencyListContext'
 import useCreatePair from '@/hooks/useCreatePair'
-import { parseUnits, formatUnits } from 'ethers/lib/utils'
 import usePairAddress from '@/hooks/usePairAddress'
 import { contractAddress, invalidAddress, platFormAddress } from '@/utils/enum'
-import usePairDetail from '@/hooks/usePairDetail'
+import usePairInfo from '@/hooks/usePairInfo'
 import useLiquidityRate from '@/hooks/useLiquidityRate'
-import { useRouter } from 'next/router'
 import { getAddress } from '@/utils'
-import { constants } from 'ethers'
 import useValueByInput from '@/hooks/useOutValueByInputIn'
 import useErc20InfoList from '@/hooks/useErc20InfoList'
 import { isSameAddress } from '@/utils/address'
@@ -37,7 +36,7 @@ const IncreaseLP = () => {
   const [inputValueByTo, setInputValueByTo] = useState<string | undefined>()
   const [inputValueByFrom, setInputValueByFrom] = useState<string | undefined>()
   const [pairAddress, setPairAddress] = useState(constants.AddressZero)
-  const { pairDetail, updatePairDetail } = usePairDetail(pairAddress)
+  const { pairDetail, updatePairDetail } = usePairInfo(pairAddress)
   const { addLiquidity, addLiquidityETH } = useCreatePair()
   const { getOutValueByInputIn, getInValueByInputOut } = useValueByInput(
     getAddress(checkedFromCurrency.address, checkedToCurrency.address).fromAddress,

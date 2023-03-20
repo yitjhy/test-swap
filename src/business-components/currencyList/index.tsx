@@ -1,6 +1,5 @@
 import styled from 'styled-components'
 import { TextInput } from '@/components/input'
-import Image from 'next/image'
 import { Check, RotateCw } from 'react-feather'
 import { ConfirmBtn } from '@/components/button'
 import Modal from '@/components/modal'
@@ -97,17 +96,17 @@ const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }
                     <span className="currency-name">{item.name}</span>
                     <span className="currency-symbol">{item.symbol}</span>
                   </div>
-                  {index % 2 === 1 && (
-                    <Image
-                      src="/warning.png"
-                      alt=""
-                      width={15}
-                      height={15}
-                      onClick={() => {
-                        handleWarningModalOpen(true)
-                      }}
-                    />
-                  )}
+                  {/*{index % 2 === 1 && (*/}
+                  {/*  <Image*/}
+                  {/*    src="/warning.png"*/}
+                  {/*    alt=""*/}
+                  {/*    width={15}*/}
+                  {/*    height={15}*/}
+                  {/*    onClick={() => {*/}
+                  {/*      handleWarningModalOpen(true)*/}
+                  {/*    }}*/}
+                  {/*  />*/}
+                  {/*)}*/}
                 </div>
                 {index % 2 > -1 ? (
                   <div className="currency-balance-wrapper">

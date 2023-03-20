@@ -51,7 +51,10 @@ const Header = () => {
         </div>
       </div>
       <div className="operation-wrapper">
-        <div className="chain-wrapper">Cocos Smart Chain</div>
+        <div className="chain-wrapper">
+          <div className="chain-logo" />
+          Cocos Smart Chain
+        </div>
         <button className="connect-wallet" onClick={goConnectWallet}>
           {account ? getEllipsisStr(account) : 'Connect Wallet'}
         </button>
@@ -63,9 +66,9 @@ const HeaderWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 37px 105px 0 49px;
+  padding: 37px 5vw 0 49px;
   font-size: 20px;
-  color: #ffffff;
+  color: #d9d9d9;
   .nav-wrapper {
     display: flex;
     column-gap: 7rem;
@@ -82,10 +85,12 @@ const HeaderWrapper = styled.div`
     }
     .menu-wrapper {
       display: flex;
-      column-gap: 5rem;
       align-items: center;
+      justify-content: space-between;
+      width: 30vw;
       .menu-item {
         cursor: pointer;
+        color: #d9d9d9;
       }
     }
   }
@@ -96,15 +101,21 @@ const HeaderWrapper = styled.div`
       display: flex;
       align-items: center;
       column-gap: 0.75rem;
+      .chain-logo {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: #d9d9d9;
+      }
     }
     .connect-wallet {
       outline: none;
       padding: 13px 34px;
-      border: 1px solid #ffffff;
+      border: 1px solid #d9d9d9;
       cursor: pointer;
       background: none;
       font-size: 20px;
-      color: #ffffff;
+      color: #d9d9d9;
     }
   }
 `

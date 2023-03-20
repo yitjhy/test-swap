@@ -1,4 +1,3 @@
-import { invalidAddress } from '@/utils/enum'
 import { getContract } from '@/hooks/contract/useContract'
 import { ABI } from '@/utils/abis'
 import { parseUnits } from 'ethers/lib/utils'

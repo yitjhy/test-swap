@@ -11,7 +11,50 @@
   top: 0;
   left: 0;
   background: url("/images/home/home-bg.png");
+  background-size: cover;
 }
 .HUNTERSWAP {
   background: none;
+}
+.content {
+  margin-top: 160px;
+  margin-left: 25.6vw;
+  width: 738px;
+}
+.title {
+  font-size: 80px;
+  color: #FFFFFF;
+}
+.introduce {
+  font-size: 16px;
+  color: #FFFFFF;
+  margin-top: 20px;
+  line-height: 184.27%;
+}
+.menuWrapper {
+  margin-top: 66px;
+  font-size: 30px;
+  display: grid;
+  row-gap: 40px;
+}
+.itemWrapper {
+  display: flex;
+  column-gap: 67px;
+  align-items: center;
+}
+.item{
+
+}
+.blockChain {
+  /*width: 200px;*/
+}
+.blockChainItem {
+  font-size: 14px;
+}
+.copyRight {
+  position: fixed;
+  text-align: center;
+  font-size: 12px;
+  color: #A6A6A6;
+  bottom: 20px;
 }

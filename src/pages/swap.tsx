@@ -9,18 +9,20 @@ import SubmitBtn from '@/components/submitBtn'
 import SwapSection, { TSwapSectionProps } from '@/business-components/swap-section'
 import ConfirmWrap from '@/views/swap/confirmSwap'
 import PriceDetail from '@/views/swap/price-detail'
-import { TCurrencyListItem } from '@/context/remoteCurrencyListContext'
 import { formatUnits } from 'ethers/lib/utils'
 import { useSwap } from '@/hooks/useSwapRouter'
 import { constants } from 'ethers'
 import { isSameAddress } from '@/utils/address'
 import { useRouter } from 'next/router'
 import { useDialog } from '@/components/dialog'
+import { Global } from '@/types/global'
 
 function Swap() {
   const router = useRouter()
-  const [checkedFromCurrency, setCheckedFromCurrency] = useState<TCurrencyListItem>({} as TCurrencyListItem)
-  const [checkedToCurrency, setCheckedToCurrency] = useState<TCurrencyListItem>({} as TCurrencyListItem)
+  const [checkedFromCurrency, setCheckedFromCurrency] = useState<Global.TErc20InfoWithPair>(
+    {} as Global.TErc20InfoWithPair
+  )
+  const [checkedToCurrency, setCheckedToCurrency] = useState<Global.TErc20InfoWithPair>({} as Global.TErc20InfoWithPair)
   const [isConfirmWrapModalOpen, handleConfirmWrapModalOpen] = useState(false)
   const [isConfigModalOpen, handleConfigModalOpen] = useState(false)
   const { openDialog } = useDialog()

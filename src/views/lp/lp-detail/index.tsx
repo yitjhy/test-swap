@@ -1,12 +1,12 @@
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
 import { ConfirmBtn } from '@/components/button'
-import { BigNumber } from 'ethers'
 import { FC } from 'react'
 import { formatUnits } from 'ethers/lib/utils'
-import { TPairDetail } from '@/hooks/usePairDetail'
+import { Global } from '@/types/global'
+import { constants } from 'ethers'
 
-const PairDetail: FC<{ data: TPairDetail }> = ({ data }) => {
+const PairDetail: FC<{ data: Global.TPairDetail }> = ({ data }) => {
   const router = useRouter()
   return (
     <LPDetailWrapper>
@@ -19,7 +19,9 @@ const PairDetail: FC<{ data: TPairDetail }> = ({ data }) => {
           return (
             <div className="lp-detail-item-wrapper" key={index}>
               <div className="lp-detail-item-label">Pooled {item.symbol}:</div>
-              <div className="lp-detail-item-value">{formatUnits(item.balanceOfPair, item.decimals)}</div>
+              <div className="lp-detail-item-value">
+                {formatUnits(item.balanceOfPair || constants.Zero, item.decimals)}
+              </div>
             </div>
           )
         })}

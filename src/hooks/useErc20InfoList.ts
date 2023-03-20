@@ -6,14 +6,13 @@ import { ERC20 } from '@/utils/abis/ERC20'
 import { ContractCall } from 'ethers-multicall'
 import { useMultiContract, getMulContract } from '@/hooks/contract/useMulContract'
 import { isSameAddress } from '@/utils/address'
-import { constants } from 'ethers'
+import { BigNumber, constants } from 'ethers'
 import { platFormAddress } from '@/utils/enum'
+import { Global } from '@/types/global'
 
-export type TErc20InfoItem = { address: string; name: any; symbol: any; decimals: any; balance: any }
-// let _cache: TErc20InfoItem[] = []
 export default function useErc20InfoList(addressList: string[]) {
   const { isActive: active, account, provider: singleProvider } = useWeb3React()
-  const [list, setList] = useState<TErc20InfoItem[]>([])
+  const [list, setList] = useState<Global.TErc20InfoWithPair[]>([])
   const provider = useMulProvider()
   const multiCallContractList = addressList
     .filter((address) => {
@@ -31,12 +30,9 @@ export default function useErc20InfoList(addressList: string[]) {
     }, [])
   useEffect(() => {
     if (!addressList) return
-    // if (_cache.length) {
-    //   return
-    // }
     if (multiCallContractList && provider && active) {
       // @ts-ignore
-      const promise: Promise<TErc20InfoItem[]> = provider.all(multiCallContractList).then((res) => {
+      const promise: Promise<TErc20Info[]> = provider.all(multiCallContractList).then((res) => {
         const res2 = addressList
           .filter((address) => {
             return !isSameAddress(address, constants.AddressZero)
@@ -50,8 +46,6 @@ export default function useErc20InfoList(addressList: string[]) {
               balance: res[index * 4 + 3],
             }
           })
-        // _cache = res2
-
         const addressZeroIndex = addressList.findIndex((address) => isSameAddress(address, constants.AddressZero))
         if (addressZeroIndex < 0) {
           setList(res2)

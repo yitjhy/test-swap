@@ -3,18 +3,18 @@ import styled from 'styled-components'
 import { CaretDownOutlined, PlusCircleOutlined, LeftOutlined } from '@ant-design/icons'
 import CurrencyList, { TSelectCurrencyProps } from '@/business-components/currencyList'
 import Modal from '@/components/modal'
-import { TCurrencyListItem } from '@/context/remoteCurrencyListContext'
 import usePairAddress from '@/hooks/usePairAddress'
 import { invalidAddress } from '@/utils/enum'
 import { useRouter } from 'next/router'
 import { getAddress } from '@/utils'
+import { Global } from '@/types/global'
 
 function Find() {
   const router = useRouter()
   const [isFromCurrencyListModalOpen, handleFromCurrencyListModalOpen] = useState(false)
   const [isToCurrencyListModalOpen, handleToCurrencyListModalOpen] = useState(false)
-  const [fromCurrency, setFromCurrency] = useState<TCurrencyListItem>({} as TCurrencyListItem)
-  const [toCurrency, setToCurrency] = useState<TCurrencyListItem>({} as TCurrencyListItem)
+  const [fromCurrency, setFromCurrency] = useState<Global.TErc20InfoWithPair>({} as Global.TErc20InfoWithPair)
+  const [toCurrency, setToCurrency] = useState<Global.TErc20InfoWithPair>({} as Global.TErc20InfoWithPair)
   const { pairAddress } = usePairAddress(
     getAddress(fromCurrency.address, toCurrency.address).fromAddress,
     getAddress(fromCurrency.address, toCurrency.address).toAddress
@@ -107,8 +107,7 @@ function Find() {
 }
 const LPWrapper = styled.div`
   max-width: 480px;
-  margin: 0 auto;
-  margin-top: 68px;
+  margin: 68px auto 0;
   background: #1a1a1a;
   padding: 21px 19px;
   row-gap: 14px;

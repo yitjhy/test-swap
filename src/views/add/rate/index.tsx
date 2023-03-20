@@ -1,16 +1,10 @@
 import styled from 'styled-components'
-import { TCurrencyListItem } from '@/context/remoteCurrencyListContext'
 import { FC } from 'react'
-import { BigNumber } from 'ethers'
 import { formatUnits } from 'ethers/lib/utils'
+import { Global } from '@/types/global'
 
-export type RateItem = {
-  rate: BigNumber | any
-  fromCurrency: TCurrencyListItem
-  toCurrency: TCurrencyListItem
-}
 export type TRateProps = {
-  rate: [RateItem, RateItem]
+  rate: Global.TPairDetail['rate']
   shareOfPool: string
 }
 

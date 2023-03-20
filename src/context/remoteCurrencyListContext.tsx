@@ -1,9 +1,10 @@
 import { useState, createContext, PropsWithChildren, FC, useEffect, useContext } from 'react'
 import remoteCurrencyListAll from './currencyList.json'
-import useErc20InfoList, { TErc20InfoItem } from '@/hooks/useErc20InfoList'
+import useErc20InfoList from '@/hooks/useErc20InfoList'
 import { useWeb3React } from '@web3-react/core'
 import { BigNumber, constants } from 'ethers'
 import { platFormAddress } from '@/utils/enum'
+import { Global } from '@/types/global'
 
 // const url = 'https://gateway.ipfs.io/ipns/tokens.uniswap.org'
 
@@ -15,14 +16,14 @@ export type TRemoteCurrencyListItem = {
   name: string
   symbol: string
 }
-export type TCurrencyListItem = TErc20InfoItem & {
+export type TCurrencyListItem = Global.TErc20InfoWithPair & {
   logoURI: TRemoteCurrencyListItem['logoURI']
   chainId: TRemoteCurrencyListItem['chainId']
   balanceOfPair: BigNumber
 }
 type TRemoteCurrencyListContext = {
   remoteCurrencyList: TRemoteCurrencyListItem[]
-  currencyList: TErc20InfoItem[]
+  currencyList: Global.TErc20InfoWithPair[]
 }
 
 const RemoteCurrencyListContext = createContext({} as TRemoteCurrencyListContext)

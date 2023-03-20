@@ -1,11 +1,11 @@
-import React, { useState, FC, FormEvent, ChangeEvent, useEffect } from 'react'
+import React, { useState, FC, ChangeEvent, useEffect } from 'react'
 import styled from 'styled-components'
 import { ChevronDown } from 'react-feather'
 import Modal from '@/components/modal'
 import CurrencyList, { TSelectCurrencyProps } from '@/business-components/currencyList'
-import { TCurrencyListItem } from '@/context/remoteCurrencyListContext'
 import { judgeImgUrl } from '@/utils'
 import { formatUnits } from 'ethers/lib/utils'
+import { Global } from '@/types/global'
 
 export enum TInputCurrency {
   simple = 'simple',
@@ -13,10 +13,10 @@ export enum TInputCurrency {
 }
 export type TSwapSectionProps = {
   amount?: string
-  checkedCurrency: TCurrencyListItem
+  checkedCurrency: Global.TErc20InfoWithPair
   onInput?: (value: string) => void
   onMax?: (value: string | undefined) => void
-  onSelectedCurrency?: (balance: number, currency: TCurrencyListItem) => void
+  onSelectedCurrency?: (balance: number, currency: Global.TErc20InfoWithPair) => void
   type?: TInputCurrency
   readonly?: boolean
   style?: React.CSSProperties
@@ -34,7 +34,7 @@ const SwapSection: FC<TSwapSectionProps> = ({
 }) => {
   const [inputAmount, setInputAmount] = useState<string | undefined>()
   const [isCurrencyListModalOpen, handleCurrencyListModalOpen] = useState(false)
-  const [currencyData, setCurrencyData] = useState<TCurrencyListItem>(checkedCurrency || {})
+  const [currencyData, setCurrencyData] = useState<Global.TErc20Info>(checkedCurrency || {})
   const goSelectCurrency = () => {
     handleCurrencyListModalOpen(true)
   }
@@ -87,8 +87,8 @@ const SwapSection: FC<TSwapSectionProps> = ({
         >
           {currencyData && Object.keys(currencyData).length > 0 ? (
             <>
-              {judgeImgUrl(currencyData.logoURI) ? (
-                <img className="currency-icon" src={currencyData.logoURI} alt="" width={30} height={30} />
+              {judgeImgUrl('') ? (
+                <img className="currency-icon" src={''} alt="" width={30} height={30} />
               ) : (
                 <div className="logo-wrapper">{currencyData.symbol?.slice(0, 3)}</div>
               )}
@@ -187,7 +187,7 @@ const SwapSectionWrapper = styled.div`
   .swap-currency-fiat-row {
     display: flex;
     min-height: 20px;
-    padding: 10px 0px 0px 0px;
+    padding: 10px 0 0 0;
     justify-content: flex-end;
     font-weight: 400;
     font-size: 14px;
@@ -205,7 +205,7 @@ const SwapSectionWrapper = styled.div`
           background-position: 100% 50%;
         }
         100% {
-          background-position: 0% 50%;
+          background-position: 0 50%;
         }
       }
     }

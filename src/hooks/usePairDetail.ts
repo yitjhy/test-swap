@@ -1,7 +1,6 @@
 import { getContract } from '@/hooks/contract/useContract'
 import { ABI } from '@/utils/abis'
 import { parseUnits } from 'ethers/lib/utils'
-import { TLPDetailProps } from '@/views/add/lp-detail'
 import { TRateProps } from '@/views/add/rate'
 import { useWeb3React } from '@web3-react/core'
 import { useSigner } from '@/hooks/contract/useSigner'
@@ -12,15 +11,10 @@ import { isSameAddress } from '@/utils/address'
 import { BigNumber, constants } from 'ethers'
 import { HunterswapPair } from '@/utils/abis/HunterswapPair'
 import { contractAddress, platformCurrencyData } from '@/utils/enum'
+import { Global } from '@/types/global'
 
-type TPairAmount = GetPromiseType<ReturnType<HunterswapPair['getReserves']>>
-export type TPairDetail = TLPDetailProps & {
-  rate: TRateProps['rate']
-  pairAddress: string
-  pairAmount: TPairAmount
-}
 const usePairDetail = (pairAddress: string) => {
-  const [pairDetail, setPairDetail] = useState<TPairDetail>({} as TPairDetail)
+  const [pairDetail, setPairDetail] = useState<Global.TPairDetail>({} as Global.TPairDetail)
   const { account, provider } = useWeb3React()
   const signer = useSigner()
   const { getAmountOut } = useAmountOut()
@@ -68,23 +62,27 @@ const usePairDetail = (pairAddress: string) => {
 
         const platformBalance = await provider?.getBalance(account as string)
 
-        const token0 = {
+        const token0: Global.TErc20InfoWithPair = {
           symbol: isSameAddress(token0Address, contractAddress.weth) ? platformCurrencyData.symbol : token0symbol,
           decimals: token0Decimal,
           balance: isSameAddress(token0Address, contractAddress.weth) ? platformBalance : token0balance,
-          balanceOfPair: accountToken0Balance,
+          balanceOfPair: accountToken0Balance as BigNumber,
           name: isSameAddress(token0Address, contractAddress.weth) ? platformCurrencyData.name : token0Name,
-          address: isSameAddress(token0Address, contractAddress.weth) ? platformCurrencyData.address : token0Address,
+          address: isSameAddress(token0Address, contractAddress.weth)
+            ? platformCurrencyData.address
+            : (token0Address as string),
         }
-        const token1 = {
+        const token1: Global.TErc20InfoWithPair = {
           symbol: isSameAddress(token1Address, contractAddress.weth) ? platformCurrencyData.symbol : token1symbol,
           decimals: token1Decimal,
           balance: isSameAddress(token1Address, contractAddress.weth) ? platformBalance : token1balance,
-          balanceOfPair: accountToken1Balance,
+          balanceOfPair: accountToken1Balance as BigNumber,
           name: isSameAddress(token1Address, contractAddress.weth) ? platformCurrencyData.name : token1Name,
-          address: isSameAddress(token1Address, contractAddress.weth) ? platformCurrencyData.address : token1Address,
+          address: isSameAddress(token1Address, contractAddress.weth)
+            ? platformCurrencyData.address
+            : (token1Address as string),
         }
-        const tokens: TLPDetailProps['tokens'] = [token0, token1] as any
+        const tokens: Global.TPairDetail['tokens'] = [token0, token1]
 
         let rateOfToken0 = await getAmountOut(
           parseUnits('1', token0Decimal),
@@ -110,11 +108,11 @@ const usePairDetail = (pairAddress: string) => {
           rate,
           pairAddress: pairAddress,
         }
-        setPairDetail(pairDetail as TPairDetail)
+        setPairDetail(pairDetail as Global.TPairDetail)
         return pairDetail
       } else {
-        setPairDetail({} as TPairDetail)
-        return {} as TPairDetail
+        setPairDetail({} as Global.TPairDetail)
+        return {} as Global.TPairDetail
       }
     },
     [account, signer, getAmountOut]

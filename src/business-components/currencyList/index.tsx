@@ -9,22 +9,18 @@ import { useEffect, useState, FC, ChangeEvent } from 'react'
 import { formatUnits } from 'ethers/lib/utils'
 import { useRemoteCurrencyList, TCurrencyListItem } from '@/context/remoteCurrencyListContext'
 import { judgeImgUrl } from '@/utils'
+import { Global } from '@/types/global'
 
 export type TSelectCurrencyProps = {
-  checkedCurrency: TCurrencyListItem
-  onChecked?: (data: TCurrencyListItem) => void
+  checkedCurrency: Global.TErc20InfoWithPair
+  onChecked?: (data: Global.TErc20InfoWithPair) => void
 }
 const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }) => {
   const [isWarningModalOpen, handleWarningModalOpen] = useState(false)
   const [searchValue, setSearchValue] = useState('')
-  const [currencyList, setCurrencyList] = useState<TCurrencyListItem[]>([])
-  // const { name, symbol, decimals, balance } = useErc20Info('0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6')
-  // const res = useErc20InfoList([
-  //   '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
-  //   '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
-  // ])
+  const [currencyList, setCurrencyList] = useState<Global.TErc20InfoWithPair[]>([])
   const { currencyList: currencyListByContext } = useRemoteCurrencyList()
-  const handleChecked = (data: TCurrencyListItem) => {
+  const handleChecked = (data: Global.TErc20InfoWithPair) => {
     onChecked?.(data)
   }
   const onSearch = (e: ChangeEvent<HTMLInputElement>) => {
@@ -35,13 +31,13 @@ const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }
       const filterCurrencyList = currencyListByContext.filter((item) => {
         return item.name.toLowerCase().includes(lowerCaseValue) || item.symbol.toLowerCase().includes(lowerCaseValue)
       })
-      setCurrencyList(filterCurrencyList as TCurrencyListItem[])
+      setCurrencyList(filterCurrencyList)
     } else {
-      setCurrencyList(currencyListByContext as TCurrencyListItem[])
+      setCurrencyList(currencyListByContext)
     }
   }
   useEffect(() => {
-    setCurrencyList(currencyListByContext as TCurrencyListItem[])
+    setCurrencyList(currencyListByContext)
   }, [currencyListByContext])
   return (
     <SelectCurrencyWrapper>
@@ -65,7 +61,7 @@ const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }
         }}
         placeholder="Search Name Or Paste Address"
       />
-      <RecommandCurrency>
+      <RecommendCurrency>
         {currencyListByContext.length > 0 &&
           currencyListByContext.slice(0, 3).map((item, index) => (
             <div
@@ -78,7 +74,7 @@ const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }
               <span className="currency-symbol">{item.symbol}</span>
             </div>
           ))}
-      </RecommandCurrency>
+      </RecommendCurrency>
       <div className="split-line" />
       <div className="currency-list-wrapper">
         {currencyList.length > 0 ? (
@@ -91,8 +87,8 @@ const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }
                 onClick={() => handleChecked(item)}
               >
                 <div className="currency-base-info-wrapper">
-                  {judgeImgUrl(item.logoURI) ? (
-                    <img src={item.logoURI} alt="" width={40} height={40} />
+                  {judgeImgUrl('') ? (
+                    <img src={''} alt="" width={40} height={40} />
                   ) : (
                     <div className="logo-wrapper">{item.symbol?.slice(0, 3)}</div>
                   )}
@@ -142,7 +138,7 @@ const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }
     </SelectCurrencyWrapper>
   )
 }
-const RecommandCurrency = styled.div`
+const RecommendCurrency = styled.div`
   display: flex;
   column-gap: 0.5rem;
   .currency-btn {

@@ -24,13 +24,16 @@ import { constants } from 'ethers'
 import useValueByInput from '@/hooks/useOutValueByInputIn'
 import useErc20InfoList from '@/hooks/useErc20InfoList'
 import { isSameAddress } from '@/utils/address'
+import { Global } from '@/types/global'
 
 const IncreaseLP = () => {
   const router = useRouter()
   const { query } = useRouter()
   const [isConfigModalOpen, handleConfigModalOpen] = useState(false)
-  const [checkedFromCurrency, setCheckedFromCurrency] = useState<TCurrencyListItem>({} as TCurrencyListItem)
-  const [checkedToCurrency, setCheckedToCurrency] = useState<TCurrencyListItem>({} as TCurrencyListItem)
+  const [checkedFromCurrency, setCheckedFromCurrency] = useState<Global.TErc20InfoWithPair>(
+    {} as Global.TErc20InfoWithPair
+  )
+  const [checkedToCurrency, setCheckedToCurrency] = useState<Global.TErc20InfoWithPair>({} as Global.TErc20InfoWithPair)
   const [inputValueByTo, setInputValueByTo] = useState<string | undefined>()
   const [inputValueByFrom, setInputValueByFrom] = useState<string | undefined>()
   const [pairAddress, setPairAddress] = useState(constants.AddressZero)
@@ -181,8 +184,12 @@ const IncreaseLP = () => {
       }
     }
   }, [pairDetail])
-  const onSlippageChange: TConfig['onSlippageChange'] = (value) => {}
-  const onDeadlineChange: TConfig['onDeadlineChange'] = (value) => {}
+  const onSlippageChange: TConfig['onSlippageChange'] = (value) => {
+    console.log(value)
+  }
+  const onDeadlineChange: TConfig['onDeadlineChange'] = (value) => {
+    console.log(value)
+  }
   return (
     <IncreaseLPWrapper>
       <Modal
@@ -259,8 +266,7 @@ const IncreaseLPWrapper = styled.div`
   color: #d9d9d9;
   padding: 1rem;
   max-width: 480px;
-  margin: 0 auto;
-  margin-top: 68px;
+  margin: 68px auto 0;
   row-gap: 1.25rem;
   .approve-wrapper {
     display: flex;

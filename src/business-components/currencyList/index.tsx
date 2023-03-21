@@ -33,7 +33,6 @@ const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }
   }
   // const currencyList = useErc20InfoList([searchAddress])
   const searchErc20Info = useErc20Info(searchAddress)
-  console.log(searchErc20Info)
   // console.log(searchErc20Info)
   const onSearch = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
@@ -108,14 +107,15 @@ const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }
       />
       <RecommendCurrency>
         {currencyListByContext.length > 0 &&
-          currencyListByContext.slice(0, 3).map((item, index) => (
+          currencyListByContext.slice(0, 4).map((item, index) => (
             <div
               className="currency-btn"
               key={index}
               style={{ opacity: checkedCurrency?.address === item.address ? 0.5 : 1 }}
               onClick={() => handleChecked(item as TCurrencyListItem)}
             >
-              <img src="" alt="" width={24} height={24} />
+              {/*<img src="" alt="" width={24} height={24} />*/}
+              <div className="recommend-logo-wrapper">{item.symbol?.slice(0, 3)}</div>
               <span className="currency-symbol">{item.symbol}</span>
             </div>
           ))}
@@ -209,6 +209,30 @@ const SelectCurrencyWrapper = styled.div`
   font-size: 16px;
   /* height: 60vh; */
   color: #d9d9d9;
+  .logo-wrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f2f4f7;
+    color: #131313;
+    font-size: 13px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-transform: uppercase;
+  }
+  .recommend-logo-wrapper {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #f2f4f7;
+    color: #131313;
+    font-size: 13px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-transform: uppercase;
+  }
   .currency-list-wrapper {
     display: grid;
     row-gap: 1.5rem;
@@ -222,17 +246,6 @@ const SelectCurrencyWrapper = styled.div`
         display: flex;
         align-items: center;
         column-gap: 12px;
-        .logo-wrapper {
-          width: 40px;
-          height: 40px;
-          border-radius: 40px;
-          background: #262626;
-          font-size: 13px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          text-transform: uppercase;
-        }
         .currency-logo {
           width: 40px;
           height: 40px;

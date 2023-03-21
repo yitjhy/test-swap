@@ -30,7 +30,6 @@ function Swap() {
   const [isConfigModalOpen, handleConfigModalOpen] = useState(false)
   const { openDialog } = useDialog()
   const { approved, approve } = useERC20Approved(checkedFromCurrency.address, contractAddress.router)
-  console.log(approved)
   const swap = useSwap(
     isSameAddress(checkedFromCurrency.address, constants.AddressZero)
       ? constants.AddressZero

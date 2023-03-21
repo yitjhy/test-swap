@@ -158,6 +158,7 @@ export function useSwap(tokenIn: string, tokenOut: string) {
     }, [reserveIn, reserveOut, inAmount, outAmount, tokenInInfo, tokenOutInfo])
 
     const [maxIn, minOut] = useMemo(() => {
+        if (+inAmount == 0 || +outAmount == 0) return  [constants.Zero, constants.Zero]
         const inValue = parseUnits(inAmount, tokenInInfo.decimals)
         const outValue = parseUnits(outAmount, tokenOutInfo.decimals)
         const price = +formatUnits(reserveIn, tokenInInfo.decimals) / +formatUnits(reserveOut, tokenOutInfo.decimals)

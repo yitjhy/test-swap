@@ -9,12 +9,13 @@ import RemoveSection, { TRemoveSection } from '@/views/remove/remove-section'
 import { useState } from 'react'
 import { useRouter } from 'next/router'
 import usePairInfo from '@/hooks/usePairInfo'
-import { formatUnits } from 'ethers/lib/utils'
+import { formatUnits, parseUnits } from 'ethers/lib/utils'
 import useRemoveLiquidity from '@/hooks/useRemoveLiquidity'
 import { BigNumber, constants } from 'ethers'
 import useERC20Approved from '@/hooks/contract/useERC20Approved'
 import { contractAddress } from '@/utils/enum'
 import { isSameAddress } from '@/utils/address'
+import { cutOffStr } from '@/utils'
 
 const RemoveLP = () => {
   const router = useRouter()
@@ -24,7 +25,11 @@ const RemoveLP = () => {
   const { query } = useRouter()
   const { pairDetail, updatePairDetail } = usePairInfo(query.address as string)
 
-  const { approved, approve } = useERC20Approved(pairDetail.pairAddress, contractAddress.router)
+  const { approved, approve } = useERC20Approved(
+    pairDetail.pairAddress,
+    contractAddress.router,
+    liquidity || constants.Zero
+  )
   const onLiquidityChange: TRemoveSection['onLiquidityChange'] = (data) => {
     setLiquidity(data)
   }

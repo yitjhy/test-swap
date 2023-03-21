@@ -3,6 +3,7 @@ import { formatUnits, parseUnits } from 'ethers/lib/utils'
 import { isSameAddress } from '@/utils/address'
 import { constants } from 'ethers'
 import useGetPairContract from '@/hooks/usePairAddress'
+import { cutOffStr } from '@/utils'
 
 const useValueByInput = (fromAddress: string, toAddress: string) => {
   const { pairAddress } = useGetPairContract(fromAddress, toAddress)
@@ -14,7 +15,7 @@ const useValueByInput = (fromAddress: string, toAddress: string) => {
         if (value) {
           if (tokens[0].address === fromAddress) {
             const outValue = pairAmount._reserve1
-              .mul(parseUnits(String(value), tokens[0].decimals))
+              .mul(parseUnits(cutOffStr(value, tokens[0].decimals), tokens[0].decimals))
               .div(pairAmount._reserve0)
             return {
               value: formatUnits(outValue, tokens[1].decimals),
@@ -22,7 +23,7 @@ const useValueByInput = (fromAddress: string, toAddress: string) => {
             }
           } else {
             const outValue = pairAmount._reserve0
-              .mul(parseUnits(String(value), tokens[1].decimals))
+              .mul(parseUnits(cutOffStr(value, tokens[1].decimals), tokens[1].decimals))
               .div(pairAmount._reserve1)
             return {
               value: formatUnits(outValue, tokens[0].decimals),
@@ -45,7 +46,7 @@ const useValueByInput = (fromAddress: string, toAddress: string) => {
         if (value) {
           if (tokens[0].address === fromAddress) {
             const outValue = pairAmount._reserve0
-              .mul(parseUnits(String(value), tokens[1].decimals))
+              .mul(parseUnits(cutOffStr(value, tokens[1].decimals), tokens[1].decimals))
               .div(pairAmount._reserve1)
             return {
               value: formatUnits(outValue, tokens[0].decimals),
@@ -53,7 +54,7 @@ const useValueByInput = (fromAddress: string, toAddress: string) => {
             }
           } else {
             const outValue = pairAmount._reserve1
-              .mul(parseUnits(String(value), tokens[0].decimals))
+              .mul(parseUnits(cutOffStr(value, tokens[0].decimals), tokens[0].decimals))
               .div(pairAmount._reserve0)
             return {
               value: formatUnits(outValue, tokens[1].decimals),

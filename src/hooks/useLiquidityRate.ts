@@ -4,7 +4,7 @@ import { formatEther, formatUnits, parseUnits } from 'ethers/lib/utils'
 import usePairAddress from '@/hooks/usePairAddress'
 import { useSigner } from '@/hooks/contract/useSigner'
 import { useCallback, useEffect, useState } from 'react'
-import { getAddress } from '@/utils'
+import { getAddress, cutOffStr } from '@/utils'
 import { isSameAddress } from '@/utils/address'
 import { constants } from 'ethers'
 
@@ -31,10 +31,10 @@ const useLiquidityRate = (
         const token0Decimal = await token0Contract?.decimals()
         const token1Decimal = await token1Contract?.decimals()
         if (token0Address === fromAddress) {
-          const aa = parseUnits(String(from.inputValue), token0Decimal)
+          const aa = parseUnits(String(cutOffStr(from.inputValue as string, token0Decimal)), token0Decimal)
             .mul(totalSupplyBigNumber)
             .div(pairAmount._reserve0)
-          const bb = parseUnits(String(to.inputValue), token1Decimal)
+          const bb = parseUnits(String(cutOffStr(to.inputValue as string, token1Decimal)), token1Decimal)
             .mul(totalSupplyBigNumber)
             .div(pairAmount._reserve1)
           const liquidity = aa.lt(bb) ? aa : bb
@@ -42,10 +42,10 @@ const useLiquidityRate = (
           const rate3 = liquidity.mul(parseUnits('1', decimals)).div(totalSupplyBigNumber.add(liquidity))
           setShareOfPool(formatUnits(rate3, decimals - 2))
         } else {
-          const aa = parseUnits(String(from.inputValue), token1Decimal)
+          const aa = parseUnits(String(cutOffStr(from.inputValue as string, token1Decimal)), token1Decimal)
             .mul(totalSupplyBigNumber)
             .div(pairAmount._reserve1)
-          const bb = parseUnits(String(to.inputValue), token0Decimal)
+          const bb = parseUnits(String(cutOffStr(to.inputValue as string, token0Decimal)), token0Decimal)
             .mul(totalSupplyBigNumber)
             .div(pairAmount._reserve0)
           const liquidity = aa.lt(bb) ? aa : bb

@@ -7,6 +7,7 @@ import { Plus } from 'react-feather'
 import { formatUnits, parseUnits } from 'ethers/lib/utils'
 import { BigNumber, constants } from 'ethers'
 import { Global } from '@/types/global'
+import { cutOffStr } from '@/utils'
 
 enum RemoveType {
   simple = 'simple',
@@ -68,23 +69,23 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
 
   const onInputFrom: TSwapSectionProps['onInput'] = (value) => {
     if (data.tokens[1].balanceOfPair && data.tokens[0].balanceOfPair) {
-      const inputValueByTo = parseUnits(String(value), data.tokens[0].decimals)
+      const inputValueByTo = parseUnits(cutOffStr(value, data.tokens[0].decimals), data.tokens[0].decimals)
         .mul(data.tokens[1].balanceOfPair)
         .div(data.tokens[0].balanceOfPair)
       setInputValueByTo(formatUnits(inputValueByTo, data.tokens[1].decimals))
 
       const token0 = changeTokens[0]
       const token1 = changeTokens[1]
-      token0.balanceOfPair = parseUnits(String(value), data.tokens[0].decimals)
+      token0.balanceOfPair = parseUnits(cutOffStr(value, data.tokens[0].decimals), data.tokens[0].decimals)
       token1.balanceOfPair = inputValueByTo
       setChangeTokens([token0, token1])
 
-      const liquidity = parseUnits(String(value), data.tokens[0].decimals)
+      const liquidity = parseUnits(cutOffStr(value, data.tokens[0].decimals), data.tokens[0].decimals)
         .mul(data.accountPairBalance)
         .div(data.tokens[0].balanceOfPair)
       setLiquidity(liquidity)
       onLiquidityChange(liquidity)
-      const rate = parseUnits(String(value), data.tokens[0].decimals)
+      const rate = parseUnits(cutOffStr(value, data.tokens[0].decimals), data.tokens[0].decimals)
         .mul(parseUnits('1', data.tokens[0].decimals))
         .div(data.tokens[0].balanceOfPair)
         .mul(parseUnits('1', 2))
@@ -93,7 +94,7 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
   }
   const onInputTo: TSwapSectionProps['onInput'] = (value) => {
     if (data.tokens[0].balanceOfPair && data.tokens[1].balanceOfPair) {
-      const inputValueByFrom = parseUnits(String(value), data.tokens[1].decimals)
+      const inputValueByFrom = parseUnits(cutOffStr(value, data.tokens[1].decimals), data.tokens[1].decimals)
         .mul(data.tokens[0].balanceOfPair)
         .div(data.tokens[1].balanceOfPair)
       setInputValueByFrom(formatUnits(inputValueByFrom, data.tokens[0].decimals))
@@ -101,15 +102,15 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
       const token0 = changeTokens[0]
       const token1 = changeTokens[1]
       token0.balanceOfPair = inputValueByFrom
-      token1.balanceOfPair = parseUnits(String(value), data.tokens[1].decimals)
+      token1.balanceOfPair = parseUnits(cutOffStr(value, data.tokens[1].decimals), data.tokens[1].decimals)
       setChangeTokens([token0, token1])
 
-      const liquidity = parseUnits(String(value), data.tokens[1].decimals)
+      const liquidity = parseUnits(cutOffStr(value, data.tokens[1].decimals), data.tokens[1].decimals)
         .mul(data.accountPairBalance)
         .div(data.tokens[1].balanceOfPair)
       setLiquidity(liquidity)
       onLiquidityChange(liquidity)
-      const rate = parseUnits(String(value), data.tokens[1].decimals)
+      const rate = parseUnits(cutOffStr(value, data.tokens[1].decimals), data.tokens[1].decimals)
         .mul(parseUnits('1', data.tokens[1].decimals))
         .div(data.tokens[1].balanceOfPair)
         .mul(parseUnits('1', 2))

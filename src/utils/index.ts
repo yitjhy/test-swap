@@ -48,3 +48,11 @@ export const getStrByDecimalPlaces = (val: string, decimalPlaces = 6) => {
     return val
   }
 }
+export const cutOffStr = (str: string, length: number) => {
+  const arr = str.split('.')
+  if (arr[1]) {
+    return `${arr[0]}.${arr[1].slice(0, length)}`
+  } else {
+    return str
+  }
+}

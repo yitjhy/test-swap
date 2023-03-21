@@ -174,7 +174,7 @@ const IncreaseLP = () => {
   }, [currencyListFromQuery])
   useEffect(() => {
     if (pairDetail.tokens && pairDetail.tokens.length) {
-      if (pairDetail.tokens[0] === checkedFromCurrency) {
+      if (pairDetail.tokens[0].address === checkedFromCurrency.address) {
         setCheckedFromCurrency(pairDetail.tokens[0] as TCurrencyListItem)
         setCheckedToCurrency(pairDetail.tokens[1] as TCurrencyListItem)
       } else {

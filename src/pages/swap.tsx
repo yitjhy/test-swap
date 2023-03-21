@@ -90,9 +90,7 @@ function Swap() {
       approved &&
       checkedFromCurrency.address &&
       checkedToCurrency.address &&
-      Number(swap.outAmount) > 0 &&
       Number(swap.inAmount) > 0 &&
-      Number(swap.outAmount) <= Number(formatUnits(checkedToCurrency.balance, checkedToCurrency.decimals)) &&
       Number(swap.inAmount) <= Number(formatUnits(checkedFromCurrency.balance, checkedFromCurrency.decimals))
     )
   }

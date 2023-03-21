@@ -171,7 +171,7 @@ export function useSwap(tokenIn: string, tokenOut: string) {
             tokenOutInfo.decimals
         )
         return [maxInValue, minOutValue]
-    }, [inAmount, outAmount, tokenInInfo.decimals, tokenOutInfo.decimals])
+    }, [inAmount, outAmount, tokenInInfo.decimals, tokenOutInfo.decimals, reserveIn, reserveOut])
 
     const swap = useCallback(async () => {
         if (!router || !account) return

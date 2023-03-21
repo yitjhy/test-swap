@@ -16,7 +16,7 @@ const useAddLiquidity = () => {
   const addLiquidity: TAddLiquidity = useCallback(
     async (fromAddress, toAddress, amountFrom, amountTo) => {
       try {
-        openDialog({ title: 'Add Liquidity', desc: 'adding' })
+        openDialog({ title: 'Add Liquidity', desc: 'Waiting for signing.' })
         const operation = await LPContract?.addLiquidity(
           fromAddress,
           toAddress,
@@ -27,6 +27,7 @@ const useAddLiquidity = () => {
           account,
           deadline
         )
+        openDialog({ title: 'Add Liquidity', desc: 'Waiting for blockchain confirmation.' })
         await operation.wait()
         close()
         return true
@@ -40,8 +41,9 @@ const useAddLiquidity = () => {
   const addLiquidityETH: TAddLiquidityETH = useCallback(
     async (address, amount, ethValue) => {
       try {
-        openDialog({ title: 'Add Liquidity', desc: 'adding' })
+        openDialog({ title: 'Add Liquidity', desc: 'Waiting for signing.' })
         const operation = await LPContract?.addLiquidityETH(address, amount, 0, 0, account, deadline, ethValue)
+        openDialog({ title: 'Add Liquidity', desc: 'Waiting for blockchain confirmation.' })
         await operation.wait()
         close()
         return true

@@ -90,7 +90,7 @@ export function useSwap(tokenIn: string, tokenOut: string) {
   const [deadLine, setDeadLine] = useState(300) // 5 min
   const provider = useMulProvider()
   const { account } = useWeb3React()
-  const { openDialog } = useDialog()
+  const { openDialog, close } = useDialog()
 
   useEffect(() => {
     if (mulRouter && provider) {
@@ -204,7 +204,7 @@ export function useSwap(tokenIn: string, tokenOut: string) {
       }
       openDialog({ title: 'Swap', desc: 'Waiting for blockchain confirmation' })
       await tx.wait()
-      openDialog({ title: 'Success', desc: 'Swap success' })
+      openDialog({ title: 'Success', desc: 'Swap Successed' })
       setTimeout(() => {
         close()
       }, 1000)

@@ -48,6 +48,7 @@ export default function useErc20Info(address: string) {
       // .catch((e) => {
       //   delete _cache[address]
       // })
+      // @ts-ignore
       _cache[address] = promise
     }
   }, [active, multiCallContract, provider, address, account])

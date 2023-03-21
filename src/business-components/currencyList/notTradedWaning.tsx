@@ -1,9 +1,20 @@
 import styled from 'styled-components'
 import Image from 'next/image'
+import { FC } from 'react'
 import { Copy, Link } from 'react-feather'
 import { ConfirmBtn, CancelBtn } from '@/components/button'
 
-const NotTradedWaning = () => {
+type TNotTradedWaning = {
+  onCancel: () => void
+  onConfirm: () => void
+}
+const NotTradedWaning: FC<TNotTradedWaning> = ({ onConfirm, onCancel }) => {
+  const handleConfirm = () => {
+    onConfirm()
+  }
+  const handleCancel = () => {
+    onCancel()
+  }
   return (
     <NotTradedWaningWrapper>
       <div className="not-traded-waning-icon">
@@ -21,8 +32,10 @@ const NotTradedWaning = () => {
         <Link color="#9C9C9C" size={16} cursor="pointer" />
         <Copy color="#9C9C9C" size={16} cursor="pointer" />
       </div>
-      <ConfirmBtn>I Know</ConfirmBtn>
-      <CancelBtn style={{ background: '#1A1A1A' }}>Cancel</CancelBtn>
+      <ConfirmBtn onClick={handleConfirm}>I Know</ConfirmBtn>
+      <CancelBtn style={{ background: '#1A1A1A' }} onClick={onCancel}>
+        Cancel
+      </CancelBtn>
     </NotTradedWaningWrapper>
   )
 }

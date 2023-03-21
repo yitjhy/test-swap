@@ -1,15 +1,18 @@
 import styled from 'styled-components'
 import { TextInput } from '@/components/input'
-import { Check, RotateCw } from 'react-feather'
-import { SyncOutlined } from '@ant-design/icons'
+import { Check } from 'react-feather'
 import { ConfirmBtn } from '@/components/button'
+import Image from 'next/image'
 import Modal from '@/components/modal'
 import NotTradedWaning from '@/business-components/currencyList/notTradedWaning'
 import { useEffect, useState, FC, ChangeEvent } from 'react'
 import { formatUnits } from 'ethers/lib/utils'
-import { useRemoteCurrencyList, TCurrencyListItem } from '@/context/remoteCurrencyListContext'
+import { useRemoteCurrencyList, TCurrencyListItem, baseAddress } from '@/context/remoteCurrencyListContext'
 import { judgeImgUrl } from '@/utils'
 import { Global } from '@/types/global'
+import useErc20Info from '@/hooks/contract/useERC20Info'
+import useErc20InfoList from '@/hooks/useErc20InfoList'
+import { constants } from 'ethers'
 
 export type TSelectCurrencyProps = {
   checkedCurrency: Global.TErc20InfoWithPair
@@ -19,39 +22,76 @@ const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }
   const [isWarningModalOpen, handleWarningModalOpen] = useState(false)
   const [searchValue, setSearchValue] = useState('')
   const [currencyList, setCurrencyList] = useState<Global.TErc20InfoWithPair[]>([])
-  const { currencyList: currencyListByContext } = useRemoteCurrencyList()
+  const { currencyList: currencyListByContext, update: updateCurrencyList } = useRemoteCurrencyList()
+  const [searchAddress, setSearchAddress] = useState('')
+  const [erc20ListByUserAdded, setErc20ListByUserAdded] = useState<string[]>([])
+
   const handleChecked = (data: Global.TErc20InfoWithPair) => {
     onChecked?.(data)
+    setCurrencyList(currencyListByContext)
+    setSearchValue('')
   }
+  // const currencyList = useErc20InfoList([searchAddress])
+  const searchErc20Info = useErc20Info(searchAddress)
+  console.log(searchErc20Info)
+  // console.log(searchErc20Info)
   const onSearch = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     setSearchValue(e.target.value)
     const lowerCaseValue = value.toLowerCase()
     if (value) {
-      const filterCurrencyList = currencyListByContext.filter((item) => {
-        return item.name.toLowerCase().includes(lowerCaseValue) || item.symbol.toLowerCase().includes(lowerCaseValue)
-      })
-      setCurrencyList(filterCurrencyList)
+      if (value.length === 42) {
+        setSearchAddress(value)
+      } else {
+        const filterCurrencyList = currencyListByContext.filter((item) => {
+          return item.name.toLowerCase().includes(lowerCaseValue) || item.symbol.toLowerCase().includes(lowerCaseValue)
+        })
+        setCurrencyList(filterCurrencyList)
+      }
     } else {
       setCurrencyList(currencyListByContext)
+      setSearchAddress('')
     }
-  }
-  const onClose = () => {
-    handleWarningModalOpen(false)
-    setCurrencyList(currencyListByContext)
-    setSearchValue('')
   }
   useEffect(() => {
     setCurrencyList(currencyListByContext)
+  }, [currencyListByContext])
+  useEffect(() => {
+    if (searchErc20Info.symbol && searchValue && searchValue.length === 42) {
+      setCurrencyList([searchErc20Info])
+    }
+  }, [searchErc20Info, searchValue])
+  const onNotTradedWaningCancel = () => {
+    handleWarningModalOpen(false)
+  }
+  const addThirdPartyCurrencyInStorage = () => {
+    let list: string[] = [searchErc20Info.address]
+    if (erc20ListByUserAdded && erc20ListByUserAdded.length > 0) {
+      list = Array.from(new Set([...erc20ListByUserAdded, searchErc20Info.address]))
+    }
+    localStorage.setItem('erc20ListByUserAdded', JSON.stringify(list))
+    setErc20ListByUserAdded(list)
+    updateCurrencyList()
+  }
+  const onNotTradedWaningConfirm = () => {
+    addThirdPartyCurrencyInStorage()
+    handleChecked(searchErc20Info)
+    handleWarningModalOpen(false)
+  }
+  useEffect(() => {
+    const erc20ListByUserAdded = localStorage.getItem('erc20ListByUserAdded')
+    if (erc20ListByUserAdded) {
+      setErc20ListByUserAdded(JSON.parse(erc20ListByUserAdded))
+    }
   }, [currencyListByContext])
   return (
     <SelectCurrencyWrapper>
       <Modal
         title=""
-        content={<NotTradedWaning />}
+        content={<NotTradedWaning onConfirm={onNotTradedWaningConfirm} onCancel={onNotTradedWaningCancel} />}
         open={isWarningModalOpen}
         contentStyle={{ width: 480 }}
-        onClose={onClose}
+        onClose={handleWarningModalOpen}
       />
       <TextInput
         value={searchValue}
@@ -89,7 +129,14 @@ const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }
                 key={index}
                 className="currency-item-wrapper"
                 style={{ opacity: checkedCurrency?.address === item.address ? 0.5 : 1 }}
-                onClick={() => handleChecked(item)}
+                onClick={(e) => {
+                  if (baseAddress.includes(item.address) || erc20ListByUserAdded.includes(item.address)) {
+                    handleChecked(item)
+                  } else {
+                    e.stopPropagation()
+                    handleWarningModalOpen(true)
+                  }
+                }}
               >
                 <div className="currency-base-info-wrapper">
                   {judgeImgUrl('') ? (
@@ -102,17 +149,7 @@ const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }
                     <span className="currency-name">{item.name}</span>
                     <span className="currency-symbol">{item.symbol}</span>
                   </div>
-                  {/*{index % 2 === 1 && (*/}
-                  {/*  <Image*/}
-                  {/*    src="/warning.png"*/}
-                  {/*    alt=""*/}
-                  {/*    width={15}*/}
-                  {/*    height={15}*/}
-                  {/*    onClick={() => {*/}
-                  {/*      handleWarningModalOpen(true)*/}
-                  {/*    }}*/}
-                  {/*  />*/}
-                  {/*)}*/}
+                  {!baseAddress.includes(item.address) && <Image src="/warning.png" alt="" width={15} height={15} />}
                 </div>
                 {index % 2 > -1 ? (
                   <div className="currency-balance-wrapper">

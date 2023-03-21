@@ -16,6 +16,9 @@ import { isSameAddress } from '@/utils/address'
 import { useRouter } from 'next/router'
 import { useDialog } from '@/components/dialog'
 import { Global } from '@/types/global'
+import useERC20Approved from '@/hooks/contract/useERC20Approved'
+import { contractAddress } from '@/utils/enum'
+import { ConfirmBtn } from '@/components/button'
 
 function Swap() {
   const router = useRouter()
@@ -26,6 +29,8 @@ function Swap() {
   const [isConfirmWrapModalOpen, handleConfirmWrapModalOpen] = useState(false)
   const [isConfigModalOpen, handleConfigModalOpen] = useState(false)
   const { openDialog } = useDialog()
+  const { approved, approve } = useERC20Approved(checkedFromCurrency.address, contractAddress.router)
+  console.log(approved)
   const swap = useSwap(
     isSameAddress(checkedFromCurrency.address, constants.AddressZero)
       ? constants.AddressZero
@@ -83,6 +88,7 @@ function Swap() {
   }
   const getSubmitBtnStatus = () => {
     return !(
+      approved &&
       checkedFromCurrency.address &&
       checkedToCurrency.address &&
       Number(swap.outAmount) > 0 &&
@@ -148,6 +154,9 @@ function Swap() {
         />
         <PriceDetail from={checkedFromCurrency.symbol} to={checkedToCurrency.symbol} rate={swap.rate} />
         <>
+          {!approved && checkedFromCurrency.address && (
+            <ApproveBtn onClick={approve}>Approve {checkedFromCurrency.symbol}</ApproveBtn>
+          )}
           {swap.pairs.length > 0 && !isSameAddress(swap.pairs[0], constants.AddressZero) && (
             <SubmitBtn text={getSubmitBtnText()} onSubmit={handleSubmit} disabled={getSubmitBtnStatus()} />
           )}
@@ -184,7 +193,13 @@ function Swap() {
     </div>
   )
 }
-
+const ApproveBtn = styled(ConfirmBtn)`
+  flex: 1;
+  padding: 0 0.8rem;
+  margin-top: 0.9rem;
+  user-select: none;
+  width: 100%;
+`
 const SwapWrapper = styled.div`
   padding: 15px;
   width: 100%;

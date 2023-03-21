@@ -40,7 +40,7 @@ function Swap() {
   const { approved, approve } = useERC20Approved(
     checkedFromCurrency.address,
     contractAddress.router,
-    parseUnits(swap.inAmount, swap.tokenInInfo.balance)
+    parseUnits(swap.inAmount, swap.tokenInInfo.decimals)
   )
 
   const handleSubmit = () => {

@@ -13,7 +13,7 @@ export type TConfig = {
 const Config: FC<TConfig> = ({ onSlippageChange, onDeadlineChange }) => {
   const [isExpertModeModalOpen, handleExpertModeModalOpen] = useState(false)
   const [configData, setConfigData] = useState<{ isExpertMode: boolean }>({ isExpertMode: false })
-  const [slippage, setSlippage] = useState<number>(0.5)
+  const [slippage, setSlippage] = useState<number>(5)
   const [deadline, setDeadline] = useState<number>(30)
   const handleSlippageChange = (value: number) => {
     setSlippage(value)

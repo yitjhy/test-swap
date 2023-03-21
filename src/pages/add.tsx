@@ -145,8 +145,11 @@ const IncreaseLP = () => {
   }
   const getSubmitBtnStatus = () => {
     return !(
+      isApprovedCurrencyTo &&
+      isApprovedCurrencyFrom &&
       checkedFromCurrency.address &&
       checkedToCurrency.address &&
+      checkedFromCurrency.address !== checkedToCurrency.address &&
       Number(inputValueByTo) > 0 &&
       Number(inputValueByFrom) > 0 &&
       Number(inputValueByTo) <= Number(formatUnits(checkedToCurrency.balance, checkedToCurrency.decimals)) &&

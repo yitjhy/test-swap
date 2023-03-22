@@ -222,7 +222,7 @@ export function useSwap(tokenIn: string, tokenOut: string) {
                 close()
             }, 1000)
         }
-    }, [tokenIn, tokenOut, lock, inAmount, outAmount, router, tokenInInfo, tokenOutInfo, maxIn, minOut])
+    }, [tokenIn, tokenOut, lock, inAmount, outAmount, router, tokenInInfo, tokenOutInfo, maxIn, minOut, deadLine])
 
     return {
         inAmount,

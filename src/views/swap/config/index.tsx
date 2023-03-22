@@ -222,7 +222,6 @@ const ConfigLabelWrapper = styled.span`
       font-size: 8px;
       width: 200px;
       word-wrap: break-word;
-      word-break: break-all;
       white-space: pre-wrap;
       padding: 3px;
     }

@@ -199,7 +199,6 @@ const SwapDetailWrapper = styled.div<{ isExpand: boolean }>`
           width: 200px;
           font-weight: lighter;
           word-wrap: break-word;
-          word-break: break-all;
           white-space: pre-wrap;
           padding: 3px;
         }

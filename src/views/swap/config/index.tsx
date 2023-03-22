@@ -3,18 +3,20 @@ import Popover from '@/components/popover'
 import { HelpCircle } from 'react-feather'
 import Switch from '@/components/switch'
 import Modal from '@/components/modal'
-import { useState, FC, ChangeEvent } from 'react'
+import { useState, FC, ChangeEvent, useEffect, useRef } from 'react'
 import ExpertModeCom from '@/views/swap/config/expertMode'
 
 export type TConfig = {
   onSlippageChange: (value: number) => void
   onDeadlineChange: (value: number) => void
+  onExpertModeChange: (value: boolean) => void
 }
-const Config: FC<TConfig> = ({ onSlippageChange, onDeadlineChange }) => {
+const Config: FC<TConfig> = ({ onSlippageChange, onDeadlineChange, onExpertModeChange }) => {
+  const switchRef = useRef()
   const [isExpertModeModalOpen, handleExpertModeModalOpen] = useState(false)
-  const [configData, setConfigData] = useState<{ isExpertMode: boolean }>({ isExpertMode: false })
   const [slippage, setSlippage] = useState<number>(5)
   const [deadline, setDeadline] = useState<number>(30)
+  const [isExpertMode, setIsExpertMode] = useState(false)
   const handleSlippageChange = (value: number) => {
     setSlippage(value)
     onSlippageChange(value)
@@ -23,14 +25,30 @@ const Config: FC<TConfig> = ({ onSlippageChange, onDeadlineChange }) => {
     setDeadline(Number(e.target.value))
     onDeadlineChange(Number(e.target.value))
   }
+  const onTurnOnExpertMode = () => {
+    setIsExpertMode(true)
+    localStorage.setItem('isExpertMode', 'true')
+    handleExpertModeModalOpen(false)
+    onExpertModeChange(true)
+  }
+  const onExpertModeModalClose = () => {
+    handleExpertModeModalOpen(false)
+    const isExpertMode = localStorage.getItem('isExpertMode')
+    // @ts-ignore
+    switchRef?.current?.handleChecked?.(!!isExpertMode)
+  }
+  useEffect(() => {
+    const isExpertMode = localStorage.getItem('isExpertMode')
+    setIsExpertMode(!!isExpertMode)
+  }, [])
   return (
     <ConfigWrapper>
       <Modal
         contentStyle={{ width: 480 }}
         title="Expert Mode"
-        content={<ExpertModeCom />}
+        content={<ExpertModeCom onTurnOnExpertMode={onTurnOnExpertMode} />}
         open={isExpertModeModalOpen}
-        onClose={handleExpertModeModalOpen}
+        onClose={onExpertModeModalClose}
       />
       <div className="split-line" />
       <ConfigItemWrapper>
@@ -132,10 +150,15 @@ const Config: FC<TConfig> = ({ onSlippageChange, onDeadlineChange }) => {
           </ConfigLabelWrapper>
           <div style={{ paddingRight: '2rem' }}>
             <Switch
-              checked={configData.isExpertMode}
+              ref={switchRef}
+              checked={isExpertMode}
               onChange={(isExpertMode) => {
                 if (isExpertMode) handleExpertModeModalOpen(true)
-                setConfigData({ ...configData, isExpertMode })
+                if (!isExpertMode) {
+                  onExpertModeChange(false)
+                  setIsExpertMode(false)
+                  localStorage.removeItem('isExpertMode')
+                }
               }}
             />
           </div>
@@ -165,7 +188,6 @@ const ConfigWrapper = styled.div`
     border-top: 1px solid #262626;
   }
   .config-title {
-    font-weight: 600;
     font-weight: bolder;
     font-size: 16px;
   }

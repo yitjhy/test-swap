@@ -1,17 +1,23 @@
-import { useEffect, useState, FC } from 'react'
+// @ts-nocheck
+import { useEffect, useState, FC, InputHTMLAttributes, useImperativeHandle, forwardRef } from 'react'
 
 type TSwitchProps = {
   checked: boolean
   onChange: (isChecked: boolean) => void
 }
-const Switch: FC<TSwitchProps> = ({ checked, onChange }) => {
+const Switch: FC<TSwitchProps> = ({ checked, onChange }, ref) => {
   const [isChecked, setIsChecked] = useState(checked)
-
+  useImperativeHandle(ref, () => ({
+    // changeVal 就是暴露给父组件的方法
+    handleChecked: (value: boolean) => {
+      setIsChecked(value)
+    },
+  }))
   useEffect(() => {
     setIsChecked(checked)
   }, [checked])
 
-  const onInputChange: React.InputHTMLAttributes<HTMLInputElement>['onChange'] = (e) => {
+  const onInputChange: InputHTMLAttributes<HTMLInputElement>['onChange'] = (e) => {
     const value = e.target.checked
     setIsChecked(value)
     if (!onChange) {
@@ -28,4 +34,4 @@ const Switch: FC<TSwitchProps> = ({ checked, onChange }) => {
   )
 }
 
-export default Switch
+export default forwardRef(Switch)

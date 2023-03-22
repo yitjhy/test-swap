@@ -2,10 +2,16 @@ import styled from 'styled-components'
 import Image from 'next/image'
 import CheckBox from '@/components/checkbox'
 import { ConfirmBtn, CancelBtn } from '@/components/button'
-import { useState } from 'react'
+import { useState, FC } from 'react'
 
-const ExpertMode = () => {
+const ExpertMode: FC<{ onTurnOnExpertMode: () => void }> = ({ onTurnOnExpertMode }) => {
   const [isShowExpertModeAgain, setIsShowExpertModeAgain] = useState(false)
+  const handleTurnOnExpertMode = () => {
+    const result = prompt('Please type the word "confirm" to enable expert mode.', '')
+    if (result === 'confirm') {
+      onTurnOnExpertMode()
+    }
+  }
   return (
     <ExpertModeWrapper>
       <div className="split-line" />
@@ -17,9 +23,9 @@ const ExpertMode = () => {
         </p>
       </div>
       <p className="description-text">Only use this mode if you know what you are doing.</p>
-      <CheckBox text="Dont show this again" value={isShowExpertModeAgain} onChange={setIsShowExpertModeAgain} />
-      <ConfirmBtn>Turn On Expert Mode</ConfirmBtn>
-      <CancelBtn>Cancel</CancelBtn>
+      {/*<CheckBox text="Dont show this again" value={isShowExpertModeAgain} onChange={setIsShowExpertModeAgain} />*/}
+      <ConfirmBtn onClick={handleTurnOnExpertMode}>Turn On Expert Mode</ConfirmBtn>
+      {/*<CancelBtn>Cancel</CancelBtn>*/}
     </ExpertModeWrapper>
   )
 }

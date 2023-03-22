@@ -26,6 +26,7 @@ function Swap() {
   const [checkedFromCurrency, setCheckedFromCurrency] = useState<Global.TErc20InfoWithPair>(
     {} as Global.TErc20InfoWithPair
   )
+  const [isExpertMode, setIsExpertMode] = useState(false)
   const [checkedToCurrency, setCheckedToCurrency] = useState<Global.TErc20InfoWithPair>({} as Global.TErc20InfoWithPair)
   const [isConfirmWrapModalOpen, handleConfirmWrapModalOpen] = useState(false)
   const [isConfigModalOpen, handleConfigModalOpen] = useState(false)
@@ -90,11 +91,29 @@ function Swap() {
     ) {
       return 'Insufficient balance'
     }
-    return 'Supply'
+    if (swap.currentSlippage > swap.slippage && swap.currentSlippage / swap.slippage > 1.2) {
+      if (isExpertMode) {
+        return 'Swap Anyway'
+      } else {
+        return 'Price Impact Too High'
+      }
+    }
+    if (
+      swap.currentSlippage > swap.slippage &&
+      swap.currentSlippage / swap.slippage > 1 &&
+      swap.currentSlippage / swap.slippage < 1.2
+    ) {
+      return 'Swap Anyway'
+    }
+    return 'Swap'
   }
   const getSubmitBtnStatus = () => {
+    if (swap.currentSlippage > swap.slippage && swap.currentSlippage / swap.slippage > 1.2) {
+      return !isExpertMode
+    }
     return !(
       approved &&
+      checkedFromCurrency.address !== checkedToCurrency.address &&
       checkedFromCurrency.address &&
       checkedToCurrency.address &&
       Number(swap.inAmount) > 0 &&
@@ -107,11 +126,18 @@ function Swap() {
   const onDeadlineChange: TConfig['onDeadlineChange'] = (value) => {
     swap.updateDeadline(value * 60)
   }
+  const onExpertModeChange: TConfig['onExpertModeChange'] = (value) => {
+    setIsExpertMode(value)
+  }
   useEffect(() => {
-    if (swap.currentSlippage > swap.slippage && openDialog) {
-      openDialog({ title: 'Warning', desc: 'Had Out Of Slippage, Please ReInput Or Reset Slippage', loading: false })
-    }
-  }, [swap.inAmount, swap.outAmount, swap.currentSlippage, swap.slippage])
+    const isExpertMode = localStorage.getItem('isExpertMode')
+    setIsExpertMode(!!isExpertMode)
+  }, [])
+  // useEffect(() => {
+  // if (swap.currentSlippage > swap.slippage && openDialog) {
+  // openDialog({ title: 'Warning', desc: 'Had Out Of Slippage, Please ReInput Or Reset Slippage', loading: false })
+  // }
+  // }, [swap.inAmount, swap.outAmount, swap.currentSlippage, swap.slippage])
   return (
     <div style={{ maxWidth: 480, margin: '0 auto' }}>
       <SwapWrapper>
@@ -125,7 +151,13 @@ function Swap() {
         <Modal
           contentStyle={{ width: 480 }}
           title="Settings"
-          content={<Config onSlippageChange={onSlippageChange} onDeadlineChange={onDeadlineChange} />}
+          content={
+            <Config
+              onSlippageChange={onSlippageChange}
+              onDeadlineChange={onDeadlineChange}
+              onExpertModeChange={onExpertModeChange}
+            />
+          }
           open={isConfigModalOpen}
           onClose={handleConfigModalOpen}
         />
@@ -164,17 +196,19 @@ function Swap() {
           {swap.pairs.length > 0 && !isSameAddress(swap.pairs[0], constants.AddressZero) && (
             <SubmitBtn text={getSubmitBtnText()} onSubmit={handleSubmit} disabled={getSubmitBtnStatus()} />
           )}
-          {swap.pairs.length > 0 && isSameAddress(swap.pairs[0], constants.AddressZero) && (
-            <SubmitBtn
-              disabled={false}
-              text="Create Pair"
-              onSubmit={() => {
-                router
-                  .push(`/add?addressIn=${checkedFromCurrency.address}&addressOut=${checkedToCurrency.address}`)
-                  .then()
-              }}
-            />
-          )}
+          {swap.pairs.length > 0 &&
+            isSameAddress(swap.pairs[0], constants.AddressZero) &&
+            checkedFromCurrency.address !== checkedToCurrency.address && (
+              <SubmitBtn
+                disabled={false}
+                text="Create Pair"
+                onSubmit={() => {
+                  router
+                    .push(`/add?addressIn=${checkedFromCurrency.address}&addressOut=${checkedToCurrency.address}`)
+                    .then()
+                }}
+              />
+            )}
           {(!checkedFromCurrency.address || !checkedToCurrency.address) && (
             <SubmitBtn disabled={true} text="Select Token" onSubmit={() => {}} />
           )}

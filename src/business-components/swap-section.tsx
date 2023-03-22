@@ -63,7 +63,7 @@ const SwapSection: FC<TSwapSectionProps> = ({
     <SwapSectionWrapper style={style}>
       <Modal
         contentStyle={{ width: 480 }}
-        title="Select A Token"
+        title="Select a token"
         content={<CurrencyList onChecked={handleSelectedCurrency} checkedCurrency={checkedCurrency} />}
         open={isCurrencyListModalOpen}
         onClose={handleCurrencyListModalOpen}

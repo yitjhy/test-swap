@@ -1,9 +1,35 @@
 import { HelpCircle } from 'react-feather'
 import styled from 'styled-components'
-import React, { useState } from 'react'
+import React, { FC, useState } from 'react'
 import Popover from '@/components/popover'
+import { SwapLock } from '@/hooks/useSwapRouter'
+import { BigNumber } from 'ethers'
+import { formatUnits } from 'ethers/lib/utils'
 
-const SwapDetail = () => {
+type TSwapDetail = {
+  lock: SwapLock
+  maxIn: BigNumber
+  minOut: BigNumber
+  currentSlippage: number
+  outAmount: string
+  inSymbol: string
+  inDecimals: number
+  outSymbol: string
+  outDecimals: number
+  slippage: number
+}
+const SwapDetail: FC<TSwapDetail> = ({
+  lock,
+  maxIn,
+  minOut,
+  currentSlippage,
+  outAmount,
+  inSymbol,
+  inDecimals,
+  outSymbol,
+  outDecimals,
+  slippage,
+}) => {
   const [isPriceDetailExpand, setIsPriceDetailExpand] = useState(true)
   return (
     <SwapDetailWrapper isExpand={isPriceDetailExpand}>
@@ -20,8 +46,8 @@ const SwapDetail = () => {
               <Popover
                 content={
                   <span className="tip-text">
-                    Setting a high slippage tolerance can help transactions succeed, but you may not get such a good
-                    price. Use with caution.
+                    The amount you expect to receive at the current market price. You may receive less or more if the
+                    market price changes while your transaction is pending.
                   </span>
                 }
                 triger={
@@ -32,7 +58,9 @@ const SwapDetail = () => {
               />
             </span>
           </span>
-          <span className="price-detal-item-value">1564 USDT</span>
+          <span className="price-detal-item-value">
+            {outAmount} {outSymbol}
+          </span>
         </div>
       </div>
       <div>
@@ -41,12 +69,7 @@ const SwapDetail = () => {
             <span className="label-text">Price Impact</span>
             <span className="label-tip">
               <Popover
-                content={
-                  <span className="tip-text">
-                    Setting a high slippage tolerance can help transactions succeed, but you may not get such a good
-                    price. Use with caution.
-                  </span>
-                }
+                content={<span className="tip-text">The impact your trade has on the market price of this pool.</span>}
                 triger={
                   <span style={{ display: 'flex' }}>
                     <HelpCircle size={16} />
@@ -55,60 +78,94 @@ const SwapDetail = () => {
               />
             </span>
           </span>
-          <span className="price-detal-item-value">26.18 %</span>
+          <span className="price-detal-item-value">{currentSlippage / 100} %</span>
         </div>
       </div>
-      <div>
-        <div className="price-detal-item-wrapper">
-          <span className="price-detal-item-label">
-            <span className="label-text">Minimum received after slippage (0.50%)</span>
-            <span className="label-tip">
-              <Popover
-                content={
-                  <span className="tip-text">
-                    Setting a high slippage tolerance can help transactions succeed, but you may not get such a good
-                    price. Use with caution.
-                  </span>
-                }
-                triger={
-                  <span style={{ display: 'flex' }}>
-                    <HelpCircle size={16} />
-                  </span>
-                }
-              />
+      {lock === SwapLock.In && (
+        <div>
+          <div className="price-detal-item-wrapper">
+            <span className="price-detal-item-label">
+              <span className="label-text">Minimum received after slippage ({slippage / 100}%)</span>
+              <span className="label-tip">
+                <Popover
+                  content={
+                    <span className="tip-text">
+                      The minimum amount you are guaranteed to receive. If the price slips any further, your transaction
+                      will revert.
+                    </span>
+                  }
+                  triger={
+                    <span style={{ display: 'flex' }}>
+                      <HelpCircle size={16} />
+                    </span>
+                  }
+                  placement="topCenter"
+                />
+              </span>
             </span>
-          </span>
-          <span className="price-detal-item-value">2.1122 USDT</span>
-        </div>
-      </div>
-      <div>
-        <div className="price-detal-item-wrapper">
-          <span className="price-detal-item-label">
-            <span className="label-text">Network Fee</span>
-            <span className="label-tip">
-              <Popover
-                content={
-                  <span className="tip-text">
-                    Setting a high slippage tolerance can help transactions succeed, but you may not get such a good
-                    price. Use with caution.
-                  </span>
-                }
-                triger={
-                  <span style={{ display: 'flex' }}>
-                    <HelpCircle size={16} />
-                  </span>
-                }
-              />
+            <span className="price-detal-item-value">
+              {formatUnits(minOut, outDecimals)} {outSymbol}
             </span>
-          </span>
-          <span className="price-detal-item-value">~$ 0.002</span>
+          </div>
         </div>
-      </div>
+      )}
+      {lock === SwapLock.Out && (
+        <div>
+          <div className="price-detal-item-wrapper">
+            <span className="price-detal-item-label">
+              <span className="label-text">Max output after slippage ({slippage / 100}%)</span>
+              <span className="label-tip">
+                <Popover
+                  content={
+                    <span className="tip-text">
+                      Setting a high slippage tolerance can help transactions succeed, but you may not get such a good
+                      price. Use with caution.
+                    </span>
+                  }
+                  triger={
+                    <span style={{ display: 'flex' }}>
+                      <HelpCircle size={16} />
+                    </span>
+                  }
+                />
+              </span>
+            </span>
+            <span className="price-detal-item-value">
+              {formatUnits(maxIn, inDecimals)} {inSymbol}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/*<div>*/}
+      {/*  <div className="price-detal-item-wrapper">*/}
+      {/*    <span className="price-detal-item-label">*/}
+      {/*      <span className="label-text">Network Fee</span>*/}
+      {/*      <span className="label-tip">*/}
+      {/*        <Popover*/}
+      {/*          content={*/}
+      {/*            <span className="tip-text">*/}
+      {/*              Setting a high slippage tolerance can help transactions succeed, but you may not get such a good*/}
+      {/*              price. Use with caution.*/}
+      {/*            </span>*/}
+      {/*          }*/}
+      {/*          triger={*/}
+      {/*            <span style={{ display: 'flex' }}>*/}
+      {/*              <HelpCircle size={16} />*/}
+      {/*            </span>*/}
+      {/*          }*/}
+      {/*        />*/}
+      {/*      </span>*/}
+      {/*    </span>*/}
+      {/*    <span className="price-detal-item-value">~$ 0.002</span>*/}
+      {/*  </div>*/}
+      {/*</div>*/}
     </SwapDetailWrapper>
   )
 }
 const SwapDetailWrapper = styled.div<{ isExpand: boolean }>`
   padding: 0.3rem 0.7rem;
+  padding-bottom: 50px;
   margin-top: 20px;
   display: grid;
   row-gap: 20px;
@@ -140,6 +197,7 @@ const SwapDetailWrapper = styled.div<{ isExpand: boolean }>`
           background: #191919;
           font-size: 8px;
           width: 200px;
+          font-weight: lighter;
           word-wrap: break-word;
           word-break: break-all;
           white-space: pre-wrap;

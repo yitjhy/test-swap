@@ -13,7 +13,7 @@ export type TConfig = {
 const Config: FC<TConfig> = ({ onSlippageChange, onDeadlineChange }) => {
   const [isExpertModeModalOpen, handleExpertModeModalOpen] = useState(false)
   const [configData, setConfigData] = useState<{ isExpertMode: boolean }>({ isExpertMode: false })
-  const [slippage, setSlippage] = useState<number>(0.5)
+  const [slippage, setSlippage] = useState<number>(5)
   const [deadline, setDeadline] = useState<number>(30)
   const handleSlippageChange = (value: number) => {
     setSlippage(value)
@@ -38,7 +38,11 @@ const Config: FC<TConfig> = ({ onSlippageChange, onDeadlineChange }) => {
           <span className="label-text">Slippage Tolerance</span>
           <span className="label-tip">
             <Popover
-              content={<span className="tip-text">如果兑换率超过百分百,则将还原该交易</span>}
+              content={
+                <span className="tip-text">
+                  Your transaction will revert if the price changes unfavorably by more than this percentage.
+                </span>
+              }
               triger={
                 <span style={{ display: 'flex' }}>
                   <HelpCircle size={16} />
@@ -87,7 +91,11 @@ const Config: FC<TConfig> = ({ onSlippageChange, onDeadlineChange }) => {
             <span className="label-text">Tx Deadline (mins)</span>
             <span className="label-tip">
               <Popover
-                content={<span className="tip-text">如果兑换率超过百分百,则将还原该交易</span>}
+                content={
+                  <span className="tip-text">
+                    Your transaction will revert if it is pending for more than this period of time.
+                  </span>
+                }
                 triger={
                   <span style={{ display: 'flex' }}>
                     <HelpCircle size={16} />
@@ -111,8 +119,7 @@ const Config: FC<TConfig> = ({ onSlippageChange, onDeadlineChange }) => {
               <Popover
                 content={
                   <span className="tip-text">
-                    Setting a high slippage tolerance can help transactions succeed, but you may not get such a good
-                    price. Use with caution.
+                    Allow high price impact trades and skip the confirm screen. Use at your own risk.
                   </span>
                 }
                 triger={

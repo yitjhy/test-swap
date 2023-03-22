@@ -9,7 +9,7 @@ import SubmitBtn from '@/components/submitBtn'
 import SwapSection, { TSwapSectionProps } from '@/business-components/swap-section'
 import ConfirmWrap from '@/views/swap/confirmSwap'
 import PriceDetail from '@/views/swap/price-detail'
-import { formatUnits } from 'ethers/lib/utils'
+import { formatUnits, parseUnits } from 'ethers/lib/utils'
 import { useSwap } from '@/hooks/useSwapRouter'
 import { constants } from 'ethers'
 import { isSameAddress } from '@/utils/address'
@@ -19,6 +19,7 @@ import { Global } from '@/types/global'
 import useERC20Approved from '@/hooks/contract/useERC20Approved'
 import { contractAddress } from '@/utils/enum'
 import { ConfirmBtn } from '@/components/button'
+import SwapDetail from '@/views/swap/swap-detail'
 
 function Swap() {
   const router = useRouter()
@@ -29,13 +30,19 @@ function Swap() {
   const [isConfirmWrapModalOpen, handleConfirmWrapModalOpen] = useState(false)
   const [isConfigModalOpen, handleConfigModalOpen] = useState(false)
   const { openDialog } = useDialog()
-  const { approved, approve } = useERC20Approved(checkedFromCurrency.address, contractAddress.router)
   const swap = useSwap(
     isSameAddress(checkedFromCurrency.address, constants.AddressZero)
       ? constants.AddressZero
       : checkedFromCurrency.address,
     checkedToCurrency.address
   )
+
+  const { approved, approve } = useERC20Approved(
+    checkedFromCurrency.address,
+    contractAddress.router,
+    parseUnits(swap.inAmount, swap.tokenInInfo.decimals)
+  )
+
   const handleSubmit = () => {
     // handleConfirmWrapModalOpen(true)
     // swap()
@@ -71,12 +78,12 @@ function Swap() {
     if (swap.outAmount === '0' || swap.inAmount === '0') {
       return 'Enter the number of Token'
     }
-    if (
-      checkedToCurrency.address &&
-      Number(swap.outAmount) > Number(formatUnits(checkedToCurrency.balance, checkedToCurrency.decimals))
-    ) {
-      return 'Insufficient balance'
-    }
+    // if (
+    //   checkedToCurrency.address &&
+    //   Number(swap.outAmount) > Number(formatUnits(checkedToCurrency.balance, checkedToCurrency.decimals))
+    // ) {
+    //   return 'Insufficient balance'
+    // }
     if (
       checkedFromCurrency.address &&
       Number(swap.inAmount) > Number(formatUnits(checkedFromCurrency.balance, checkedFromCurrency.decimals))
@@ -186,7 +193,18 @@ function Swap() {
           {/*)}*/}
         </>
       </SwapWrapper>
-      {/*<SwapDetail />*/}
+      <SwapDetail
+        currentSlippage={swap.currentSlippage}
+        lock={swap.lock}
+        maxIn={swap.maxIn}
+        minOut={swap.minOut}
+        outAmount={swap.outAmount}
+        inSymbol={swap.tokenInInfo.symbol}
+        inDecimals={swap.tokenInInfo.decimals}
+        outSymbol={swap.tokenOutInfo.symbol}
+        outDecimals={swap.tokenOutInfo.decimals}
+        slippage={swap.slippage}
+      />
     </div>
   )
 }

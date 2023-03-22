@@ -19,7 +19,7 @@ import usePairAddress from '@/hooks/usePairAddress'
 import { contractAddress, invalidAddress, platFormAddress } from '@/utils/enum'
 import usePairInfo from '@/hooks/usePairInfo'
 import useLiquidityRate from '@/hooks/useLiquidityRate'
-import { getAddress } from '@/utils'
+import { cutOffStr, getAddress } from '@/utils'
 import useValueByInput from '@/hooks/useOutValueByInputIn'
 import useErc20InfoList from '@/hooks/useErc20InfoList'
 import { isSameAddress } from '@/utils/address'
@@ -48,11 +48,13 @@ const IncreaseLP = () => {
   )
   const { approved: isApprovedCurrencyFrom, approve: approveCurrencyFrom } = useERC20Approved(
     checkedFromCurrency.address,
-    contractAddress.router
+    contractAddress.router,
+    parseUnits(cutOffStr(inputValueByFrom || '0', checkedFromCurrency.decimals))
   )
   const { approved: isApprovedCurrencyTo, approve: approveCurrencyTo } = useERC20Approved(
     checkedToCurrency.address,
-    contractAddress.router
+    contractAddress.router,
+    parseUnits(cutOffStr(inputValueByTo || '0', checkedToCurrency.decimals))
   )
   const { shareOfPool } = useLiquidityRate(
     { address: checkedFromCurrency.address, inputValue: inputValueByFrom },

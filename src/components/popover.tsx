@@ -1,13 +1,13 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
-import { MoreHorizontal } from 'react-feather';
+import React, { FC } from 'react'
+import styled from 'styled-components'
+import { MoreHorizontal } from 'react-feather'
 
 export interface PopoverProps {
-  content: React.ReactNode | string;
-  triger?: React.ReactNode | string;
-  style?: React.CSSProperties;
-  contentStyle?: React.CSSProperties;
-  placement?: 'bottomLeft' | 'bottomRight' | 'bottom';
+  content: React.ReactNode | string
+  triger?: React.ReactNode | string
+  style?: React.CSSProperties
+  contentStyle?: React.CSSProperties
+  placement?: 'bottomLeft' | 'bottomRight' | 'bottom' | 'topCenter'
 }
 
 const DefaultTriggerNode = () => {
@@ -19,21 +19,15 @@ const DefaultTriggerNode = () => {
       cursor: pointer;
       position: relative;
     }
-  `;
+  `
   return (
     <DefaultTriggerWrapper>
       <MoreHorizontal className="moreOperationIcon" />
     </DefaultTriggerWrapper>
-  );
-};
+  )
+}
 
-const Popover: FC<PopoverProps> = ({
-  triger,
-  placement = 'bottomLeft',
-  style,
-  content,
-  contentStyle,
-}) => {
+const Popover: FC<PopoverProps> = ({ triger, placement = 'bottomLeft', style, content, contentStyle }) => {
   return (
     <DropdownWrapper style={style}>
       <div className="triggerWrapper">{triger || <DefaultTriggerNode />}</div>
@@ -41,8 +35,8 @@ const Popover: FC<PopoverProps> = ({
         {content}
       </div>
     </DropdownWrapper>
-  );
-};
+  )
+}
 const DropdownWrapper = styled.div`
   position: relative;
   &:hover > .menuWrapper {
@@ -62,8 +56,7 @@ const DropdownWrapper = styled.div`
     transform: scale(0);
     background: #191919;
     border-radius: 8px;
-    box-shadow: 0 6px 16px 0 rgb(0 0 0 / 8%), 0 3px 6px -4px rgb(0 0 0 / 12%),
-      0 9px 28px 8px rgb(0 0 0 / 5%);
+    box-shadow: 0 6px 16px 0 rgb(0 0 0 / 8%), 0 3px 6px -4px rgb(0 0 0 / 12%), 0 9px 28px 8px rgb(0 0 0 / 5%);
     &.bottomLeft {
       top: 100%;
       left: 0;
@@ -81,6 +74,13 @@ const DropdownWrapper = styled.div`
       margin-left: 50%;
       //transform: translateX(-50%);
     }
+    &.topCenter {
+      top: -100%;
+      transform-origin: 50% 0%;
+      transform: translate(-50%, -85%);
+      //transform: scaleY(0) translateX(-50%);
+      //margin-left: 50%;
+    }
   }
-`;
-export default Popover;
+`
+export default Popover

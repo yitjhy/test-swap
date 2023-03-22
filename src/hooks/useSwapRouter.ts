@@ -102,11 +102,11 @@ export function useSwap(tokenIn: string, tokenOut: string) {
 
     const rate = useMemo(() => {
         // 1 inToken = rate outToken
-        const reserveInAmount = +formatUnits(reserveIn, tokenInInfo.decimals)
-        const reserveOutAmount = +formatUnits(reserveOut, tokenOutInfo.decimals)
+        const reserveInAmount = +formatUnits(inAmount, tokenInInfo.decimals)
+        const reserveOutAmount = +formatUnits(outAmount, tokenOutInfo.decimals)
         if (reserveInAmount > 0) return reserveOutAmount / reserveInAmount
         return 0
-    }, [reserveIn, reserveOut, tokenInInfo, tokenOutInfo])
+    }, [inAmount, outAmount, tokenInInfo, tokenOutInfo])
 
     useDebounceEffect(() => {
         if (lock === SwapLock.In && router) {

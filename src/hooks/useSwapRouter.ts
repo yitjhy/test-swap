@@ -102,9 +102,9 @@ export function useSwap(tokenIn: string, tokenOut: string) {
 
     const rate = useMemo(() => {
         // 1 inToken = rate outToken
-        const reserveInAmount = +formatUnits(inAmount, tokenInInfo.decimals)
-        const reserveOutAmount = +formatUnits(outAmount, tokenOutInfo.decimals)
-        if (reserveInAmount > 0) return reserveOutAmount / reserveInAmount
+        // const reserveInAmount = +formatUnits(inAmount, tokenInInfo.decimals)
+        // const reserveOutAmount = +formatUnits(outAmount, tokenOutInfo.decimals)
+        if (+inAmount > 0) return +outAmount / +inAmount
         return 0
     }, [inAmount, outAmount, tokenInInfo, tokenOutInfo])
 

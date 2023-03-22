@@ -143,7 +143,23 @@ function Swap() {
       <SwapWrapper>
         <Modal
           title="Confirm Swap"
-          content={<ConfirmWrap />}
+          content={
+            <ConfirmWrap
+              onSubmit={handleSubmit}
+              outAmount={swap.outAmount}
+              inAmount={swap.inAmount}
+              rate={swap.rate}
+              inSymbol={swap.tokenInInfo.symbol}
+              outSymbol={swap.tokenOutInfo.symbol}
+              currentSlippage={swap.currentSlippage}
+              lock={swap.lock}
+              slippage={swap.slippage}
+              outDecimals={swap.tokenOutInfo.decimals}
+              minOut={swap.minOut}
+              inDecimals={swap.tokenInInfo.decimals}
+              maxIn={swap.maxIn}
+            />
+          }
           open={isConfirmWrapModalOpen}
           contentStyle={{ width: 480 }}
           onClose={handleConfirmWrapModalOpen}
@@ -203,7 +219,14 @@ function Swap() {
             <ApproveBtn onClick={approve}>Approve {checkedFromCurrency.symbol}</ApproveBtn>
           )}
           {swap.pairs.length > 0 && !isSameAddress(swap.pairs[0], constants.AddressZero) && (
-            <SubmitBtn text={getSubmitBtnText()} onSubmit={handleSubmit} disabled={getSubmitBtnStatus()} />
+            <SubmitBtn
+              text={getSubmitBtnText()}
+              onSubmit={() => {
+                handleConfirmWrapModalOpen(true)
+                // handleSubmit()
+              }}
+              disabled={getSubmitBtnStatus()}
+            />
           )}
           {swap.pairs.length > 0 &&
             isSameAddress(swap.pairs[0], constants.AddressZero) &&

@@ -71,6 +71,7 @@ const DialogProvider: FC<PropsWithChildren> = ({ children }) => {
   return (
     <DialogContext.Provider value={{ isDialogOpen, openDialog, close, loading }}>
       <Modal
+        rootStyle={{ zIndex: 9999999 }}
         maskClosable={false}
         contentStyle={{ width: 480 }}
         title=""

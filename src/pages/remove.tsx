@@ -101,9 +101,16 @@ const RemoveLP = () => {
             </>
           )}
           <RemoveBtn
-            className={`${liquidity?.isZero() || !approved || !pairDetail.pairAddress ? 'disabledOther' : ''}`}
+            className={`${
+              liquidity?.isZero() ||
+              !approved ||
+              !pairDetail.pairAddress ||
+              liquidity?.gt(pairDetail.accountPairBalance)
+                ? 'disabledOther'
+                : ''
+            }`}
             onClick={handleRemove}
-            disabled={liquidity?.isZero()}
+            disabled={liquidity?.isZero() || liquidity?.gt(pairDetail.accountPairBalance || !approved)}
           >
             Remove
           </RemoveBtn>

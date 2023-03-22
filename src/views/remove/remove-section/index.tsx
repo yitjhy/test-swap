@@ -128,7 +128,7 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
       <div className="title-wrapper">
         <span className="title">Amount</span>
         <span className="view-detail-text" onClick={onChangeType}>
-          {removeType === RemoveType.simple ? 'Simple' : 'Detailed'}
+          {removeType !== RemoveType.simple ? 'Simple' : 'Detailed'}
         </span>
       </div>
       <>

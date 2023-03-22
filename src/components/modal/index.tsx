@@ -8,8 +8,9 @@ export type TModalProps = {
   onClose: (open: boolean) => void
   contentStyle?: CSSProperties
   maskClosable?: boolean
+  rootStyle?: CSSProperties
 }
-const Modal: FC<TModalProps> = ({ title, content, maskClosable = true, open, onClose, contentStyle }) => {
+const Modal: FC<TModalProps> = ({ title, content, rootStyle, maskClosable = true, open, onClose, contentStyle }) => {
   const [isOpen, setIsOpen] = useState(open)
   useEffect(() => {
     setIsOpen(open)
@@ -23,6 +24,7 @@ const Modal: FC<TModalProps> = ({ title, content, maskClosable = true, open, onC
   }
   return (
     <ModalWrapper
+      style={rootStyle}
       open={isOpen}
       onClick={() => {
         if (!!maskClosable) {

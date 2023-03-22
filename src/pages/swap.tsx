@@ -78,12 +78,12 @@ function Swap() {
     if (swap.outAmount === '0' || swap.inAmount === '0') {
       return 'Enter the number of Token'
     }
-    if (
-      checkedToCurrency.address &&
-      Number(swap.outAmount) > Number(formatUnits(checkedToCurrency.balance, checkedToCurrency.decimals))
-    ) {
-      return 'Insufficient balance'
-    }
+    // if (
+    //   checkedToCurrency.address &&
+    //   Number(swap.outAmount) > Number(formatUnits(checkedToCurrency.balance, checkedToCurrency.decimals))
+    // ) {
+    //   return 'Insufficient balance'
+    // }
     if (
       checkedFromCurrency.address &&
       Number(swap.inAmount) > Number(formatUnits(checkedFromCurrency.balance, checkedFromCurrency.decimals))

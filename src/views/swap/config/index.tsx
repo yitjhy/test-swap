@@ -19,11 +19,13 @@ const Config: FC<TConfig> = ({ onSlippageChange, onDeadlineChange, onExpertModeC
   const [isExpertMode, setIsExpertMode] = useState(false)
   const handleSlippageChange = (value: number) => {
     setSlippage(value)
+    localStorage.setItem('slippage', String(value))
     onSlippageChange(value)
   }
   const handleDeadline = (e: ChangeEvent<HTMLInputElement>) => {
     setDeadline(Number(e.target.value))
     onDeadlineChange(Number(e.target.value))
+    localStorage.setItem('deadline', e.target.value)
   }
   const onTurnOnExpertMode = () => {
     setIsExpertMode(true)
@@ -40,6 +42,15 @@ const Config: FC<TConfig> = ({ onSlippageChange, onDeadlineChange, onExpertModeC
   useEffect(() => {
     const isExpertMode = localStorage.getItem('isExpertMode')
     setIsExpertMode(!!isExpertMode)
+    const slippageFromStorage = localStorage.getItem('slippage')
+    if (slippageFromStorage) {
+      handleSlippageChange(Number(slippageFromStorage))
+    }
+    const deadlineFromStorage = localStorage.getItem('deadline')
+    if (deadlineFromStorage) {
+      setDeadline(Number(deadlineFromStorage))
+      onDeadlineChange(Number(deadlineFromStorage))
+    }
   }, [])
   return (
     <ConfigWrapper>

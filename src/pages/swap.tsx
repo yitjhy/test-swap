@@ -20,6 +20,7 @@ import useERC20Approved from '@/hooks/contract/useERC20Approved'
 import { contractAddress } from '@/utils/enum'
 import { ConfirmBtn } from '@/components/button'
 import SwapDetail from '@/views/swap/swap-detail'
+import { cutOffStr } from '@/utils'
 
 function Swap() {
   const router = useRouter()
@@ -30,24 +31,23 @@ function Swap() {
   const [checkedToCurrency, setCheckedToCurrency] = useState<Global.TErc20InfoWithPair>({} as Global.TErc20InfoWithPair)
   const [isConfirmWrapModalOpen, handleConfirmWrapModalOpen] = useState(false)
   const [isConfigModalOpen, handleConfigModalOpen] = useState(false)
-  const { openDialog } = useDialog()
+  // const { openDialog } = useDialog()
   const swap = useSwap(
     isSameAddress(checkedFromCurrency.address, constants.AddressZero)
       ? constants.AddressZero
       : checkedFromCurrency.address,
     checkedToCurrency.address
   )
-
   const { approved, approve } = useERC20Approved(
     checkedFromCurrency.address,
     contractAddress.router,
-    parseUnits(swap.inAmount, swap.tokenInInfo.decimals)
+    parseUnits(cutOffStr(swap.inAmount, swap.tokenInInfo.decimals), swap.tokenInInfo.decimals)
   )
 
   const handleSubmit = () => {
     // handleConfirmWrapModalOpen(true)
     // swap()
-    swap.swap().then((data) => console.log(data))
+    swap.swap(isExpertMode).then((data) => console.log(data))
   }
   const onSelectedCurrencyByFrom: TSwapSectionProps['onSelectedCurrency'] = (balance, currency) => {
     setCheckedFromCurrency(currency)
@@ -187,6 +187,7 @@ function Swap() {
           checkedCurrency={checkedToCurrency}
           onSelectedCurrency={onSelectedCurrencyByTo}
           onInput={onInputByTo}
+          hiddenMax={true}
         />
         <PriceDetail from={checkedFromCurrency.symbol} to={checkedToCurrency.symbol} rate={swap.rate} />
         <>

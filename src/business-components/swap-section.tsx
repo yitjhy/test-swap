@@ -20,6 +20,7 @@ export type TSwapSectionProps = {
   type?: TInputCurrency
   readonly?: boolean
   style?: React.CSSProperties
+  hiddenMax?: boolean
 }
 
 const SwapSection: FC<TSwapSectionProps> = ({
@@ -31,6 +32,7 @@ const SwapSection: FC<TSwapSectionProps> = ({
   onMax,
   onInput,
   checkedCurrency,
+  hiddenMax,
 }) => {
   const [inputAmount, setInputAmount] = useState<string | undefined>()
   const [isCurrencyListModalOpen, handleCurrencyListModalOpen] = useState(false)
@@ -107,7 +109,7 @@ const SwapSection: FC<TSwapSectionProps> = ({
         <div className="swap-currency-fiat-row">
           <div className="currency-balance">
             Balance: {currencyData?.balance ? formatUnits(currencyData.balance, currencyData.decimals) : '0'}{' '}
-            {currencyData?.balance && !readonly && (
+            {currencyData?.balance && !readonly && !hiddenMax && (
               <button className="comparative-btn" onClick={handleMax}>
                 Max
               </button>

@@ -189,7 +189,15 @@ function Swap() {
           onInput={onInputByTo}
           hiddenMax={true}
         />
-        <PriceDetail from={checkedFromCurrency.symbol} to={checkedToCurrency.symbol} rate={swap.rate} />
+        {checkedFromCurrency.address &&
+          checkedToCurrency.address &&
+          swap.inAmount &&
+          swap.inAmount !== '0' &&
+          swap.outAmount &&
+          swap.outAmount !== '0' && (
+            <PriceDetail from={checkedFromCurrency.symbol} to={checkedToCurrency.symbol} rate={swap.rate} />
+          )}
+
         <>
           {!approved && checkedFromCurrency.address && (
             <ApproveBtn onClick={approve}>Approve {checkedFromCurrency.symbol}</ApproveBtn>
@@ -228,18 +236,25 @@ function Swap() {
           {/*)}*/}
         </>
       </SwapWrapper>
-      <SwapDetail
-        currentSlippage={swap.currentSlippage}
-        lock={swap.lock}
-        maxIn={swap.maxIn}
-        minOut={swap.minOut}
-        outAmount={swap.outAmount}
-        inSymbol={swap.tokenInInfo.symbol}
-        inDecimals={swap.tokenInInfo.decimals}
-        outSymbol={swap.tokenOutInfo.symbol}
-        outDecimals={swap.tokenOutInfo.decimals}
-        slippage={swap.slippage}
-      />
+      {checkedFromCurrency.address &&
+        checkedToCurrency.address &&
+        swap.inAmount &&
+        swap.inAmount !== '0' &&
+        swap.outAmount &&
+        swap.outAmount !== '0' && (
+          <SwapDetail
+            currentSlippage={swap.currentSlippage}
+            lock={swap.lock}
+            maxIn={swap.maxIn}
+            minOut={swap.minOut}
+            outAmount={swap.outAmount}
+            inSymbol={swap.tokenInInfo.symbol}
+            inDecimals={swap.tokenInInfo.decimals}
+            outSymbol={swap.tokenOutInfo.symbol}
+            outDecimals={swap.tokenOutInfo.decimals}
+            slippage={swap.slippage}
+          />
+        )}
     </div>
   )
 }

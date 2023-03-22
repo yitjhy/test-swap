@@ -194,12 +194,21 @@ const IncreaseLP = () => {
   const onDeadlineChange: TConfig['onDeadlineChange'] = (value) => {
     console.log(value)
   }
+  const onExpertModeChange: TConfig['onExpertModeChange'] = (value) => {
+    console.log(value)
+  }
   return (
     <IncreaseLPWrapper>
       <Modal
         contentStyle={{ width: 480 }}
         title="Settings"
-        content={<Config onDeadlineChange={onDeadlineChange} onSlippageChange={onSlippageChange} />}
+        content={
+          <Config
+            onDeadlineChange={onDeadlineChange}
+            onSlippageChange={onSlippageChange}
+            onExpertModeChange={onExpertModeChange}
+          />
+        }
         open={isConfigModalOpen}
         onClose={handleConfigModalOpen}
       />

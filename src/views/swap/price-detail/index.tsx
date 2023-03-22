@@ -13,16 +13,16 @@ const PriceDetail: FC<TPriceDetailProps> = ({ rate, from, to }) => {
     <PriceDetailWrapper>
       <div className="price-label">
         <span className="label-text">Price</span>
-        <span className="label-tip">
-          <Popover
-            content={<span className="tip-text">如果兑换率超过百分百,则将还原该交易</span>}
-            triger={
-              <span style={{ display: 'flex' }}>
-                <AlertCircle size={15} color="#9c9c9c" />
-              </span>
-            }
-          />
-        </span>
+        {/*<span className="label-tip">*/}
+        {/*  <Popover*/}
+        {/*    content={<span className="tip-text">如果兑换率超过百分百,则将还原该交易</span>}*/}
+        {/*    triger={*/}
+        {/*      <span style={{ display: 'flex' }}>*/}
+        {/*        <AlertCircle size={15} color="#9c9c9c" />*/}
+        {/*      </span>*/}
+        {/*    }*/}
+        {/*  />*/}
+        {/*</span>*/}
       </div>
       <div className="price-value">
         <span className="value">

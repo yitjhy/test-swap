@@ -46,8 +46,8 @@ const SwapDetail: FC<TSwapDetail> = ({
               <Popover
                 content={
                   <span className="tip-text">
-                    Setting a high slippage tolerance can help transactions succeed, but you may not get such a good
-                    price. Use with caution.
+                    The amount you expect to receive at the current market price. You may receive less or more if the
+                    market price changes while your transaction is pending.
                   </span>
                 }
                 triger={
@@ -69,12 +69,7 @@ const SwapDetail: FC<TSwapDetail> = ({
             <span className="label-text">Price Impact</span>
             <span className="label-tip">
               <Popover
-                content={
-                  <span className="tip-text">
-                    Setting a high slippage tolerance can help transactions succeed, but you may not get such a good
-                    price. Use with caution.
-                  </span>
-                }
+                content={<span className="tip-text">The impact your trade has on the market price of this pool.</span>}
                 triger={
                   <span style={{ display: 'flex' }}>
                     <HelpCircle size={16} />
@@ -95,8 +90,8 @@ const SwapDetail: FC<TSwapDetail> = ({
                 <Popover
                   content={
                     <span className="tip-text">
-                      Setting a high slippage tolerance can help transactions succeed, but you may not get such a good
-                      price. Use with caution.
+                      The minimum amount you are guaranteed to receive. If the price slips any further, your transaction
+                      will revert.
                     </span>
                   }
                   triger={
@@ -104,6 +99,7 @@ const SwapDetail: FC<TSwapDetail> = ({
                       <HelpCircle size={16} />
                     </span>
                   }
+                  placement="topCenter"
                 />
               </span>
             </span>
@@ -169,6 +165,7 @@ const SwapDetail: FC<TSwapDetail> = ({
 }
 const SwapDetailWrapper = styled.div<{ isExpand: boolean }>`
   padding: 0.3rem 0.7rem;
+  padding-bottom: 50px;
   margin-top: 20px;
   display: grid;
   row-gap: 20px;
@@ -200,6 +197,7 @@ const SwapDetailWrapper = styled.div<{ isExpand: boolean }>`
           background: #191919;
           font-size: 8px;
           width: 200px;
+          font-weight: lighter;
           word-wrap: break-word;
           word-break: break-all;
           white-space: pre-wrap;

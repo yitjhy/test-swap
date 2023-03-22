@@ -28,7 +28,7 @@ const PairDetail: FC<{ data: Global.TPairInfo }> = ({ data }) => {
       </>
       <div className="lp-detail-item-wrapper">
         <div className="lp-detail-item-label">Your pool share:</div>
-        <div className="lp-detail-item-value">{formatUnits(data.LPShare, 4)}%</div>
+        <div className="lp-detail-item-value">{formatUnits(data.LPShare, 6)}%</div>
       </div>
       <div className="operation-wrapper">
         <ConfirmBtn

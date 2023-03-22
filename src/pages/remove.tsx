@@ -120,8 +120,7 @@ const RemoveLPWrapper = styled.div`
   color: #d9d9d9;
   padding: 1rem;
   max-width: 480px;
-  margin: 0 auto;
-  margin-top: 68px;
+  margin: 68px auto 0;
   row-gap: 1.25rem;
   .approve-wrapper {
     display: flex;

@@ -117,6 +117,12 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
       setPercentRate(Number(Number(formatUnits(rate, data.tokens[1].decimals)).toFixed(2)))
     }
   }
+  const onMaxFrom: TSwapSectionProps['onMax'] = (value) => {
+    onInputFrom(value || '0')
+  }
+  const onMaxTo: TSwapSectionProps['onMax'] = (value) => {
+    onInputTo(value || '0')
+  }
   return (
     <RemoveSectionWrapper removeType={removeType}>
       <div className="title-wrapper">
@@ -149,6 +155,7 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
               onInput={onInputFrom}
               checkedCurrency={swapSectionTokens[0]}
               amount={inputValueByFrom}
+              onMax={onMaxFrom}
             />
             <div className="add-icon" style={{ marginTop: 7 }}>
               <Plus color="#191919" size={18} />
@@ -158,6 +165,7 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
               onInput={onInputTo}
               checkedCurrency={swapSectionTokens[1]}
               amount={inputValueByTo}
+              onMax={onMaxTo}
             />
           </>
         ) : (

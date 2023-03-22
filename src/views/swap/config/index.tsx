@@ -45,11 +45,16 @@ const Config: FC<TConfig> = ({ onSlippageChange, onDeadlineChange, onExpertModeC
     const slippageFromStorage = localStorage.getItem('slippage')
     if (slippageFromStorage) {
       handleSlippageChange(Number(slippageFromStorage))
+    } else {
+      handleSlippageChange(slippage)
     }
     const deadlineFromStorage = localStorage.getItem('deadline')
     if (deadlineFromStorage) {
       setDeadline(Number(deadlineFromStorage))
       onDeadlineChange(Number(deadlineFromStorage))
+    } else {
+      onDeadlineChange(deadline)
+      localStorage.setItem('deadline', String(deadline))
     }
   }, [])
   return (

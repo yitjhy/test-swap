@@ -14,7 +14,6 @@ import { useSwap } from '@/hooks/useSwapRouter'
 import { BigNumber, constants } from 'ethers'
 import { isSameAddress } from '@/utils/address'
 import { useRouter } from 'next/router'
-import { useDialog } from '@/components/dialog'
 import { Global } from '@/types/global'
 import useERC20Approved from '@/hooks/contract/useERC20Approved'
 import { contractAddress } from '@/utils/enum'
@@ -22,11 +21,11 @@ import { ConfirmBtn } from '@/components/button'
 import SwapDetail from '@/views/swap/swap-detail'
 import { cutOffStr } from '@/utils'
 import { getContract } from '@/hooks/contract/useContract'
-import { HunterswapPair } from '@/utils/abis/HunterswapPair'
 import { ABI } from '@/utils/abis'
 import { ERC20 } from '@/utils/abis/ERC20'
 import { useSigner } from '@/hooks/contract/useSigner'
 import { useWeb3React } from '@web3-react/core'
+import { useRemoteCurrencyList } from '@/context/remoteCurrencyListContext'
 
 function Swap() {
   const router = useRouter()
@@ -38,8 +37,8 @@ function Swap() {
   const [checkedToCurrency, setCheckedToCurrency] = useState<Global.TErc20InfoWithPair>({} as Global.TErc20InfoWithPair)
   const [isConfirmWrapModalOpen, handleConfirmWrapModalOpen] = useState(false)
   const [isConfigModalOpen, handleConfigModalOpen] = useState(false)
+  const { currencyList: currencyListByContext } = useRemoteCurrencyList()
   const signer = useSigner()
-  // const { openDialog } = useDialog()
   const swap = useSwap(
     isSameAddress(checkedFromCurrency.address, constants.AddressZero)
       ? constants.AddressZero
@@ -94,7 +93,6 @@ function Swap() {
   const handleSwitch = () => {
     setCheckedFromCurrency(checkedToCurrency)
     setCheckedToCurrency(checkedFromCurrency)
-    // swap.updateIn(swap.outAmount)
   }
   const onInputByFrom: TSwapSectionProps['onInput'] = (value) => {
     swap.updateIn(value)
@@ -174,6 +172,11 @@ function Swap() {
     const isExpertMode = localStorage.getItem('isExpertMode')
     setIsExpertMode(!!isExpertMode)
   }, [])
+  useEffect(() => {
+    if (currencyListByContext.length) {
+      setCheckedFromCurrency(currencyListByContext[0])
+    }
+  }, [currencyListByContext])
   // useEffect(() => {
   // if (swap.currentSlippage > swap.slippage && openDialog) {
   // openDialog({ title: 'Warning', desc: 'Had Out Of Slippage, Please ReInput Or Reset Slippage', loading: false })

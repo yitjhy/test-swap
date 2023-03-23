@@ -5,8 +5,8 @@ const IncreaseTip = () => {
     <IncreaseTipWrapper>
       <Image src="/warning.png" alt="" width={15} height={15} />
       <p className="tip-text">
-        Expert mode turns off the Confirm transaction prompt, and allows high slippage trades that often result in bad
-        rates and lost funds.
+        Tip: When you add liquidity, you will receive pool tokens representing your position. These tokens automatically
+        earn fees proportional to your share of the pool, and can be redeemed at any time.
       </p>
     </IncreaseTipWrapper>
   )

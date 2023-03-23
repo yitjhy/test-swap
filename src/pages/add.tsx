@@ -49,12 +49,12 @@ const IncreaseLP = () => {
   const { approved: isApprovedCurrencyFrom, approve: approveCurrencyFrom } = useERC20Approved(
     checkedFromCurrency.address,
     contractAddress.router,
-    parseUnits(cutOffStr(inputValueByFrom || '0', checkedFromCurrency.decimals))
+    parseUnits(cutOffStr(inputValueByFrom || '0', checkedFromCurrency.decimals), checkedFromCurrency.decimals)
   )
   const { approved: isApprovedCurrencyTo, approve: approveCurrencyTo } = useERC20Approved(
     checkedToCurrency.address,
     contractAddress.router,
-    parseUnits(cutOffStr(inputValueByTo || '0', checkedToCurrency.decimals))
+    parseUnits(cutOffStr(inputValueByTo || '0', checkedToCurrency.decimals), checkedToCurrency.decimals)
   )
   const { shareOfPool } = useLiquidityRate(
     { address: checkedFromCurrency.address, inputValue: inputValueByFrom },

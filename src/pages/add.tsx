@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-import { constants } from 'ethers'
+import { BigNumber, constants } from 'ethers'
 import { parseUnits, formatUnits } from 'ethers/lib/utils'
 import styled from 'styled-components'
 import { ChevronLeft, Plus, Settings } from 'react-feather'
@@ -11,7 +11,7 @@ import Tip from '@/views/add/tip'
 import LPDetail from '@/views/add/lp-detail'
 import { ConfirmBtn } from '@/components/button'
 import Modal from '@/components/modal'
-import Config, { TConfig } from '@/views/swap/config'
+import Config, { TConfig } from '@/views/add/config'
 import useERC20Approved from '@/hooks/contract/useERC20Approved'
 import { TCurrencyListItem } from '@/context/remoteCurrencyListContext'
 import useCreatePair from '@/hooks/useCreatePair'
@@ -24,10 +24,14 @@ import useValueByInput from '@/hooks/useOutValueByInputIn'
 import useErc20InfoList from '@/hooks/useErc20InfoList'
 import { isSameAddress } from '@/utils/address'
 import { Global } from '@/types/global'
+import moment from 'moment'
 
 const IncreaseLP = () => {
   const router = useRouter()
   const { query } = useRouter()
+  const [slippage, setSlippage] = useState<number>(0)
+  const [deadline, setDeadline] = useState<number>(0)
+  const [isExpertMode, setIsExpertMode] = useState(false)
   const [isConfigModalOpen, handleConfigModalOpen] = useState(false)
   const [checkedFromCurrency, setCheckedFromCurrency] = useState<Global.TErc20InfoWithPair>(
     {} as Global.TErc20InfoWithPair
@@ -98,30 +102,76 @@ const IncreaseLP = () => {
     updatePairDetail()
   }
   const handleSubmit = async () => {
+    const _deadline = moment()
+      .add(deadline * 60, 'second')
+      .unix()
     if (checkedFromCurrency.address === platFormAddress) {
-      await addLiquidityETH(checkedToCurrency.address, parseUnits(String(inputValueByTo), checkedToCurrency.decimals), {
-        value: parseUnits(String(inputValueByFrom), checkedFromCurrency.decimals),
-      })
-      addCallback().then()
-    }
-    if (checkedToCurrency.address === platFormAddress) {
-      await addLiquidityETH(
-        checkedFromCurrency.address,
-        parseUnits(String(inputValueByFrom), checkedFromCurrency.decimals),
+      let erc20TokenMin = parseUnits(String(inputValueByTo), checkedToCurrency.decimals)
+        .mul(parseUnits(`${100 - slippage}`, 10))
+        .div(parseUnits('100', 10))
+      let ethTokenMin = parseUnits(String(inputValueByFrom), checkedFromCurrency.decimals)
+        .mul(parseUnits(`${100 - slippage}`, 10))
+        .div(parseUnits('100', 10))
+      if (isExpertMode) {
+        erc20TokenMin = constants.Zero
+        ethTokenMin = constants.Zero
+      }
+      const res = await addLiquidityETH(
+        checkedToCurrency.address,
+        parseUnits(String(inputValueByTo), checkedToCurrency.decimals),
+        erc20TokenMin,
+        ethTokenMin,
+        _deadline,
         {
-          value: parseUnits(String(checkedToCurrency), checkedToCurrency.decimals),
+          value: parseUnits(String(inputValueByFrom), checkedFromCurrency.decimals),
         }
       )
-      addCallback().then()
+      if (res) addCallback().then()
+    }
+    if (checkedToCurrency.address === platFormAddress) {
+      let erc20TokenMin = parseUnits(String(inputValueByFrom), checkedFromCurrency.decimals)
+        .mul(parseUnits(`${100 - slippage}`, 10))
+        .div(parseUnits('100', 10))
+      let ethTokenMin = parseUnits(String(inputValueByTo), checkedToCurrency.decimals)
+        .mul(parseUnits(`${100 - slippage}`, 10))
+        .div(parseUnits('100', 10))
+      if (isExpertMode) {
+        erc20TokenMin = constants.Zero
+        ethTokenMin = constants.Zero
+      }
+      const res = await addLiquidityETH(
+        checkedFromCurrency.address,
+        parseUnits(String(inputValueByFrom), checkedFromCurrency.decimals),
+        erc20TokenMin,
+        ethTokenMin,
+        _deadline,
+        {
+          value: parseUnits(String(inputValueByTo), checkedToCurrency.decimals),
+        }
+      )
+      if (res) addCallback().then()
     }
     if (checkedToCurrency.address !== platFormAddress && checkedFromCurrency.address !== platFormAddress) {
-      await addLiquidity(
+      let amountFromMin = parseUnits(String(inputValueByFrom), checkedFromCurrency.decimals)
+        .mul(parseUnits(`${100 - slippage}`, 10))
+        .div(parseUnits('100', 10))
+      let amountToMin = parseUnits(String(inputValueByTo), checkedToCurrency.decimals)
+        .mul(parseUnits(`${100 - slippage}`, 10))
+        .div(parseUnits('100', 10))
+      if (isExpertMode) {
+        amountFromMin = constants.Zero
+        amountToMin = constants.Zero
+      }
+      const res = await addLiquidity(
         checkedFromCurrency.address,
         checkedToCurrency.address,
         parseUnits(String(inputValueByFrom), checkedFromCurrency.decimals),
-        parseUnits(String(inputValueByTo), checkedToCurrency.decimals)
+        parseUnits(String(inputValueByTo), checkedToCurrency.decimals),
+        amountFromMin,
+        amountToMin,
+        _deadline
       )
-      addCallback().then()
+      if (res) addCallback().then()
     }
   }
   const getSubmitBtnText = () => {
@@ -188,14 +238,18 @@ const IncreaseLP = () => {
       }
     }
   }, [pairDetail])
+
   const onSlippageChange: TConfig['onSlippageChange'] = (value) => {
     console.log(value)
+    setSlippage(value)
   }
   const onDeadlineChange: TConfig['onDeadlineChange'] = (value) => {
     console.log(value)
+    setDeadline(value)
   }
   const onExpertModeChange: TConfig['onExpertModeChange'] = (value) => {
     console.log(value)
+    setIsExpertMode(value)
   }
   return (
     <IncreaseLPWrapper>
@@ -204,6 +258,7 @@ const IncreaseLP = () => {
         title="Settings"
         content={
           <Config
+            storageKey="addConfig"
             onDeadlineChange={onDeadlineChange}
             onSlippageChange={onSlippageChange}
             onExpertModeChange={onExpertModeChange}

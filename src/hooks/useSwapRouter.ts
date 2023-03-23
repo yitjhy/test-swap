@@ -17,7 +17,7 @@ import {useDialog} from '@/components/dialog'
 import {TransactionResponse} from '@ethersproject/abstract-provider'
 import {getErrorMsg} from '@/utils'
 import {useSigner} from "@/hooks/contract/useSigner";
-import {AddressZero, Zero} from "@ethersproject/constants";
+import {AddressZero, MaxUint256, Zero} from "@ethersproject/constants";
 import de from "@walletconnect/qrcode-modal/dist/cjs/browser/languages/de";
 
 const routerAddress = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'
@@ -69,7 +69,7 @@ function useReserves(factoryAddress: string, tokenIn: string, tokenOut: string) 
                 contract.off('Sync', syncListener.callback)
             }
         }
-    }, [pair, pairAddress, contract])
+    }, [pair, pairAddress, contract, tokenIn, tokenOut])
     const pairs = useMemo(() => (!!pairAddress ? [pairAddress] : []), [pairAddress])
     return {reserveIn, reserveOut, pairs}
 }
@@ -114,7 +114,7 @@ export function useSwap(tokenIn: string, tokenOut: string) {
             if (inValue.eq(constants.Zero)) {
                 setOutAmount('0')
             } else {
-                router.getAmountOut(inValue, reserveIn, reserveOut).then((res) => {
+                router.getAmountOut(inValue.gt(MaxUint256) ? MaxUint256 : inValue, reserveIn, reserveOut).then((res) => {
                     setOutAmount(formatUnits(res, tokenOutInfo.decimals))
                 })
             }
@@ -127,7 +127,7 @@ export function useSwap(tokenIn: string, tokenOut: string) {
                 setInAmount('0')
             } else {
                 router
-                    .getAmountIn(outValue, reserveIn, reserveOut)
+                    .getAmountIn(outValue.gt(reserveOut) ? reserveOut.sub(1) : outValue, reserveIn, reserveOut)
                     .then((res) => setInAmount(formatUnits(res, tokenInInfo.decimals)))
             }
         }

@@ -18,7 +18,7 @@ const currencyIcon =
 
 export type TRemoveSection = {
   data: Global.TPairInfo
-  onLiquidityChange: (data: BigNumber) => void
+  onLiquidityChange: (liquidity: BigNumber, inputFromLiquidity: BigNumber, inputToLiquidity: BigNumber) => void
 }
 const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
   const [removeType, setRemoveType] = useState<RemoveType>(RemoveType.simple)
@@ -41,7 +41,7 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
     setInputValueByTo(formatUnits(res[1].balanceOfPair, res[1].decimals))
 
     const liquidity = data.accountPairBalance.mul(parseUnits(String(value), 5)).div(parseUnits('1', 7))
-    onLiquidityChange(liquidity)
+    onLiquidityChange(liquidity, res[0].balanceOfPair, res[1].balanceOfPair)
     setLiquidity(liquidity)
   }
   const handleSliderChange = (value: number) => {
@@ -84,7 +84,11 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
         .mul(data.accountPairBalance)
         .div(data.tokens[0].balanceOfPair)
       setLiquidity(liquidity)
-      onLiquidityChange(liquidity)
+      onLiquidityChange(
+        liquidity,
+        parseUnits(cutOffStr(value, data.tokens[0].decimals), data.tokens[0].decimals),
+        inputValueByTo
+      )
       const rate = parseUnits(cutOffStr(value, data.tokens[0].decimals), data.tokens[0].decimals)
         .mul(parseUnits('1', data.tokens[0].decimals))
         .div(data.tokens[0].balanceOfPair)
@@ -109,7 +113,11 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
         .mul(data.accountPairBalance)
         .div(data.tokens[1].balanceOfPair)
       setLiquidity(liquidity)
-      onLiquidityChange(liquidity)
+      onLiquidityChange(
+        liquidity,
+        inputValueByFrom,
+        parseUnits(cutOffStr(value, data.tokens[1].decimals), data.tokens[1].decimals)
+      )
       const rate = parseUnits(cutOffStr(value, data.tokens[1].decimals), data.tokens[1].decimals)
         .mul(parseUnits('1', data.tokens[1].decimals))
         .div(data.tokens[1].balanceOfPair)

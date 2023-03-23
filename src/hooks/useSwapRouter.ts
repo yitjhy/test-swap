@@ -17,6 +17,7 @@ import {useDialog} from '@/components/dialog'
 import {TransactionResponse} from '@ethersproject/abstract-provider'
 import {getErrorMsg} from '@/utils'
 import {useSigner} from "@/hooks/contract/useSigner";
+import {AddressZero} from "@ethersproject/constants";
 
 const routerAddress = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'
 
@@ -184,7 +185,7 @@ export function useSwap(tokenIn: string, tokenOut: string) {
         const balance = await web3Provider.getBalance(account)
         const gasFee = (await web3Provider.getGasPrice()).mul(200000)
 
-        const _maxIn = isExpert ? balance.lte(gasFee) ? 0 :balance.sub(gasFee) : maxIn.mul(12000).div(10000)
+        const _maxIn = isExpert && isSameAddress(tokenIn, AddressZero) ? balance.lte(gasFee) ? 0 :balance.sub(gasFee) : maxIn.mul(12000).div(10000)
 
         const _deadline = moment().add(deadLine, 'second').unix()
         try {

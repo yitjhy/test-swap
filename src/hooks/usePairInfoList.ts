@@ -8,7 +8,7 @@ const usePairInfoList = (pairList: string[]) => {
   const [pairInfoList, setPairInfoList] = useState<Global.TPairInfo[]>([])
   const { getPairDetail } = usePairInfo(constants.AddressZero)
   const { openDialog, close } = useDialog()
-  useEffect(() => {
+  const getPairInfoList = () => {
     openDialog({ title: 'Fetch Liquidity List', desc: 'Waiting...' })
     const promiseList = pairList.map((item) => {
       return getPairDetail(item)
@@ -17,6 +17,9 @@ const usePairInfoList = (pairList: string[]) => {
       setPairInfoList(values as Global.TPairInfo[])
       close()
     })
+  }
+  useEffect(() => {
+    getPairInfoList()
   }, [pairList, getPairDetail])
   return pairInfoList
 }

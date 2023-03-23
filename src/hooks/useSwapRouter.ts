@@ -175,11 +175,12 @@ export function useSwap(tokenIn: string, tokenOut: string) {
     }, [inAmount, outAmount, tokenInInfo.decimals, tokenOutInfo.decimals, reserveIn, reserveOut])
 
     const swap = useCallback(async (isExpert?: boolean) => {
-        if (!router || !account) return
+        if (!router || !account || !provider) return
         const inValue = parseUnits(inAmount, tokenInInfo.decimals)
         const outValue = parseUnits(outAmount, tokenOutInfo.decimals)
         const _minOut = isExpert ? constants.Zero : minOut.mul(10000).div(12000)
-        const _maxIn = isExpert ? constants.MaxUint256 : maxIn.mul(12000).div(10000)
+        const balance = await provider.getEthBalance(account)
+        const _maxIn = isExpert ? balance : maxIn.mul(12000).div(10000)
         const _deadline = moment().add(deadLine, 'second').unix()
         try {
             let tx: TransactionResponse | null = null

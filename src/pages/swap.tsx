@@ -93,6 +93,7 @@ function Swap() {
   const handleSwitch = () => {
     setCheckedFromCurrency(checkedToCurrency)
     setCheckedToCurrency(checkedFromCurrency)
+    swap.updateIn(swap.outAmount)
   }
   const onInputByFrom: TSwapSectionProps['onInput'] = (value) => {
     swap.updateIn(value)

@@ -17,7 +17,8 @@ import {useDialog} from '@/components/dialog'
 import {TransactionResponse} from '@ethersproject/abstract-provider'
 import {getErrorMsg} from '@/utils'
 import {useSigner} from "@/hooks/contract/useSigner";
-import {AddressZero} from "@ethersproject/constants";
+import {AddressZero, Zero} from "@ethersproject/constants";
+import de from "@walletconnect/qrcode-modal/dist/cjs/browser/languages/de";
 
 const routerAddress = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'
 
@@ -92,7 +93,6 @@ export function useSwap(tokenIn: string, tokenOut: string) {
     const provider = useMulProvider()
     const {account, provider: web3Provider} = useWeb3React()
     const {openDialog, close} = useDialog()
-    const signer = useSigner()
 
     useEffect(() => {
         if (mulRouter && provider) {
@@ -104,16 +104,13 @@ export function useSwap(tokenIn: string, tokenOut: string) {
     }, [mulRouter, provider])
 
     const rate = useMemo(() => {
-        // 1 inToken = rate outToken
-        // const reserveInAmount = +formatUnits(inAmount, tokenInInfo.decimals)
-        // const reserveOutAmount = +formatUnits(outAmount, tokenOutInfo.decimals)
-        if (+inAmount > 0) return +outAmount / +inAmount
+        if (parseValue(inAmount, tokenInInfo.decimals).gt(Zero)) return  formatValue(outAmount, tokenOutInfo.decimals)/ formatValue(inAmount, tokenInInfo.decimals)
         return 0
     }, [inAmount, outAmount, tokenInInfo, tokenOutInfo])
 
     useDebounceEffect(() => {
         if (lock === SwapLock.In && router) {
-            const inValue = parseUnits(inAmount, tokenInInfo.decimals)
+            const inValue = parseValue(inAmount, tokenInInfo.decimals)
             if (inValue.eq(constants.Zero)) {
                 setOutAmount('0')
             } else {
@@ -125,7 +122,7 @@ export function useSwap(tokenIn: string, tokenOut: string) {
     }, [lock, inAmount, reserveIn, reserveOut, tokenInInfo, tokenOutInfo, rate])
     useDebounceEffect(() => {
         if (lock === SwapLock.Out && router) {
-            const outValue = parseUnits(outAmount, tokenOutInfo.decimals)
+            const outValue = parseValue(outAmount, tokenOutInfo.decimals)
             if (outValue.eq(constants.Zero)) {
                 setInAmount('0')
             } else {
@@ -138,14 +135,14 @@ export function useSwap(tokenIn: string, tokenOut: string) {
 
     const updateIn = useCallback(
         (amount: number | string) => {
-            setInAmount(+(+amount).toFixed(tokenInInfo.decimals) + '')
+            setInAmount(amount + '')
             setLock(SwapLock.In)
         },
         [tokenInInfo]
     )
     const updateOut = useCallback(
         (amount: number | string) => {
-            setOutAmount(+(+amount).toFixed(tokenOutInfo.decimals) + '')
+            setOutAmount(amount + '')
             setLock(SwapLock.Out)
         },
         [tokenOutInfo]
@@ -162,8 +159,8 @@ export function useSwap(tokenIn: string, tokenOut: string) {
 
     const [maxIn, minOut] = useMemo(() => {
         if (+inAmount == 0 || +outAmount == 0) return  [constants.Zero, constants.Zero]
-        const inValue = parseUnits(inAmount, tokenInInfo.decimals)
-        const outValue = parseUnits(outAmount, tokenOutInfo.decimals)
+        const inValue = parseValue(inAmount, tokenInInfo.decimals)
+        const outValue = parseValue(outAmount, tokenOutInfo.decimals)
         const price = +formatUnits(reserveIn, tokenInInfo.decimals) / +formatUnits(reserveOut, tokenOutInfo.decimals)
         const maxPrice = price * (1 + slippage / 10000)
         const maxInValue = parseUnits(
@@ -179,8 +176,8 @@ export function useSwap(tokenIn: string, tokenOut: string) {
 
     const swap = useCallback(async (isExpert?: boolean) => {
         if (!router || !account || !web3Provider) return
-        const inValue = parseUnits(inAmount, tokenInInfo.decimals)
-        const outValue = parseUnits(outAmount, tokenOutInfo.decimals)
+        const inValue = parseValue(inAmount, tokenInInfo.decimals)
+        const outValue = parseValue(outAmount, tokenOutInfo.decimals)
         const _minOut = isExpert ? constants.Zero : minOut.mul(10000).div(12000)
         const balance = await web3Provider.getBalance(account)
         const gasFee = (await web3Provider.getGasPrice()).mul(200000)
@@ -252,4 +249,18 @@ export function useSwap(tokenIn: string, tokenOut: string) {
         minOut,
         lock
     }
+}
+
+function parseValue(value: string, decimals: number) {
+    const length = value.length
+    if (length > decimals) {
+        return parseUnits(value, length).div(BigNumber.from(10).pow(length - decimals))
+    } else {
+        return  parseUnits(value, decimals)
+    }
+}
+
+function formatValue(value: string, decimals: number) {
+    const parsedValue = parseValue(value, decimals)
+    return +formatUnits(parsedValue, decimals)
 }

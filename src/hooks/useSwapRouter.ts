@@ -163,11 +163,11 @@ export function useSwap(tokenIn: string, tokenOut: string) {
         const outValue = parseValue(outAmount, tokenOutInfo.decimals)
         const price = +formatUnits(reserveIn, tokenInInfo.decimals) / +formatUnits(reserveOut, tokenOutInfo.decimals)
         const maxPrice = price * (1 + slippage / 10000)
-        const maxInValue = parseUnits(
+        const maxInValue = parseValue(
             (maxPrice * +formatUnits(outValue, tokenOutInfo.decimals)).toFixed(tokenInInfo.decimals),
             tokenInInfo.decimals
         )
-        const minOutValue = parseUnits(
+        const minOutValue = parseValue(
             (+formatUnits(inValue, tokenInInfo.decimals) / maxPrice).toFixed(tokenOutInfo.decimals),
             tokenOutInfo.decimals
         )
@@ -253,10 +253,14 @@ export function useSwap(tokenIn: string, tokenOut: string) {
 
 function parseValue(value: string, decimals: number) {
     const length = value.length
-    if (length > decimals) {
-        return parseUnits(value, length).div(BigNumber.from(10).pow(length - decimals))
-    } else {
-        return  parseUnits(value, decimals)
+    try {
+        if (length > decimals) {
+            return parseUnits(value, length).div(BigNumber.from(10).pow(length - decimals))
+        } else {
+            return  parseUnits(value, decimals)
+        }
+    } catch (e) {
+        return constants.Zero
     }
 }
 

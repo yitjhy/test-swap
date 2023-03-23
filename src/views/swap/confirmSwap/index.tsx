@@ -90,7 +90,7 @@ const ConfirmWrap: FC<TConfirmWrapProps> = ({
 
         <div className="wrap-detail-item-wrapper">
           <span className="wrap-detail-label">Price Impact</span>
-          <span className="wrap-detail-value">{currentSlippage / 100}%</span>
+          <span className="wrap-detail-value">- {currentSlippage / 100}%</span>
         </div>
       </div>
       <div className="price-update-wrapper">

@@ -17,7 +17,7 @@ const usePairInfoList = (pairList: string[]) => {
       setPairInfoList(values as Global.TPairInfo[])
       close()
     })
-  }, [pairList])
+  }, [pairList, getPairDetail])
   return pairInfoList
 }
 export default usePairInfoList

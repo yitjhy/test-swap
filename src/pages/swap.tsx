@@ -11,7 +11,7 @@ import ConfirmWrap from '@/views/swap/confirmSwap'
 import PriceDetail from '@/views/swap/price-detail'
 import { formatUnits, parseUnits } from 'ethers/lib/utils'
 import { useSwap } from '@/hooks/useSwapRouter'
-import { constants } from 'ethers'
+import { BigNumber, constants } from 'ethers'
 import { isSameAddress } from '@/utils/address'
 import { useRouter } from 'next/router'
 import { useDialog } from '@/components/dialog'
@@ -21,9 +21,16 @@ import { contractAddress } from '@/utils/enum'
 import { ConfirmBtn } from '@/components/button'
 import SwapDetail from '@/views/swap/swap-detail'
 import { cutOffStr } from '@/utils'
+import { getContract } from '@/hooks/contract/useContract'
+import { HunterswapPair } from '@/utils/abis/HunterswapPair'
+import { ABI } from '@/utils/abis'
+import { ERC20 } from '@/utils/abis/ERC20'
+import { useSigner } from '@/hooks/contract/useSigner'
+import { useWeb3React } from '@web3-react/core'
 
 function Swap() {
   const router = useRouter()
+  const { account, provider } = useWeb3React()
   const [checkedFromCurrency, setCheckedFromCurrency] = useState<Global.TErc20InfoWithPair>(
     {} as Global.TErc20InfoWithPair
   )
@@ -31,6 +38,7 @@ function Swap() {
   const [checkedToCurrency, setCheckedToCurrency] = useState<Global.TErc20InfoWithPair>({} as Global.TErc20InfoWithPair)
   const [isConfirmWrapModalOpen, handleConfirmWrapModalOpen] = useState(false)
   const [isConfigModalOpen, handleConfigModalOpen] = useState(false)
+  const signer = useSigner()
   // const { openDialog } = useDialog()
   const swap = useSwap(
     isSameAddress(checkedFromCurrency.address, constants.AddressZero)
@@ -44,10 +52,38 @@ function Swap() {
     parseUnits(cutOffStr(swap.inAmount, swap.tokenInInfo.decimals), swap.tokenInInfo.decimals)
   )
 
+  const updateBalance = async () => {
+    let fromBalance = constants.Zero
+    let toBalance = constants.Zero
+    if (isSameAddress(checkedFromCurrency.address, constants.AddressZero)) {
+      fromBalance = (await provider?.getBalance(account as string)) as BigNumber
+    } else {
+      const contract = await getContract<ERC20>(checkedFromCurrency.address, ABI.ERC20, signer)
+      fromBalance = (await contract?.balanceOf(account as string)) as BigNumber
+    }
+    setCheckedFromCurrency({
+      ...checkedFromCurrency,
+      balance: fromBalance,
+    })
+
+    if (isSameAddress(checkedToCurrency.address, constants.AddressZero)) {
+      toBalance = (await provider?.getBalance(account as string)) as BigNumber
+    } else {
+      const contract = await getContract<ERC20>(checkedToCurrency.address, ABI.ERC20, signer)
+      toBalance = (await contract?.balanceOf(account as string)) as BigNumber
+    }
+    setCheckedToCurrency({
+      ...checkedToCurrency,
+      balance: toBalance,
+    })
+  }
+
   const handleSubmit = () => {
     // handleConfirmWrapModalOpen(true)
     // swap()
-    swap.swap(isExpertMode).then((data) => console.log(data))
+    swap.swap(isExpertMode).then((data) => {
+      updateBalance().then()
+    })
   }
   const onSelectedCurrencyByFrom: TSwapSectionProps['onSelectedCurrency'] = (balance, currency) => {
     setCheckedFromCurrency(currency)
@@ -108,7 +144,12 @@ function Swap() {
     return 'Swap'
   }
   const getSubmitBtnStatus = () => {
-    if (swap.currentSlippage > swap.slippage && swap.currentSlippage / swap.slippage > 1.2) {
+    if (
+      swap.currentSlippage > swap.slippage &&
+      swap.currentSlippage / swap.slippage > 1.2 &&
+      Number(swap.inAmount) > 0 &&
+      Number(swap.inAmount) <= Number(formatUnits(checkedFromCurrency.balance, checkedFromCurrency.decimals))
+    ) {
       return !isExpertMode
     }
     return !(

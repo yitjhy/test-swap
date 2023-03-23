@@ -3,7 +3,7 @@ import styled from 'styled-components'
 const Docs = () => {
   return (
     <DocsWrapper>
-      <h1>功能开发中，敬请期待...</h1>
+      <h1>The Function Is Under Development...</h1>
     </DocsWrapper>
   )
 }
@@ -12,7 +12,7 @@ const DocsWrapper = styled.div`
   justify-content: center;
   margin-top: 28vh;
   h1 {
-    font-size: 100px;
+    font-size: 80px;
     user-select: none;
     animation: wave 2s infinite;
     @keyframes wave {

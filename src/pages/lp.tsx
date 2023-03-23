@@ -22,8 +22,10 @@ function LP() {
   const getPairAddressList = () => {
     const pairAddressListFromStorage = localStorage.getItem('pairAddressList')
     if (pairAddressListFromStorage) {
-      const pairAddressList = JSON.parse(pairAddressListFromStorage) as string[]
-      setPairAddressList(pairAddressList)
+      const pairAddressData = JSON.parse(pairAddressListFromStorage) as Record<string, string[]>
+      if (pairAddressData[account as string]) {
+        setPairAddressList(pairAddressData[account as string])
+      }
     }
   }
   useEffect(() => {

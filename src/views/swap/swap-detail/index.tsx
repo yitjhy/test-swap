@@ -78,7 +78,7 @@ const SwapDetail: FC<TSwapDetail> = ({
               />
             </span>
           </span>
-          <span className="price-detal-item-value">{currentSlippage / 100} %</span>
+          <span className="price-detal-item-value">- {currentSlippage / 100} %</span>
         </div>
       </div>
       {lock === SwapLock.In && (

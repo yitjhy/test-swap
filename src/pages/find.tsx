@@ -6,11 +6,13 @@ import Modal from '@/components/modal'
 import usePairAddress from '@/hooks/usePairAddress'
 import { invalidAddress } from '@/utils/enum'
 import { useRouter } from 'next/router'
-import { getAddress } from '@/utils'
+import { getAddress, addPairAddressToStorage } from '@/utils'
 import { Global } from '@/types/global'
+import { useWeb3React } from '@web3-react/core'
 
 function Find() {
   const router = useRouter()
+  const { account } = useWeb3React()
   const [isFromCurrencyListModalOpen, handleFromCurrencyListModalOpen] = useState(false)
   const [isToCurrencyListModalOpen, handleToCurrencyListModalOpen] = useState(false)
   const [fromCurrency, setFromCurrency] = useState<Global.TErc20InfoWithPair>({} as Global.TErc20InfoWithPair)
@@ -28,13 +30,7 @@ function Find() {
     setToCurrency(data)
   }
   const submit = () => {
-    const pairAddressListFromStorage = localStorage.getItem('pairAddressList')
-    if (pairAddressListFromStorage) {
-      const pairAddressList = JSON.parse(pairAddressListFromStorage)
-      localStorage.setItem('pairAddressList', JSON.stringify(Array.from(new Set([...pairAddressList, pairAddress]))))
-    } else {
-      localStorage.setItem('pairAddressList', JSON.stringify([pairAddress]))
-    }
+    addPairAddressToStorage(account as string, pairAddress)
     router.push('/lp').then()
   }
   return (
@@ -97,7 +93,7 @@ function Find() {
             onClick={submit}
           >
             {fromCurrency.address && toCurrency.address && pairAddress && pairAddress !== invalidAddress
-              ? 'Add Liquidity'
+              ? 'Manage This Pool'
               : 'Invalid Pair'}
           </button>
         </div>

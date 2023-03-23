@@ -56,3 +56,24 @@ export const cutOffStr = (str: string, length: number) => {
     return str
   }
 }
+
+export const addPairAddressToStorage = (account: string, pairAddress: string) => {
+  const pairAddressListFromStorage = localStorage.getItem('pairAddressList')
+  if (pairAddressListFromStorage) {
+    const pairAddressData = JSON.parse(pairAddressListFromStorage)
+    localStorage.setItem(
+      'pairAddressList',
+      JSON.stringify({
+        ...pairAddressData,
+        [account]: Array.from(new Set([...pairAddressData[account], pairAddress])),
+      })
+    )
+  } else {
+    localStorage.setItem(
+      'pairAddressList',
+      JSON.stringify({
+        [account]: [pairAddress],
+      })
+    )
+  }
+}

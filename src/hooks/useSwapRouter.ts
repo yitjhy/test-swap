@@ -69,7 +69,7 @@ function useReserves(factoryAddress: string, tokenIn: string, tokenOut: string) 
                 contract.off('Sync', syncListener.callback)
             }
         }
-    }, [pair, pairAddress, contract])
+    }, [pair, pairAddress, contract, tokenIn, tokenOut])
     const pairs = useMemo(() => (!!pairAddress ? [pairAddress] : []), [pairAddress])
     return {reserveIn, reserveOut, pairs}
 }

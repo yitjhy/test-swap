@@ -16,6 +16,7 @@ import moment from 'moment'
 import {useDialog} from '@/components/dialog'
 import {TransactionResponse} from '@ethersproject/abstract-provider'
 import {getErrorMsg} from '@/utils'
+import {useSigner} from "@/hooks/contract/useSigner";
 
 const routerAddress = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'
 
@@ -88,8 +89,9 @@ export function useSwap(tokenIn: string, tokenOut: string) {
     )
     const [deadLine, setDeadLine] = useState(300) // 5 min
     const provider = useMulProvider()
-    const {account} = useWeb3React()
+    const {account, provider: web3Provider} = useWeb3React()
     const {openDialog, close} = useDialog()
+    const signer = useSigner()
 
     useEffect(() => {
         if (mulRouter && provider) {
@@ -175,12 +177,15 @@ export function useSwap(tokenIn: string, tokenOut: string) {
     }, [inAmount, outAmount, tokenInInfo.decimals, tokenOutInfo.decimals, reserveIn, reserveOut])
 
     const swap = useCallback(async (isExpert?: boolean) => {
-        if (!router || !account || !provider) return
+        if (!router || !account || !web3Provider) return
         const inValue = parseUnits(inAmount, tokenInInfo.decimals)
         const outValue = parseUnits(outAmount, tokenOutInfo.decimals)
         const _minOut = isExpert ? constants.Zero : minOut.mul(10000).div(12000)
-        const balance = await provider.getEthBalance(account)
-        const _maxIn = isExpert ? balance : maxIn.mul(12000).div(10000)
+        const balance = await web3Provider.getBalance(account)
+        const gasFee = (await web3Provider.getGasPrice()).mul(200000)
+
+        const _maxIn = isExpert ? balance.lte(gasFee) ? 0 :balance.sub(gasFee) : maxIn.mul(12000).div(10000)
+
         const _deadline = moment().add(deadLine, 'second').unix()
         try {
             let tx: TransactionResponse | null = null
@@ -223,7 +228,7 @@ export function useSwap(tokenIn: string, tokenOut: string) {
                 close()
             }, 1000)
         }
-    }, [tokenIn, tokenOut, lock, inAmount, outAmount, router, tokenInInfo, tokenOutInfo, maxIn, minOut, deadLine])
+    }, [tokenIn, tokenOut, lock, inAmount, outAmount, router, tokenInInfo, tokenOutInfo, maxIn, minOut, deadLine, web3Provider])
 
     return {
         inAmount,

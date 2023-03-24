@@ -40,6 +40,8 @@ function Swap() {
   const [checkedFromCurrency, setCheckedFromCurrency] = useState<Global.TErc20InfoWithPair>(
     {} as Global.TErc20InfoWithPair
   )
+  const [inAmount, setInAmount] = useState('')
+  const [outAmount, setOutAmount] = useState('')
   const [isExpertMode, setIsExpertMode] = useState(false)
   const [exactType, setExactType] = useState<ExactType>(ExactType.exactIn)
   const [checkedToCurrency, setCheckedToCurrency] = useState<Global.TErc20InfoWithPair>({} as Global.TErc20InfoWithPair)
@@ -56,7 +58,9 @@ function Swap() {
   const { approved, approve } = useERC20Approved(
     checkedFromCurrency.address,
     contractAddress.router,
-    parseUnits(cutOffStr(swap.inAmount, swap.tokenInInfo.decimals), swap.tokenInInfo.decimals)
+    swap.inAmount && swap.inAmount !== '0'
+      ? parseUnits(cutOffStr(swap.inAmount, swap.tokenInInfo.decimals), swap.tokenInInfo.decimals)
+      : constants.Zero
   )
   const { routePair, routePath } = useRoutes(
     checkedFromCurrency.address,
@@ -193,6 +197,18 @@ function Swap() {
       setCheckedFromCurrency(currencyListByContext[0])
     }
   }, [currencyListByContext])
+  useEffect(() => {
+    if (swap.inAmount && swap.inAmount !== '0') {
+      setInAmount(swap.inAmount)
+    } else {
+      setInAmount('')
+    }
+    if (swap.outAmount && swap.outAmount !== '0') {
+      setOutAmount(swap.outAmount)
+    } else {
+      setOutAmount('')
+    }
+  }, [swap.inAmount, swap.outAmount])
   return (
     <div style={{ maxWidth: 480, margin: '0 auto' }}>
       <Modal
@@ -245,7 +261,7 @@ function Swap() {
           />
           <div style={{ position: 'relative' }}>
             <SwapSection
-              amount={swap.inAmount}
+              amount={inAmount}
               onMax={handleMaxByFrom}
               checkedCurrency={checkedFromCurrency}
               onSelectedCurrency={onSelectedCurrencyByFrom}
@@ -256,7 +272,7 @@ function Swap() {
             </button>
           </div>
           <SwapSection
-            amount={swap.outAmount}
+            amount={outAmount}
             onMax={handleMaxByTo}
             checkedCurrency={checkedToCurrency}
             onSelectedCurrency={onSelectedCurrencyByTo}

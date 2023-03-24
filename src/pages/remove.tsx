@@ -6,7 +6,7 @@ import { ConfirmBtn } from '@/components/button'
 import Modal from '@/components/modal'
 import Config, { TConfig } from '@/views/add/config'
 import RemoveSection, { TRemoveSection } from '@/views/remove/remove-section'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { useRouter } from 'next/router'
 import usePairInfo from '@/hooks/usePairInfo'
 import { formatUnits, parseUnits } from 'ethers/lib/utils'
@@ -17,6 +17,7 @@ import { contractAddress } from '@/utils/enum'
 import { isSameAddress } from '@/utils/address'
 import { cutOffStr } from '@/utils'
 import moment from 'moment'
+import VideoBg from '@/business-components/videoBg'
 
 const RemoveLP = () => {
   const router = useRouter()
@@ -137,65 +138,68 @@ const RemoveLP = () => {
         open={isConfigModalOpen}
         onClose={handleConfigModalOpen}
       />
-      <div style={{ background: '#1a1a1a', padding: '1rem 1rem 2rem' }}>
-        <div className="header">
-          <span
-            className="back-btn"
-            onClick={() => {
-              router.push('/lp').then()
-            }}
-          >
-            <ChevronLeft size={30} />
-          </span>
-          <span>Remove</span>
-          <Settings
-            color="#D9D9D9"
-            size={23}
-            cursor="pointer"
-            onClick={() => {
-              handleConfigModalOpen(true)
-            }}
-          />
-        </div>
-        <RemoveSection data={pairDetail} onLiquidityChange={onLiquidityChange} />
-        <div className="price-wrapper">
-          <div className="label">Price</div>
-          <div className="rate-wrapper">
-            {pairDetail.rate?.map((item, index) => {
-              return (
-                <div className="rate-item" key={index}>
-                  1{item.fromCurrency.symbol}={formatUnits(item.rate, item.toCurrency.decimals)}
-                  {item.toCurrency.symbol}
-                </div>
-              )
-            })}
+      <VideoBg src="/video/liquidity.mp4" />
+      <div style={{ position: 'relative', zIndex: 5 }}>
+        <div style={{ background: '#1a1a1a', padding: '1rem 1rem 2rem' }}>
+          <div className="header">
+            <span
+              className="back-btn"
+              onClick={() => {
+                router.push('/lp').then()
+              }}
+            >
+              <ChevronLeft size={30} />
+            </span>
+            <span>Remove</span>
+            <Settings
+              color="#D9D9D9"
+              size={23}
+              cursor="pointer"
+              onClick={() => {
+                handleConfigModalOpen(true)
+              }}
+            />
+          </div>
+          <RemoveSection data={pairDetail} onLiquidityChange={onLiquidityChange} />
+          <div className="price-wrapper">
+            <div className="label">Price</div>
+            <div className="rate-wrapper">
+              {pairDetail.rate?.map((item, index) => {
+                return (
+                  <div className="rate-item" key={index}>
+                    1{item.fromCurrency.symbol}={formatUnits(item.rate, item.toCurrency.decimals)}
+                    {item.toCurrency.symbol}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+          <div className="button-wrapper">
+            {(!approved || !pairDetail.pairAddress) && (
+              <>
+                <ApproveBtn onClick={approve}>Approve</ApproveBtn>
+                <div className="triangle" />
+              </>
+            )}
+            <RemoveBtn
+              className={`${
+                liquidity?.isZero() ||
+                !approved ||
+                !pairDetail.pairAddress ||
+                liquidity?.gt(pairDetail.accountPairBalance)
+                  ? 'disabledOther'
+                  : ''
+              }`}
+              onClick={handleRemove}
+              disabled={liquidity?.isZero() || liquidity?.gt(pairDetail.accountPairBalance || !approved)}
+            >
+              Remove
+            </RemoveBtn>
           </div>
         </div>
-        <div className="button-wrapper">
-          {(!approved || !pairDetail.pairAddress) && (
-            <>
-              <ApproveBtn onClick={approve}>Approve</ApproveBtn>
-              <div className="triangle" />
-            </>
-          )}
-          <RemoveBtn
-            className={`${
-              liquidity?.isZero() ||
-              !approved ||
-              !pairDetail.pairAddress ||
-              liquidity?.gt(pairDetail.accountPairBalance)
-                ? 'disabledOther'
-                : ''
-            }`}
-            onClick={handleRemove}
-            disabled={liquidity?.isZero() || liquidity?.gt(pairDetail.accountPairBalance || !approved)}
-          >
-            Remove
-          </RemoveBtn>
+        <div style={{ padding: '0.3rem 0.7rem' }}>
+          {pairDetail.tokens && pairDetail.tokens.length > 0 && <LPDetail data={pairDetail} />}
         </div>
-      </div>
-      <div style={{ padding: '0.3rem 0.7rem' }}>
-        {pairDetail.tokens && pairDetail.tokens.length > 0 && <LPDetail data={pairDetail} />}
       </div>
     </RemoveLPWrapper>
   )

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { BigNumber, constants } from 'ethers'
 import { parseUnits, formatUnits } from 'ethers/lib/utils'
@@ -25,6 +25,7 @@ import useErc20InfoList from '@/hooks/useErc20InfoList'
 import { isSameAddress } from '@/utils/address'
 import { Global } from '@/types/global'
 import moment from 'moment'
+import VideoBg from '@/business-components/videoBg'
 
 const IncreaseLP = () => {
   const router = useRouter()
@@ -267,64 +268,67 @@ const IncreaseLP = () => {
         open={isConfigModalOpen}
         onClose={handleConfigModalOpen}
       />
-      <div style={{ background: '#1a1a1a', padding: '1rem' }}>
-        <div className="header">
-          <span
-            className="back-btn"
-            onClick={() => {
-              router.back()
-            }}
-          >
-            <ChevronLeft size={30} />
-          </span>
-          <span>Increase Liquidity</span>
-          <Settings
-            color="#D9D9D9"
-            size={23}
-            cursor="pointer"
-            onClick={() => {
-              handleConfigModalOpen(true)
-            }}
+      <VideoBg src="/video/liquidity.mp4" />
+      <div style={{ position: 'relative', zIndex: 5 }}>
+        <div style={{ background: '#1a1a1a', padding: '1rem' }}>
+          <div className="header">
+            <span
+              className="back-btn"
+              onClick={() => {
+                router.back()
+              }}
+            >
+              <ChevronLeft size={30} />
+            </span>
+            <span>Increase Liquidity</span>
+            <Settings
+              color="#D9D9D9"
+              size={23}
+              cursor="pointer"
+              onClick={() => {
+                handleConfigModalOpen(true)
+              }}
+            />
+          </div>
+          <Tip />
+          <SwapSection
+            amount={inputValueByFrom}
+            onMax={handleMaxByFrom}
+            checkedCurrency={checkedFromCurrency}
+            onSelectedCurrency={onSelectedCurrencyByFrom}
+            onInput={onInputByFrom}
           />
+          <div className="add-icon">
+            <Plus color="#191919" size={18} />
+          </div>
+          <SwapSection
+            amount={inputValueByTo}
+            onMax={handleMaxByTo}
+            checkedCurrency={checkedToCurrency}
+            onSelectedCurrency={onSelectedCurrencyByTo}
+            onInput={onInputByTo}
+          />
+          {pairDetail.pairAddress &&
+          pairDetail.pairAddress !== invalidAddress &&
+          pairDetail.rate &&
+          pairDetail.rate.length > 0 &&
+          checkedFromCurrency.address &&
+          checkedToCurrency.address ? (
+            <Rate shareOfPool={shareOfPool} rate={pairDetail.rate} />
+          ) : null}
+          <div className="approve-wrapper">
+            {!isApprovedCurrencyFrom && checkedFromCurrency.address && (
+              <ApproveBtn onClick={approveCurrencyFrom}>Approve {checkedFromCurrency.symbol}</ApproveBtn>
+            )}
+            {!isApprovedCurrencyTo && checkedToCurrency.address && (
+              <ApproveBtn onClick={approveCurrencyTo}>Approve {checkedToCurrency.symbol}</ApproveBtn>
+            )}
+          </div>
+          <SubmitBtn text={getSubmitBtnText()} onSubmit={handleSubmit} disabled={getSubmitBtnStatus()} />
         </div>
-        <Tip />
-        <SwapSection
-          amount={inputValueByFrom}
-          onMax={handleMaxByFrom}
-          checkedCurrency={checkedFromCurrency}
-          onSelectedCurrency={onSelectedCurrencyByFrom}
-          onInput={onInputByFrom}
-        />
-        <div className="add-icon">
-          <Plus color="#191919" size={18} />
+        <div style={{ padding: '0 0.7rem' }}>
+          {pairDetail.tokens && pairDetail.tokens.length > 0 && <LPDetail data={pairDetail} />}
         </div>
-        <SwapSection
-          amount={inputValueByTo}
-          onMax={handleMaxByTo}
-          checkedCurrency={checkedToCurrency}
-          onSelectedCurrency={onSelectedCurrencyByTo}
-          onInput={onInputByTo}
-        />
-        {pairDetail.pairAddress &&
-        pairDetail.pairAddress !== invalidAddress &&
-        pairDetail.rate &&
-        pairDetail.rate.length > 0 &&
-        checkedFromCurrency.address &&
-        checkedToCurrency.address ? (
-          <Rate shareOfPool={shareOfPool} rate={pairDetail.rate} />
-        ) : null}
-        <div className="approve-wrapper">
-          {!isApprovedCurrencyFrom && checkedFromCurrency.address && (
-            <ApproveBtn onClick={approveCurrencyFrom}>Approve {checkedFromCurrency.symbol}</ApproveBtn>
-          )}
-          {!isApprovedCurrencyTo && checkedToCurrency.address && (
-            <ApproveBtn onClick={approveCurrencyTo}>Approve {checkedToCurrency.symbol}</ApproveBtn>
-          )}
-        </div>
-        <SubmitBtn text={getSubmitBtnText()} onSubmit={handleSubmit} disabled={getSubmitBtnStatus()} />
-      </div>
-      <div style={{ padding: '0 0.7rem' }}>
-        {pairDetail.tokens && pairDetail.tokens.length > 0 && <LPDetail data={pairDetail} />}
       </div>
     </IncreaseLPWrapper>
   )

@@ -27,6 +27,7 @@ import { useSigner } from '@/hooks/contract/useSigner'
 import { useWeb3React } from '@web3-react/core'
 import { useRemoteCurrencyList } from '@/context/remoteCurrencyListContext'
 import useRoutes from '@/hooks/useRoutes'
+import VideoBg from '@/business-components/videoBg'
 
 enum ExactType {
   exactIn = 'exactIn',
@@ -198,144 +199,147 @@ function Swap() {
   }, [currencyListByContext])
   return (
     <div style={{ maxWidth: 480, margin: '0 auto' }}>
-      <SwapWrapper>
-        <Modal
-          title="Confirm Swap"
-          content={
-            <ConfirmWrap
-              onSubmit={handleSubmit}
-              outAmount={swap.outAmount}
-              inAmount={swap.inAmount}
-              rate={swap.rate}
-              inSymbol={swap.tokenInInfo.symbol}
-              outSymbol={swap.tokenOutInfo.symbol}
-              currentSlippage={swap.currentSlippage}
-              lock={swap.lock}
-              slippage={swap.slippage}
-              outDecimals={swap.tokenOutInfo.decimals}
-              minOut={swap.minOut}
-              inDecimals={swap.tokenInInfo.decimals}
-              maxIn={swap.maxIn}
-            />
-          }
-          open={isConfirmWrapModalOpen}
-          contentStyle={{ width: 480 }}
-          onClose={handleConfirmWrapModalOpen}
-        />
-        <Modal
-          contentStyle={{ width: 480 }}
-          title="Settings"
-          content={
-            <Config
-              onSlippageChange={onSlippageChange}
-              onDeadlineChange={onDeadlineChange}
-              onExpertModeChange={onExpertModeChange}
-            />
-          }
-          open={isConfigModalOpen}
-          onClose={handleConfigModalOpen}
-        />
-        <Header
-          title="Swap"
-          operation={
-            <span className="swap-header-settings-icon" onClick={() => handleConfigModalOpen(true)}>
-              <Settings color="#D9D9D9" size={23} />
-            </span>
-          }
-        />
-        <div style={{ position: 'relative' }}>
-          <SwapSection
-            amount={swap.inAmount}
-            onMax={handleMaxByFrom}
-            checkedCurrency={checkedFromCurrency}
-            onSelectedCurrency={onSelectedCurrencyByFrom}
-            onInput={onInputByFrom}
+      <VideoBg src="/video/swap.mp4" />
+      <div style={{ position: 'relative', zIndex: 5 }}>
+        <SwapWrapper>
+          <Modal
+            title="Confirm Swap"
+            content={
+              <ConfirmWrap
+                onSubmit={handleSubmit}
+                outAmount={swap.outAmount}
+                inAmount={swap.inAmount}
+                rate={swap.rate}
+                inSymbol={swap.tokenInInfo.symbol}
+                outSymbol={swap.tokenOutInfo.symbol}
+                currentSlippage={swap.currentSlippage}
+                lock={swap.lock}
+                slippage={swap.slippage}
+                outDecimals={swap.tokenOutInfo.decimals}
+                minOut={swap.minOut}
+                inDecimals={swap.tokenInInfo.decimals}
+                maxIn={swap.maxIn}
+              />
+            }
+            open={isConfirmWrapModalOpen}
+            contentStyle={{ width: 480 }}
+            onClose={handleConfirmWrapModalOpen}
           />
-          <button className="switch-btn" onClick={handleSwitch}>
-            <Image src="/arrow.png" alt="" width={21} height={28} />
-          </button>
-        </div>
-        <SwapSection
-          amount={swap.outAmount}
-          onMax={handleMaxByTo}
-          checkedCurrency={checkedToCurrency}
-          onSelectedCurrency={onSelectedCurrencyByTo}
-          onInput={onInputByTo}
-          hiddenMax={true}
-        />
+          <Modal
+            contentStyle={{ width: 480 }}
+            title="Settings"
+            content={
+              <Config
+                onSlippageChange={onSlippageChange}
+                onDeadlineChange={onDeadlineChange}
+                onExpertModeChange={onExpertModeChange}
+              />
+            }
+            open={isConfigModalOpen}
+            onClose={handleConfigModalOpen}
+          />
+          <Header
+            title="Swap"
+            operation={
+              <span className="swap-header-settings-icon" onClick={() => handleConfigModalOpen(true)}>
+                <Settings color="#D9D9D9" size={23} />
+              </span>
+            }
+          />
+          <div style={{ position: 'relative' }}>
+            <SwapSection
+              amount={swap.inAmount}
+              onMax={handleMaxByFrom}
+              checkedCurrency={checkedFromCurrency}
+              onSelectedCurrency={onSelectedCurrencyByFrom}
+              onInput={onInputByFrom}
+            />
+            <button className="switch-btn" onClick={handleSwitch}>
+              <Image src="/arrow.png" alt="" width={21} height={28} />
+            </button>
+          </div>
+          <SwapSection
+            amount={swap.outAmount}
+            onMax={handleMaxByTo}
+            checkedCurrency={checkedToCurrency}
+            onSelectedCurrency={onSelectedCurrencyByTo}
+            onInput={onInputByTo}
+            hiddenMax={true}
+          />
+          {checkedFromCurrency.address &&
+            checkedToCurrency.address &&
+            swap.inAmount &&
+            swap.inAmount !== '0' &&
+            swap.outAmount &&
+            swap.outAmount !== '0' && (
+              <PriceDetail from={checkedFromCurrency.symbol} to={checkedToCurrency.symbol} rate={swap.rate} />
+            )}
+
+          <>
+            {!approved && checkedFromCurrency.address && (
+              <ApproveBtn onClick={approve}>Approve {checkedFromCurrency.symbol}</ApproveBtn>
+            )}
+            {swap.pairs.length > 0 && !isSameAddress(swap.pairs[0], constants.AddressZero) && (
+              <SubmitBtn
+                text={getSubmitBtnText()}
+                onSubmit={() => {
+                  handleConfirmWrapModalOpen(true)
+                  // handleSubmit()
+                }}
+                disabled={getSubmitBtnStatus()}
+              />
+            )}
+            {swap.pairs.length > 0 &&
+              isSameAddress(swap.pairs[0], constants.AddressZero) &&
+              checkedFromCurrency.address !== checkedToCurrency.address && (
+                <SubmitBtn
+                  disabled={false}
+                  text="Create Pair"
+                  onSubmit={() => {
+                    router
+                      .push(`/add?addressIn=${checkedFromCurrency.address}&addressOut=${checkedToCurrency.address}`)
+                      .then()
+                  }}
+                />
+              )}
+            {(!checkedFromCurrency.address || !checkedToCurrency.address) && (
+              <SubmitBtn disabled={true} text="Select Token" onSubmit={() => {}} />
+            )}
+            {/*{swap.pairs.length > 0 && !isSameAddress(swap.pairs[0], constants.AddressZero) ? (*/}
+            {/*  <SubmitBtn text={getSubmitBtnText()} onSubmit={handleSubmit} disabled={getSubmitBtnStatus()} />*/}
+            {/*) : (*/}
+            {/*  <SubmitBtn*/}
+            {/*    disabled={false}*/}
+            {/*    text="Create Pair"*/}
+            {/*    onSubmit={() => {*/}
+            {/*      router*/}
+            {/*        .push(`/add?addressIn=${checkedFromCurrency.address}&addressOut=${checkedToCurrency.address}`)*/}
+            {/*        .then()*/}
+            {/*    }}*/}
+            {/*  />*/}
+            {/*)}*/}
+          </>
+        </SwapWrapper>
         {checkedFromCurrency.address &&
           checkedToCurrency.address &&
           swap.inAmount &&
           swap.inAmount !== '0' &&
           swap.outAmount &&
           swap.outAmount !== '0' && (
-            <PriceDetail from={checkedFromCurrency.symbol} to={checkedToCurrency.symbol} rate={swap.rate} />
-          )}
-
-        <>
-          {!approved && checkedFromCurrency.address && (
-            <ApproveBtn onClick={approve}>Approve {checkedFromCurrency.symbol}</ApproveBtn>
-          )}
-          {swap.pairs.length > 0 && !isSameAddress(swap.pairs[0], constants.AddressZero) && (
-            <SubmitBtn
-              text={getSubmitBtnText()}
-              onSubmit={() => {
-                handleConfirmWrapModalOpen(true)
-                // handleSubmit()
-              }}
-              disabled={getSubmitBtnStatus()}
+            <SwapDetail
+              currentSlippage={swap.currentSlippage}
+              lock={swap.lock}
+              maxIn={swap.maxIn}
+              minOut={swap.minOut}
+              outAmount={swap.outAmount}
+              inSymbol={swap.tokenInInfo.symbol}
+              inDecimals={swap.tokenInInfo.decimals}
+              outSymbol={swap.tokenOutInfo.symbol}
+              outDecimals={swap.tokenOutInfo.decimals}
+              slippage={swap.slippage}
             />
           )}
-          {swap.pairs.length > 0 &&
-            isSameAddress(swap.pairs[0], constants.AddressZero) &&
-            checkedFromCurrency.address !== checkedToCurrency.address && (
-              <SubmitBtn
-                disabled={false}
-                text="Create Pair"
-                onSubmit={() => {
-                  router
-                    .push(`/add?addressIn=${checkedFromCurrency.address}&addressOut=${checkedToCurrency.address}`)
-                    .then()
-                }}
-              />
-            )}
-          {(!checkedFromCurrency.address || !checkedToCurrency.address) && (
-            <SubmitBtn disabled={true} text="Select Token" onSubmit={() => {}} />
-          )}
-          {/*{swap.pairs.length > 0 && !isSameAddress(swap.pairs[0], constants.AddressZero) ? (*/}
-          {/*  <SubmitBtn text={getSubmitBtnText()} onSubmit={handleSubmit} disabled={getSubmitBtnStatus()} />*/}
-          {/*) : (*/}
-          {/*  <SubmitBtn*/}
-          {/*    disabled={false}*/}
-          {/*    text="Create Pair"*/}
-          {/*    onSubmit={() => {*/}
-          {/*      router*/}
-          {/*        .push(`/add?addressIn=${checkedFromCurrency.address}&addressOut=${checkedToCurrency.address}`)*/}
-          {/*        .then()*/}
-          {/*    }}*/}
-          {/*  />*/}
-          {/*)}*/}
-        </>
-      </SwapWrapper>
-      {checkedFromCurrency.address &&
-        checkedToCurrency.address &&
-        swap.inAmount &&
-        swap.inAmount !== '0' &&
-        swap.outAmount &&
-        swap.outAmount !== '0' && (
-          <SwapDetail
-            currentSlippage={swap.currentSlippage}
-            lock={swap.lock}
-            maxIn={swap.maxIn}
-            minOut={swap.minOut}
-            outAmount={swap.outAmount}
-            inSymbol={swap.tokenInInfo.symbol}
-            inDecimals={swap.tokenInInfo.decimals}
-            outSymbol={swap.tokenOutInfo.symbol}
-            outDecimals={swap.tokenOutInfo.decimals}
-            slippage={swap.slippage}
-          />
-        )}
+      </div>
     </div>
   )
 }

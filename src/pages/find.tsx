@@ -9,6 +9,7 @@ import { useRouter } from 'next/router'
 import { getAddress, addPairAddressToStorage } from '@/utils'
 import { Global } from '@/types/global'
 import { useWeb3React } from '@web3-react/core'
+import VideoBg from '@/business-components/videoBg'
 
 function Find() {
   const router = useRouter()
@@ -50,53 +51,65 @@ function Find() {
         open={isToCurrencyListModalOpen}
         onClose={handleToCurrencyListModalOpen}
       />
-      <div className="collapse-header">
-        <span className="back-icon" onClick={() => router.back()}>
-          <LeftOutlined />
-        </span>
-        <div className="title">Import Pool</div>
-      </div>
+      <VideoBg src="/video/liquidity.mp4" />
       <div
-        className="select-currency-wrapper"
-        onClick={() => {
-          handleFromCurrencyListModalOpen(true)
+        style={{
+          position: 'relative',
+          zIndex: 5,
+          background: '#1A1A1A',
+          padding: '21px 19px',
+          rowGap: '14px',
+          display: 'grid',
         }}
       >
-        <span className="currency-symbol">{fromCurrency.symbol}</span>
-        <span className="arrow">
-          <CaretDownOutlined />
-        </span>
-      </div>
-      <div className="icon-wrapper">
-        <PlusCircleOutlined />
-      </div>
-      <div
-        className="select-currency-wrapper"
-        onClick={() => {
-          handleToCurrencyListModalOpen(true)
-        }}
-      >
-        <span className="currency-symbol">{toCurrency.symbol}</span>
-        <span className="arrow">
-          <CaretDownOutlined />
-        </span>
-      </div>
-      <div className="tip-wrapper">
-        <div>Select a token to find your liquidity.</div>
-        <div>
-          <button
-            className={`submit ${
-              !(fromCurrency.address && toCurrency.address && pairAddress && pairAddress !== invalidAddress)
-                ? 'invalid'
-                : ''
-            }`}
-            disabled={!(fromCurrency.address && toCurrency.address && pairAddress && pairAddress !== invalidAddress)}
-            onClick={submit}
-          >
-            {fromCurrency.address && toCurrency.address && pairAddress && pairAddress !== invalidAddress
-              ? 'Manage This Pool'
-              : 'Invalid Pair'}
-          </button>
+        <div className="collapse-header">
+          <span className="back-icon" onClick={() => router.back()}>
+            <LeftOutlined />
+          </span>
+          <div className="title">Import Pool</div>
+        </div>
+        <div
+          className="select-currency-wrapper"
+          onClick={() => {
+            handleFromCurrencyListModalOpen(true)
+          }}
+        >
+          <span className="currency-symbol">{fromCurrency.symbol}</span>
+          <span className="arrow">
+            <CaretDownOutlined />
+          </span>
+        </div>
+        <div className="icon-wrapper">
+          <PlusCircleOutlined />
+        </div>
+        <div
+          className="select-currency-wrapper"
+          onClick={() => {
+            handleToCurrencyListModalOpen(true)
+          }}
+        >
+          <span className="currency-symbol">{toCurrency.symbol}</span>
+          <span className="arrow">
+            <CaretDownOutlined />
+          </span>
+        </div>
+        <div className="tip-wrapper">
+          <div>Select a token to find your liquidity.</div>
+          <div>
+            <button
+              className={`submit ${
+                !(fromCurrency.address && toCurrency.address && pairAddress && pairAddress !== invalidAddress)
+                  ? 'invalid'
+                  : ''
+              }`}
+              disabled={!(fromCurrency.address && toCurrency.address && pairAddress && pairAddress !== invalidAddress)}
+              onClick={submit}
+            >
+              {fromCurrency.address && toCurrency.address && pairAddress && pairAddress !== invalidAddress
+                ? 'Manage This Pool'
+                : 'Invalid Pair'}
+            </button>
+          </div>
         </div>
       </div>
     </LPWrapper>

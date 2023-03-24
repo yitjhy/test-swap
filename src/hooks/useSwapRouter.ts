@@ -93,6 +93,7 @@ export function useSwap(tokenIn: string, tokenOut: string) {
     const provider = useMulProvider()
     const {account, provider: web3Provider} = useWeb3React()
     const {openDialog, close} = useDialog()
+    const hasPath = pairs.length > 0
 
     useEffect(() => {
         if (mulRouter && provider) {
@@ -109,7 +110,7 @@ export function useSwap(tokenIn: string, tokenOut: string) {
     }, [inAmount, outAmount, tokenInInfo, tokenOutInfo])
 
     useDebounceEffect(() => {
-        if (lock === SwapLock.In && router) {
+        if (lock === SwapLock.In && router && hasPath) {
             const inValue = parseValue(inAmount, tokenInInfo.decimals)
             if (inValue.eq(constants.Zero)) {
                 setOutAmount('0')
@@ -119,19 +120,19 @@ export function useSwap(tokenIn: string, tokenOut: string) {
                 })
             }
         }
-    }, [lock, inAmount, reserveIn, reserveOut, tokenInInfo, tokenOutInfo, rate])
+    }, [lock, inAmount, reserveIn, reserveOut, tokenInInfo, tokenOutInfo, rate, hasPath])
     useDebounceEffect(() => {
-        if (lock === SwapLock.Out && router) {
+        if (lock === SwapLock.Out && router && hasPath) {
             const outValue = parseValue(outAmount, tokenOutInfo.decimals)
             if (outValue.eq(constants.Zero)) {
                 setInAmount('0')
             } else {
                 router
-                    .getAmountIn(outValue.gt(reserveOut) ? reserveOut.sub(1) : outValue, reserveIn, reserveOut)
+                    .getAmountIn(outValue.gt(reserveOut)&&reserveOut.gt(0) ? reserveOut.sub(1) : outValue, reserveIn, reserveOut)
                     .then((res) => setInAmount(formatUnits(res, tokenInInfo.decimals)))
             }
         }
-    }, [lock, outAmount, reserveOut, reserveIn, tokenInInfo, tokenOutInfo, rate])
+    }, [lock, outAmount, reserveOut, reserveIn, tokenInInfo, tokenOutInfo, rate, hasPath])
 
     const updateIn = useCallback(
         (amount: number | string) => {

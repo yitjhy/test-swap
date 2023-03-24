@@ -19,3 +19,4 @@ export const platformCurrencyData = {
   decimals: 18,
   address: platFormAddress,
 }
+export const chainId = 5

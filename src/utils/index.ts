@@ -77,3 +77,10 @@ export const addPairAddressToStorage = (account: string, pairAddress: string) =>
     )
   }
 }
+
+export const parseParams = (data: Record<string, string | number>) => {
+  return Object.keys(data).reduce((pre, cur) => {
+    pre += `${cur}=${data[cur]}&`
+    return pre
+  }, '')
+}

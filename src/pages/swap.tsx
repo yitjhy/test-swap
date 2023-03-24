@@ -19,17 +19,18 @@ import useERC20Approved from '@/hooks/contract/useERC20Approved'
 import { contractAddress } from '@/utils/enum'
 import { ConfirmBtn } from '@/components/button'
 import SwapDetail from '@/views/swap/swap-detail'
-import { cutOffStr } from '@/utils'
+import { cutOffStr, parseParams } from '@/utils'
 import { getContract } from '@/hooks/contract/useContract'
 import { ABI } from '@/utils/abis'
 import { ERC20 } from '@/utils/abis/ERC20'
 import { useSigner } from '@/hooks/contract/useSigner'
 import { useWeb3React } from '@web3-react/core'
 import { useRemoteCurrencyList } from '@/context/remoteCurrencyListContext'
+import useRoutes from '@/hooks/useRoutes'
 
 enum ExactType {
   exactIn = 'exactIn',
-  exactOut = 'exactIn',
+  exactOut = 'exactOut',
 }
 
 function Swap() {
@@ -39,7 +40,7 @@ function Swap() {
     {} as Global.TErc20InfoWithPair
   )
   const [isExpertMode, setIsExpertMode] = useState(false)
-  const [exactType, setExactType] = useState(ExactType.exactIn)
+  const [exactType, setExactType] = useState<ExactType>(ExactType.exactIn)
   const [checkedToCurrency, setCheckedToCurrency] = useState<Global.TErc20InfoWithPair>({} as Global.TErc20InfoWithPair)
   const [isConfirmWrapModalOpen, handleConfirmWrapModalOpen] = useState(false)
   const [isConfigModalOpen, handleConfigModalOpen] = useState(false)
@@ -51,13 +52,19 @@ function Swap() {
       : checkedFromCurrency.address,
     checkedToCurrency.address
   )
-  console.log('swap', swap)
   const { approved, approve } = useERC20Approved(
     checkedFromCurrency.address,
     contractAddress.router,
     parseUnits(cutOffStr(swap.inAmount, swap.tokenInInfo.decimals), swap.tokenInInfo.decimals)
   )
-
+  const { routePair, routePath } = useRoutes(
+    checkedFromCurrency.address,
+    checkedToCurrency.address,
+    exactType === ExactType.exactIn ? swap.inAmount : swap.outAmount,
+    exactType
+  )
+  console.log(routePair)
+  console.log(routePath)
   const updateBalance = async () => {
     let fromBalance = constants.Zero
     let toBalance = constants.Zero
@@ -189,58 +196,6 @@ function Swap() {
       setCheckedFromCurrency(currencyListByContext[0])
     }
   }, [currencyListByContext])
-  // useEffect(() => {
-  // if (swap.currentSlippage > swap.slippage && openDialog) {
-  // openDialog({ title: 'Warning', desc: 'Had Out Of Slippage, Please ReInput Or Reset Slippage', loading: false })
-  // }
-  // }, [swap.inAmount, swap.outAmount, swap.currentSlippage, swap.slippage])
-  useEffect(() => {
-    const tokenChainId = 5
-    const url =
-      'https://api.uniswap.org/v1/quote?protocols=v2&tokenInAddress=0x478c635fd9EF9f26d1a7fD928294FA7d3F5532c2&tokenInChainId=5&tokenOutAddress=0x30a2926428D33d5A6C0FB8892b89232a020991BE&tokenOutChainId=5&amount=1000000000000000000&type=exactIn'
-    if (checkedFromCurrency.address && checkedToCurrency.address) {
-      let amount = '0'
-      if (exactType === ExactType.exactIn) {
-        amount = formatUnits(cutOffStr(swap.inAmount, checkedFromCurrency.decimals), checkedFromCurrency.decimals)
-      } else {
-        amount = formatUnits(cutOffStr(swap.inAmount, checkedToCurrency.decimals), checkedToCurrency.decimals)
-      }
-      console.log(amount)
-      const params = {
-        protocols: 'v2',
-        tokenInAddress: isSameAddress(checkedFromCurrency.address, constants.AddressZero)
-          ? contractAddress.weth
-          : checkedFromCurrency.address,
-        tokenInChainId: tokenChainId,
-        tokenOutAddress: isSameAddress(checkedToCurrency.address, constants.AddressZero)
-          ? contractAddress.weth
-          : checkedToCurrency.address,
-        tokenOutChainId: tokenChainId,
-        amount: '1000000000000000000',
-        type: exactType,
-      }
-
-      // fetch(url)
-      //   .then((response) => response.json())
-      //   .then((data) => {
-      //     if (data.route && data.route.length) {
-      //       console.log(data)
-      //       const routePair = data.route[0].map((item) => item.address)
-      //       const routePath = data.route[0].reduce((pre, cur, index) => {
-      //         if (index === 0) {
-      //           pre.push(cur.tokenIn)
-      //           pre.push(cur.tokenOut)
-      //         } else {
-      //           pre.push(cur.tokenOut)
-      //         }
-      //         return pre
-      //       }, [])
-      //       console.log(routePair)
-      //       console.log(routePath)
-      //     }
-      //   })
-    }
-  }, [checkedFromCurrency.address, checkedToCurrency.address])
   return (
     <div style={{ maxWidth: 480, margin: '0 auto' }}>
       <SwapWrapper>

@@ -20,6 +20,7 @@ const setStorage = (account: string, storageKey: string, key: string, value: any
     localStorage.setItem(
       storageKey,
       JSON.stringify({
+        ...JSON.parse(addConfig),
         [account]: {
           ...JSON.parse(addConfig)[account],
           [key]: value,
@@ -35,7 +36,7 @@ const getStorage = (account: string, storageKey: string, key: string) => {
   const addConfigFromStorage = localStorage.getItem(storageKey)
   if (addConfigFromStorage) {
     const addConfig = JSON.parse(addConfigFromStorage)
-    return addConfig[account][key]
+    return addConfig[account] ? addConfig[account][key] : undefined
   }
 }
 
@@ -73,6 +74,7 @@ const Config: FC<TConfig> = ({ onSlippageChange, onDeadlineChange, onExpertModeC
       const isExpertMode = getStorage(account, storageKey, 'isExpertMode')
       setIsExpertMode(!!isExpertMode)
       onExpertModeChange(!!isExpertMode)
+      setStorage(account, storageKey, 'isExpertMode', !!isExpertMode)
       const slippageFromStorage = getStorage(account, storageKey, 'slippage')
       if (slippageFromStorage && slippageFromStorage !== 0) {
         handleSlippageChange(Number(slippageFromStorage))

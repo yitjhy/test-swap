@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { ChevronLeft } from 'react-feather'
+import { ChevronLeft, HelpCircle } from 'react-feather'
 import { Settings } from 'react-feather'
 import LPDetail from '@/views/add/lp-detail'
 import { ConfirmBtn } from '@/components/button'
@@ -18,6 +18,7 @@ import { isSameAddress } from '@/utils/address'
 import { cutOffStr } from '@/utils'
 import moment from 'moment'
 import VideoBg from '@/business-components/videoBg'
+import Popover from '@/components/popover'
 
 const RemoveLP = () => {
   const router = useRouter()
@@ -111,15 +112,12 @@ const RemoveLP = () => {
     }
   }
   const onSlippageChange: TConfig['onSlippageChange'] = (value) => {
-    console.log(value)
     setSlippage(value)
   }
   const onDeadlineChange: TConfig['onDeadlineChange'] = (value) => {
-    console.log(value)
     setDeadline(value)
   }
   const onExpertModeChange: TConfig['onExpertModeChange'] = (value) => {
-    console.log(value)
     setIsExpertMode(value)
   }
   return (
@@ -150,7 +148,24 @@ const RemoveLP = () => {
             >
               <ChevronLeft size={30} />
             </span>
-            <span>Remove</span>
+            <span style={{ display: 'flex', columnGap: 5 }}>
+              Remove
+              <span className="label-tip">
+                <Popover
+                  content={
+                    <TipText>
+                      Tip: Removing pool tokens converts your position back into underlying tokens at the current rate,
+                      proportional to your share of the pool. Accrued fees are included in the amounts you receive.
+                    </TipText>
+                  }
+                  triger={
+                    <span style={{ display: 'flex' }}>
+                      <HelpCircle size={16} />
+                    </span>
+                  }
+                />
+              </span>
+            </span>
             <Settings
               color="#D9D9D9"
               size={23}
@@ -205,6 +220,17 @@ const RemoveLP = () => {
   )
 }
 
+const TipText = styled.span`
+  display: block;
+  background: #191919;
+  font-size: 8px;
+  width: 170px;
+  font-weight: lighter;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  padding: 3px;
+  color: #9c9c9c;
+`
 const RemoveLPWrapper = styled.div`
   color: #d9d9d9;
   padding: 1rem;

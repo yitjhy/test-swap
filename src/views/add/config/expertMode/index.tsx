@@ -18,7 +18,7 @@ const ExpertMode: FC<{ onTurnOnExpertMode: () => void }> = ({ onTurnOnExpertMode
       <div className="tip-wrapper">
         <Image src="/warning.png" alt="" width={15} height={15} />
         <p className="tip-icon">
-          Expert mode turns off the Confirm transaction prompt, and allows high slippage trades that often result in bad
+          Expert mode turns off the Confirm transaction prompt and allows high slippage trades that often result in bad
           rates and lost funds.
         </p>
       </div>

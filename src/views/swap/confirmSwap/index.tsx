@@ -68,7 +68,7 @@ const ConfirmWrap: FC<TConfirmWrapProps> = ({
         <div className="wrap-detail-item-wrapper">
           <span className="wrap-detail-label">Price</span>
           <span className="wrap-detail-value">
-            {rate} {inSymbol} / {outSymbol}
+            {rate} {outSymbol} / {inSymbol}
           </span>
         </div>
         {lock === SwapLock.In && (

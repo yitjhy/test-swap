@@ -241,15 +241,12 @@ const IncreaseLP = () => {
   }, [pairDetail])
 
   const onSlippageChange: TConfig['onSlippageChange'] = (value) => {
-    console.log(value)
     setSlippage(value)
   }
   const onDeadlineChange: TConfig['onDeadlineChange'] = (value) => {
-    console.log(value)
     setDeadline(value)
   }
   const onExpertModeChange: TConfig['onExpertModeChange'] = (value) => {
-    console.log(value)
     setIsExpertMode(value)
   }
   return (

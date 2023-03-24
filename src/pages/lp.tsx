@@ -47,41 +47,57 @@ function LP() {
           <span className="title">Your Liquidity</span>
           <div className="operations">
             <button className="create-pair-btn" onClick={goIncreaseLP}>
-              Creat a Pair
+              Create a pair
             </button>
             <button className="increase-lp-btn" onClick={goIncreaseLP}>
-              Increase Liquidity
+              Add Liquidity
             </button>
           </div>
         </div>
-        <div className="collapse-wrapper">
-          {pairDetailList?.map((item, index) => {
-            return (
-              <Collapse
-                key={index}
-                title={
-                  <div className="collapse-header">
-                    <Image src={imgSrc} alt="" width={40} height={40} />
-                    {item.tokens[0].symbol} / {item.tokens[1].symbol}
-                  </div>
-                }
+        {pairDetailList.length > 0 ? (
+          <>
+            <div className="collapse-wrapper">
+              {pairDetailList?.map((item, index) => {
+                return (
+                  <Collapse
+                    key={index}
+                    title={
+                      <div className="collapse-header">
+                        <Image src={imgSrc} alt="" width={40} height={40} />
+                        {item.tokens[0].symbol} / {item.tokens[1].symbol}
+                      </div>
+                    }
+                  >
+                    <PairDetail data={item} />
+                  </Collapse>
+                )
+              })}
+            </div>
+            <div className="join-lp-tip">
+              Dont see a pair you joined?{' '}
+              <span
+                className="import-btn"
+                onClick={() => {
+                  router.push('/find').then()
+                }}
               >
-                <PairDetail data={item} />
-              </Collapse>
-            )
-          })}
-        </div>
-        <div className="join-lp-tip">
-          Dont see a pool you joined?{' '}
-          <span
-            className="import-btn"
-            onClick={() => {
-              router.push('/find').then()
-            }}
-          >
-            Import It
-          </span>
-        </div>
+                Import It
+              </span>
+            </div>
+          </>
+        ) : (
+          <div className="join-lp-tip" style={{ marginTop: 10 }}>
+            No liquidity found.{' '}
+            <span
+              className="import-btn"
+              onClick={() => {
+                router.push('/find').then()
+              }}
+            >
+              Import It
+            </span>
+          </div>
+        )}
       </SwapWrapper>
     </LPWrapper>
   )

@@ -103,7 +103,7 @@ const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }
           background: '#262626',
           color: '#D9D9D9',
         }}
-        placeholder="Search Name Or Paste Address"
+        placeholder="Search name or paste address"
       />
       <RecommendCurrency>
         {currencyListByContext.length > 0 &&

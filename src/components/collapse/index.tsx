@@ -23,7 +23,7 @@ const Collapse: FC<TCollapseProps> = ({
   maxHeight = 350,
 }) => {
   const ref = useRef(null)
-  const [isExpand, setIsExpand] = useState(true)
+  const [isExpand, setIsExpand] = useState(false)
   const [globalIsExpand, setGlobalIsExpand] = useState(true)
   const [offsetHeight, setOffsetHeight] = useState<number | undefined>()
   const size = useSize(ref)
@@ -32,7 +32,6 @@ const Collapse: FC<TCollapseProps> = ({
     isForceExpand && setIsExpand(!isExpand)
     onClick && onClick()
   }
-
   useLayoutEffect(() => {
     if (globalIsExpand && size) {
       setOffsetHeight(size?.height)
@@ -55,7 +54,8 @@ const ContentWrapper = styled.div<{ isExpand: boolean; height: number | undefine
   max-height: ${({ maxHeight }) => `${maxHeight}px`};
   transition: all cubic-bezier(0.39, 0.58, 0.57, 1) 0.2s;
   transform-origin: 50% 0;
-  height: ${({ isExpand, height }) => (isExpand ? `${height}px` : 0)};
+  //height: ${({ isExpand, height }) => (isExpand ? `${height}px` : 0)};
+  height: ${({ isExpand, height }) => (isExpand ? `261px` : 0)};
   opacity: ${({ isExpand }) => (isExpand ? 1 : 0)};
   overflow: ${({ height, maxHeight }) => (Number(height) < maxHeight ? 'hidden' : 'auto')};
   /* transform: ${({ isExpand }) => (isExpand ? 'scaleY(1)' : 'scaleY(0)')}; */

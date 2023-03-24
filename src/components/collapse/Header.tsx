@@ -9,9 +9,14 @@ interface HeaderProps {
   operation?: React.ReactNode | string
 }
 
-const DefaultOperation: FC<{ isExpand: boolean }> = ({ isExpand }) => (
-  <HeaderArrowIcon isExpand={isExpand}>&#9650;</HeaderArrowIcon>
-)
+const DefaultOperation: FC<{ isExpand: boolean }> = ({ isExpand }) => {
+  return (
+    <span style={{ display: 'flex', columnGap: 11, alignItems: 'center' }}>
+      <span style={{ fontSize: 14, color: '#D9D9D9' }}>Manage</span>
+      <HeaderArrowIcon isExpand={isExpand}>&#9650;</HeaderArrowIcon>
+    </span>
+  )
+}
 
 const Header: FC<HeaderProps> = ({ title, onClick, showOperation = true, className, operation }) => {
   const [isExpand, setIsExpand] = useState<boolean>(false)

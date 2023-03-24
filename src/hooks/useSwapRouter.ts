@@ -105,7 +105,7 @@ export function useSwap(tokenIn: string, tokenOut: string) {
     }, [mulRouter, provider])
 
     const rate = useMemo(() => {
-        if (parseValue(inAmount, tokenInInfo.decimals).gt(Zero)) return  formatValue(outAmount, tokenOutInfo.decimals)/ formatValue(inAmount, tokenInInfo.decimals)
+        if (parseValue(inAmount, tokenInInfo.decimals).gt(Zero)) return formatValue(outAmount, tokenOutInfo.decimals) / formatValue(inAmount, tokenInInfo.decimals)
         return 0
     }, [inAmount, outAmount, tokenInInfo, tokenOutInfo])
 
@@ -128,7 +128,7 @@ export function useSwap(tokenIn: string, tokenOut: string) {
                 setInAmount('0')
             } else {
                 router
-                    .getAmountIn(outValue.gt(reserveOut)&&reserveOut.gt(0) ? reserveOut.sub(1) : outValue, reserveIn, reserveOut)
+                    .getAmountIn(outValue.gt(reserveOut) && reserveOut.gt(0) ? reserveOut.sub(1) : outValue, reserveIn, reserveOut)
                     .then((res) => setInAmount(formatUnits(res, tokenInInfo.decimals)))
             }
         }
@@ -151,27 +151,22 @@ export function useSwap(tokenIn: string, tokenOut: string) {
 
     const currentSlippage = useMemo(() => {
         const currentPrice = reserveOut.gt(constants.Zero)
-            ? +formatUnits(reserveIn, tokenInInfo.decimals) / +formatUnits(reserveOut, tokenOutInfo.decimals)
+            ? +formatUnits(reserveOut, tokenOutInfo.decimals) / +formatUnits(reserveIn, tokenInInfo.decimals)
             : 0
-        const swapPrice = +outAmount > 0 ? +inAmount / +outAmount : 0
+
         if (currentPrice === 0) return 0
-        return Math.floor(((swapPrice - currentPrice) / currentPrice) * 10000)
+        const inValue = formatValue(inAmount, tokenInInfo.decimals)
+        const outValue = formatValue(outAmount, tokenOutInfo.decimals)
+        const _midOutValue = currentPrice * inValue
+        return Math.floor(((_midOutValue - outValue) / _midOutValue - 0.003) * 10000)
     }, [reserveIn, reserveOut, inAmount, outAmount, tokenInInfo, tokenOutInfo])
 
     const [maxIn, minOut] = useMemo(() => {
-        if (+inAmount == 0 || +outAmount == 0) return  [constants.Zero, constants.Zero]
+        if (+inAmount == 0 || +outAmount == 0) return [constants.Zero, constants.Zero]
         const inValue = parseValue(inAmount, tokenInInfo.decimals)
         const outValue = parseValue(outAmount, tokenOutInfo.decimals)
-        const price = +formatUnits(reserveIn, tokenInInfo.decimals) / +formatUnits(reserveOut, tokenOutInfo.decimals)
-        const maxPrice = price * (1 + slippage / 10000)
-        const maxInValue = parseValue(
-            (maxPrice * +formatUnits(outValue, tokenOutInfo.decimals)).toFixed(tokenInInfo.decimals),
-            tokenInInfo.decimals
-        )
-        const minOutValue = parseValue(
-            (+formatUnits(inValue, tokenInInfo.decimals) / maxPrice).toFixed(tokenOutInfo.decimals),
-            tokenOutInfo.decimals
-        )
+        const maxInValue = inValue.mul(10000 + slippage).div(10000)
+        const minOutValue = outValue.mul(10000).div(10000 + slippage)
         return [maxInValue, minOutValue]
     }, [inAmount, outAmount, tokenInInfo.decimals, tokenOutInfo.decimals, reserveIn, reserveOut])
 
@@ -183,7 +178,7 @@ export function useSwap(tokenIn: string, tokenOut: string) {
         const balance = await web3Provider.getBalance(account)
         const gasFee = (await web3Provider.getGasPrice()).mul(200000)
 
-        const _maxIn = isExpert && isSameAddress(tokenIn, AddressZero) ? balance.lte(gasFee) ? 0 :balance.sub(gasFee) : maxIn.mul(12000).div(10000)
+        const _maxIn = isExpert && isSameAddress(tokenIn, AddressZero) ? balance.lte(gasFee) ? 0 : balance.sub(gasFee) : maxIn.mul(12000).div(10000)
 
         const _deadline = moment().add(deadLine, 'second').unix()
         try {
@@ -258,7 +253,7 @@ function parseValue(value: string, decimals: number) {
         if (length > decimals) {
             return parseUnits(value, length).div(BigNumber.from(10).pow(length - decimals))
         } else {
-            return  parseUnits(value, decimals)
+            return parseUnits(value, decimals)
         }
     } catch (e) {
         return constants.Zero

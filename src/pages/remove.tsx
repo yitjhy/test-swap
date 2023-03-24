@@ -4,7 +4,7 @@ import { Settings } from 'react-feather'
 import LPDetail from '@/views/add/lp-detail'
 import { ConfirmBtn } from '@/components/button'
 import Modal from '@/components/modal'
-import Config from '@/views/swap/config'
+import Config, { TConfig } from '@/views/add/config'
 import RemoveSection, { TRemoveSection } from '@/views/remove/remove-section'
 import { useState } from 'react'
 import { useRouter } from 'next/router'
@@ -16,10 +16,14 @@ import useERC20Approved from '@/hooks/contract/useERC20Approved'
 import { contractAddress } from '@/utils/enum'
 import { isSameAddress } from '@/utils/address'
 import { cutOffStr } from '@/utils'
+import moment from 'moment'
 
 const RemoveLP = () => {
   const router = useRouter()
   const { removeLiquidity, removeLiquidityETH } = useRemoveLiquidity()
+  const [slippage, setSlippage] = useState<number>(0)
+  const [deadline, setDeadline] = useState<number>(0)
+  const [isExpertMode, setIsExpertMode] = useState(false)
   const [isConfigModalOpen, handleConfigModalOpen] = useState(false)
   const [liquidity, setLiquidity] = useState<BigNumber>()
   const { query } = useRouter()
@@ -30,35 +34,109 @@ const RemoveLP = () => {
     contractAddress.router,
     liquidity || constants.Zero
   )
-  const onLiquidityChange: TRemoveSection['onLiquidityChange'] = (data) => {
-    setLiquidity(data)
+  const [inputFromLiquidity, setInputFromLiquidity] = useState(constants.Zero)
+  const [inputToLiquidity, setInputToLiquidity] = useState(constants.Zero)
+  const onLiquidityChange: TRemoveSection['onLiquidityChange'] = (liquidity, inputFromLiquidity, inputToLiquidity) => {
+    setLiquidity(liquidity)
+    setInputFromLiquidity(inputFromLiquidity)
+    setInputToLiquidity(inputToLiquidity)
+    console.log(formatUnits(inputFromLiquidity, pairDetail.tokens[0].decimals))
+    console.log(formatUnits(inputToLiquidity, pairDetail.tokens[1].decimals))
   }
   const handleRemove = async () => {
+    let res = false
+    const _deadline = moment()
+      .add(deadline * 60, 'second')
+      .unix()
     if (pairDetail.tokens.length && !liquidity?.isZero() && approved && pairDetail.pairAddress) {
       if (isSameAddress(pairDetail.tokens[0].address, constants.AddressZero)) {
-        await removeLiquidityETH(pairDetail.tokens[1].address, liquidity as BigNumber)
+        let erc20LiquidityTokenMin = inputToLiquidity
+          .mul(parseUnits(`${100 - slippage}`, 10))
+          .div(parseUnits('100', 10))
+        let ethLiquidityTokenMin = inputFromLiquidity
+          .mul(parseUnits(`${100 - slippage}`, 10))
+          .div(parseUnits('100', 10))
+        if (isExpertMode) {
+          erc20LiquidityTokenMin = constants.Zero
+          ethLiquidityTokenMin = constants.Zero
+        }
+        res = await removeLiquidityETH(
+          pairDetail.tokens[1].address,
+          liquidity as BigNumber,
+          erc20LiquidityTokenMin,
+          ethLiquidityTokenMin,
+          _deadline
+        )
       }
       if (isSameAddress(pairDetail.tokens[1].address, constants.AddressZero)) {
-        await removeLiquidityETH(pairDetail.tokens[0].address, liquidity as BigNumber)
+        let erc20LiquidityTokenMin = inputFromLiquidity
+          .mul(parseUnits(`${100 - slippage}`, 10))
+          .div(parseUnits('100', 10))
+        let ethLiquidityTokenMin = inputToLiquidity.mul(parseUnits(`${100 - slippage}`, 10)).div(parseUnits('100', 10))
+        if (isExpertMode) {
+          erc20LiquidityTokenMin = constants.Zero
+          ethLiquidityTokenMin = constants.Zero
+        }
+        res = await removeLiquidityETH(
+          pairDetail.tokens[0].address,
+          liquidity as BigNumber,
+          erc20LiquidityTokenMin,
+          ethLiquidityTokenMin,
+          _deadline
+        )
       }
       if (
         !isSameAddress(pairDetail.tokens[0].address, constants.AddressZero) &&
         !isSameAddress(pairDetail.tokens[1].address, constants.AddressZero)
       ) {
-        await removeLiquidity(pairDetail.tokens[0].address, pairDetail.tokens[1].address, liquidity as BigNumber)
+        let fromLiquidityTokenMin = inputFromLiquidity
+          .mul(parseUnits(`${100 - slippage}`, 10))
+          .div(parseUnits('100', 10))
+        let toLiquidityTokenMin = inputToLiquidity.mul(parseUnits(`${100 - slippage}`, 10)).div(parseUnits('100', 10))
+        if (isExpertMode) {
+          fromLiquidityTokenMin = constants.Zero
+          toLiquidityTokenMin = constants.Zero
+        }
+        res = await removeLiquidity(
+          pairDetail.tokens[0].address,
+          pairDetail.tokens[1].address,
+          liquidity as BigNumber,
+          fromLiquidityTokenMin,
+          toLiquidityTokenMin,
+          _deadline
+        )
       }
-      updatePairDetail()
+      if (res) updatePairDetail()
     }
+  }
+  const onSlippageChange: TConfig['onSlippageChange'] = (value) => {
+    console.log(value)
+    setSlippage(value)
+  }
+  const onDeadlineChange: TConfig['onDeadlineChange'] = (value) => {
+    console.log(value)
+    setDeadline(value)
+  }
+  const onExpertModeChange: TConfig['onExpertModeChange'] = (value) => {
+    console.log(value)
+    setIsExpertMode(value)
   }
   return (
     <RemoveLPWrapper>
-      {/*<Modal*/}
-      {/*  contentStyle={{ width: 480 }}*/}
-      {/*  title="Settings"*/}
-      {/*  content={<Config />}*/}
-      {/*  open={isConfigModalOpen}*/}
-      {/*  onClose={handleConfigModalOpen}*/}
-      {/*/>*/}
+      <Modal
+        contentStyle={{ width: 480 }}
+        title="Settings"
+        content={
+          <Config
+            storageKey="removeConfig"
+            onDeadlineChange={onDeadlineChange}
+            onSlippageChange={onSlippageChange}
+            onExpertModeChange={onExpertModeChange}
+          />
+        }
+        open={isConfigModalOpen}
+        onClose={handleConfigModalOpen}
+      />
       <div style={{ background: '#1a1a1a', padding: '1rem 1rem 2rem' }}>
         <div className="header">
           <span

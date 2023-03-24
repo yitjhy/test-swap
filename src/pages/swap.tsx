@@ -27,6 +27,11 @@ import { useSigner } from '@/hooks/contract/useSigner'
 import { useWeb3React } from '@web3-react/core'
 import { useRemoteCurrencyList } from '@/context/remoteCurrencyListContext'
 
+enum ExactType {
+  exactIn = 'exactIn',
+  exactOut = 'exactIn',
+}
+
 function Swap() {
   const router = useRouter()
   const { account, provider } = useWeb3React()
@@ -34,6 +39,7 @@ function Swap() {
     {} as Global.TErc20InfoWithPair
   )
   const [isExpertMode, setIsExpertMode] = useState(false)
+  const [exactType, setExactType] = useState(ExactType.exactIn)
   const [checkedToCurrency, setCheckedToCurrency] = useState<Global.TErc20InfoWithPair>({} as Global.TErc20InfoWithPair)
   const [isConfirmWrapModalOpen, handleConfirmWrapModalOpen] = useState(false)
   const [isConfigModalOpen, handleConfigModalOpen] = useState(false)
@@ -97,15 +103,19 @@ function Swap() {
   }
   const onInputByFrom: TSwapSectionProps['onInput'] = (value) => {
     swap.updateIn(value)
+    setExactType(ExactType.exactIn)
   }
   const onInputByTo: TSwapSectionProps['onInput'] = (value) => {
     swap.updateOut(value)
+    setExactType(ExactType.exactOut)
   }
   const handleMaxByFrom: TSwapSectionProps['onMax'] = (value) => {
     swap.updateIn(String(value))
+    setExactType(ExactType.exactIn)
   }
   const handleMaxByTo: TSwapSectionProps['onMax'] = (value) => {
     swap.updateOut(String(value))
+    setExactType(ExactType.exactOut)
   }
   const getSubmitBtnText = () => {
     if (!checkedFromCurrency.address || !checkedToCurrency.address) {
@@ -183,6 +193,53 @@ function Swap() {
   // openDialog({ title: 'Warning', desc: 'Had Out Of Slippage, Please ReInput Or Reset Slippage', loading: false })
   // }
   // }, [swap.inAmount, swap.outAmount, swap.currentSlippage, swap.slippage])
+  useEffect(() => {
+    const tokenChainId = 5
+    const url =
+      'https://api.uniswap.org/v1/quote?protocols=v2&tokenInAddress=0x478c635fd9EF9f26d1a7fD928294FA7d3F5532c2&tokenInChainId=5&tokenOutAddress=0x30a2926428D33d5A6C0FB8892b89232a020991BE&tokenOutChainId=5&amount=1000000000000000000&type=exactIn'
+    if (checkedFromCurrency.address && checkedToCurrency.address) {
+      let amount = '0'
+      if (exactType === ExactType.exactIn) {
+        amount = formatUnits(cutOffStr(swap.inAmount, checkedFromCurrency.decimals), checkedFromCurrency.decimals)
+      } else {
+        amount = formatUnits(cutOffStr(swap.inAmount, checkedToCurrency.decimals), checkedToCurrency.decimals)
+      }
+      console.log(amount)
+      const params = {
+        protocols: 'v2',
+        tokenInAddress: isSameAddress(checkedFromCurrency.address, constants.AddressZero)
+          ? contractAddress.weth
+          : checkedFromCurrency.address,
+        tokenInChainId: tokenChainId,
+        tokenOutAddress: isSameAddress(checkedToCurrency.address, constants.AddressZero)
+          ? contractAddress.weth
+          : checkedToCurrency.address,
+        tokenOutChainId: tokenChainId,
+        amount: '1000000000000000000',
+        type: exactType,
+      }
+
+      // fetch(url)
+      //   .then((response) => response.json())
+      //   .then((data) => {
+      //     if (data.route && data.route.length) {
+      //       console.log(data)
+      //       const routePair = data.route[0].map((item) => item.address)
+      //       const routePath = data.route[0].reduce((pre, cur, index) => {
+      //         if (index === 0) {
+      //           pre.push(cur.tokenIn)
+      //           pre.push(cur.tokenOut)
+      //         } else {
+      //           pre.push(cur.tokenOut)
+      //         }
+      //         return pre
+      //       }, [])
+      //       console.log(routePair)
+      //       console.log(routePath)
+      //     }
+      //   })
+    }
+  }, [checkedFromCurrency.address, checkedToCurrency.address])
   return (
     <div style={{ maxWidth: 480, margin: '0 auto' }}>
       <SwapWrapper>

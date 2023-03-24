@@ -51,6 +51,7 @@ function Swap() {
       : checkedFromCurrency.address,
     checkedToCurrency.address
   )
+  console.log('swap', swap)
   const { approved, approve } = useERC20Approved(
     checkedFromCurrency.address,
     contractAddress.router,

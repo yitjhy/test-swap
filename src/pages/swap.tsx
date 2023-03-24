@@ -109,10 +109,10 @@ function Swap() {
   }
   const getSubmitBtnText = () => {
     if (!checkedFromCurrency.address || !checkedToCurrency.address) {
-      return 'Select Token'
+      return 'Select a Token'
     }
     if (swap.outAmount === '0' || swap.inAmount === '0') {
-      return 'Enter the number of Token'
+      return 'Enter an amount'
     }
     // if (
     //   checkedToCurrency.address &&

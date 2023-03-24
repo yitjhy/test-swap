@@ -176,10 +176,10 @@ const IncreaseLP = () => {
   }
   const getSubmitBtnText = () => {
     if (!checkedFromCurrency.address || !checkedToCurrency.address) {
-      return 'Select Token'
+      return 'Select a Token'
     }
     if (Number(inputValueByFrom) === 0 || Number(inputValueByTo) === 0) {
-      return 'Enter the number of Token'
+      return 'Enter an amount'
     }
     if (
       checkedToCurrency.address &&

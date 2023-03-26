@@ -285,7 +285,13 @@ function Swap() {
             swap.inAmount !== '0' &&
             swap.outAmount &&
             swap.outAmount !== '0' && (
-              <PriceDetail from={checkedFromCurrency.symbol} to={checkedToCurrency.symbol} rate={swap.rate} />
+              <PriceDetail
+                from={checkedFromCurrency.symbol}
+                inDecimals={checkedFromCurrency.decimals}
+                to={checkedToCurrency.symbol}
+                outDecimals={checkedToCurrency.decimals}
+                rate={swap.rate}
+              />
             )}
           <>
             {!approved && checkedFromCurrency.address && (

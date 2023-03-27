@@ -294,9 +294,11 @@ function Swap() {
               />
             )}
           <>
-            {!approved && checkedFromCurrency.address && (
-              <ApproveBtn onClick={approve}>Approve {checkedFromCurrency.symbol}</ApproveBtn>
-            )}
+            {!approved &&
+              checkedFromCurrency.address &&
+              parseUnits(cutOffStr(inAmount || '0', checkedFromCurrency.decimals), checkedFromCurrency.decimals).lte(
+                checkedFromCurrency.balance
+              ) && <ApproveBtn onClick={approve}>Approve {checkedFromCurrency.symbol}</ApproveBtn>}
             {swap.pairs.length > 0 && !isSameAddress(swap.pairs[0], constants.AddressZero) && (
               <SubmitBtn
                 text={getSubmitBtnText()}

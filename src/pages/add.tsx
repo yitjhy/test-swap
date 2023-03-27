@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-import { BigNumber, constants } from 'ethers'
+import { constants } from 'ethers'
 import { parseUnits, formatUnits } from 'ethers/lib/utils'
 import styled from 'styled-components'
 import { ChevronLeft, Plus, Settings } from 'react-feather'
@@ -277,7 +277,7 @@ const IncreaseLP = () => {
             >
               <ChevronLeft size={30} />
             </span>
-            <span>Increase Liquidity</span>
+            <span>Add Liquidity</span>
             <Settings
               color="#D9D9D9"
               size={23}
@@ -314,12 +314,19 @@ const IncreaseLP = () => {
             <Rate shareOfPool={shareOfPool} rate={pairDetail.rate} />
           ) : null}
           <div className="approve-wrapper">
-            {!isApprovedCurrencyFrom && checkedFromCurrency.address && (
-              <ApproveBtn onClick={approveCurrencyFrom}>Approve {checkedFromCurrency.symbol}</ApproveBtn>
-            )}
-            {!isApprovedCurrencyTo && checkedToCurrency.address && (
-              <ApproveBtn onClick={approveCurrencyTo}>Approve {checkedToCurrency.symbol}</ApproveBtn>
-            )}
+            {!isApprovedCurrencyFrom &&
+              checkedFromCurrency.address &&
+              parseUnits(
+                cutOffStr(inputValueByFrom || '0', checkedFromCurrency.decimals),
+                checkedFromCurrency.decimals
+              ).lte(checkedFromCurrency.balance) && (
+                <ApproveBtn onClick={approveCurrencyFrom}>Approve {checkedFromCurrency.symbol}</ApproveBtn>
+              )}
+            {!isApprovedCurrencyTo &&
+              checkedToCurrency.address &&
+              parseUnits(cutOffStr(inputValueByTo || '0', checkedToCurrency.decimals), checkedToCurrency.decimals).lte(
+                checkedToCurrency.balance
+              ) && <ApproveBtn onClick={approveCurrencyTo}>Approve {checkedToCurrency.symbol}</ApproveBtn>}
           </div>
           <SubmitBtn text={getSubmitBtnText()} onSubmit={handleSubmit} disabled={getSubmitBtnStatus()} />
         </div>

@@ -5,7 +5,7 @@ import React from 'react'
 const Bridge = () => {
   return (
     <BridgeWrapper>
-      <VideoBg src="/video/liquidity.mp4" />
+      <VideoBg src="https://cdn.name3.net/video/liquidity.mp4" />
       <h1>The Function Is Under Development...</h1>
     </BridgeWrapper>
   )

@@ -5,7 +5,7 @@ import React from 'react'
 const Docs = () => {
   return (
     <DocsWrapper>
-      <VideoBg src="/video/swap.mp4" />
+      <VideoBg src="https://cdn.name3.net/video/swap.mp4" />
       <h1>The Function Is Under Development...</h1>
     </DocsWrapper>
   )

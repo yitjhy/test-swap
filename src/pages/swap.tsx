@@ -248,7 +248,7 @@ function Swap() {
         open={isConfigModalOpen}
         onClose={handleConfigModalOpen}
       />
-      <VideoBg src="/video/swap.mp4" />
+      <VideoBg src="https://cdn.name3.net/video/swap.mp4" />
       <div style={{ position: 'relative', zIndex: 5 }}>
         <SwapWrapper>
           <Header

@@ -51,7 +51,7 @@ function Find() {
         open={isToCurrencyListModalOpen}
         onClose={handleToCurrencyListModalOpen}
       />
-      <VideoBg src="/video/liquidity.mp4" />
+      <VideoBg src="https://cdn.name3.net/video/liquidity.mp4" />
       <div
         style={{
           position: 'relative',

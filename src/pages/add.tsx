@@ -265,7 +265,7 @@ const IncreaseLP = () => {
         open={isConfigModalOpen}
         onClose={handleConfigModalOpen}
       />
-      <VideoBg src="/video/liquidity.mp4" />
+      <VideoBg src="https://cdn.name3.net/video/liquidity.mp4" />
       <div style={{ position: 'relative', zIndex: 5 }}>
         <div style={{ background: '#1a1a1a', padding: '1rem' }}>
           <div className="header">

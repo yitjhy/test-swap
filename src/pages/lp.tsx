@@ -41,7 +41,7 @@ function LP() {
           the pool, accrue in real time and can be claimed by withdrawing your liquidity.
         </p>
       </LpIntroWrapper>
-      <VideoBg src="/video/liquidity.mp4" />
+      <VideoBg src="https://cdn.name3.net/video/liquidity.mp4" />
       <SwapWrapper>
         <div className="nav-wrapper">
           <span className="title">Your Liquidity</span>

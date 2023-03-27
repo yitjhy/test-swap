@@ -66,63 +66,90 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
       setSwapSectionTokens(res as Global.TPairInfo['tokens'])
     }
   }, [data.tokens])
-
   const onInputFrom: TSwapSectionProps['onInput'] = (value) => {
     if (data.tokens[1].balanceOfPair && data.tokens[0].balanceOfPair) {
-      const inputValueByTo = parseUnits(cutOffStr(value, data.tokens[0].decimals), data.tokens[0].decimals)
-        .mul(data.tokens[1].balanceOfPair)
-        .div(data.tokens[0].balanceOfPair)
-      setInputValueByTo(formatUnits(inputValueByTo, data.tokens[1].decimals))
+      if (
+        parseUnits(cutOffStr(value, data.tokens[0].decimals), data.tokens[0].decimals).gt(data.tokens[0].balanceOfPair)
+      ) {
+        setInputValueByTo('0')
+        setLiquidity(constants.Zero)
+        setPercentRate(0)
+        onLiquidityChange(constants.Zero, constants.Zero, constants.Zero)
+        const token0 = changeTokens[0]
+        const token1 = changeTokens[1]
+        token0.balanceOfPair = parseUnits(cutOffStr(value, data.tokens[0].decimals), data.tokens[0].decimals)
+        token1.balanceOfPair = constants.Zero
+        setChangeTokens([token0, token1])
+      } else {
+        const inputValueByTo = parseUnits(cutOffStr(value, data.tokens[0].decimals), data.tokens[0].decimals)
+          .mul(data.tokens[1].balanceOfPair)
+          .div(data.tokens[0].balanceOfPair)
+        setInputValueByTo(formatUnits(inputValueByTo, data.tokens[1].decimals))
 
-      const token0 = changeTokens[0]
-      const token1 = changeTokens[1]
-      token0.balanceOfPair = parseUnits(cutOffStr(value, data.tokens[0].decimals), data.tokens[0].decimals)
-      token1.balanceOfPair = inputValueByTo
-      setChangeTokens([token0, token1])
+        const token0 = changeTokens[0]
+        const token1 = changeTokens[1]
+        token0.balanceOfPair = parseUnits(cutOffStr(value, data.tokens[0].decimals), data.tokens[0].decimals)
+        token1.balanceOfPair = inputValueByTo
+        setChangeTokens([token0, token1])
 
-      const liquidity = parseUnits(cutOffStr(value, data.tokens[0].decimals), data.tokens[0].decimals)
-        .mul(data.accountPairBalance)
-        .div(data.tokens[0].balanceOfPair)
-      setLiquidity(liquidity)
-      onLiquidityChange(
-        liquidity,
-        parseUnits(cutOffStr(value, data.tokens[0].decimals), data.tokens[0].decimals),
-        inputValueByTo
-      )
-      const rate = parseUnits(cutOffStr(value, data.tokens[0].decimals), data.tokens[0].decimals)
-        .mul(parseUnits('1', data.tokens[0].decimals))
-        .div(data.tokens[0].balanceOfPair)
-        .mul(parseUnits('1', 2))
-      setPercentRate(Number(Number(formatUnits(rate, data.tokens[0].decimals)).toFixed(2)))
+        const liquidity = parseUnits(cutOffStr(value, data.tokens[0].decimals), data.tokens[0].decimals)
+          .mul(data.accountPairBalance)
+          .div(data.tokens[0].balanceOfPair)
+        setLiquidity(liquidity)
+        onLiquidityChange(
+          liquidity,
+          parseUnits(cutOffStr(value, data.tokens[0].decimals), data.tokens[0].decimals),
+          inputValueByTo
+        )
+        const rate = parseUnits(cutOffStr(value, data.tokens[0].decimals), data.tokens[0].decimals)
+          .mul(parseUnits('1', data.tokens[0].decimals))
+          .div(data.tokens[0].balanceOfPair)
+          .mul(parseUnits('1', 2))
+        setPercentRate(Number(Number(formatUnits(rate, data.tokens[0].decimals)).toFixed(2)))
+      }
     }
   }
   const onInputTo: TSwapSectionProps['onInput'] = (value) => {
     if (data.tokens[0].balanceOfPair && data.tokens[1].balanceOfPair) {
-      const inputValueByFrom = parseUnits(cutOffStr(value, data.tokens[1].decimals), data.tokens[1].decimals)
-        .mul(data.tokens[0].balanceOfPair)
-        .div(data.tokens[1].balanceOfPair)
-      setInputValueByFrom(formatUnits(inputValueByFrom, data.tokens[0].decimals))
+      if (
+        parseUnits(cutOffStr(value, data.tokens[1].decimals), data.tokens[1].decimals).gt(data.tokens[1].balanceOfPair)
+      ) {
+        setInputValueByFrom('0')
+        setLiquidity(constants.Zero)
+        setPercentRate(0)
+        onLiquidityChange(constants.Zero, constants.Zero, constants.Zero)
+        const token0 = changeTokens[0]
+        const token1 = changeTokens[1]
+        token0.balanceOfPair = constants.Zero
+        token1.balanceOfPair = parseUnits(cutOffStr(value, data.tokens[1].decimals), data.tokens[1].decimals)
+        setChangeTokens([token0, token1])
+      } else {
+        const inputValueByFrom = parseUnits(cutOffStr(value, data.tokens[1].decimals), data.tokens[1].decimals)
+          .mul(data.tokens[0].balanceOfPair)
+          .div(data.tokens[1].balanceOfPair)
+        setInputValueByFrom(formatUnits(inputValueByFrom, data.tokens[0].decimals))
 
-      const token0 = changeTokens[0]
-      const token1 = changeTokens[1]
-      token0.balanceOfPair = inputValueByFrom
-      token1.balanceOfPair = parseUnits(cutOffStr(value, data.tokens[1].decimals), data.tokens[1].decimals)
-      setChangeTokens([token0, token1])
+        const token0 = changeTokens[0]
+        const token1 = changeTokens[1]
+        token0.balanceOfPair = inputValueByFrom
+        token1.balanceOfPair = parseUnits(cutOffStr(value, data.tokens[1].decimals), data.tokens[1].decimals)
+        setChangeTokens([token0, token1])
 
-      const liquidity = parseUnits(cutOffStr(value, data.tokens[1].decimals), data.tokens[1].decimals)
-        .mul(data.accountPairBalance)
-        .div(data.tokens[1].balanceOfPair)
-      setLiquidity(liquidity)
-      onLiquidityChange(
-        liquidity,
-        inputValueByFrom,
-        parseUnits(cutOffStr(value, data.tokens[1].decimals), data.tokens[1].decimals)
-      )
-      const rate = parseUnits(cutOffStr(value, data.tokens[1].decimals), data.tokens[1].decimals)
-        .mul(parseUnits('1', data.tokens[1].decimals))
-        .div(data.tokens[1].balanceOfPair)
-        .mul(parseUnits('1', 2))
-      setPercentRate(Number(Number(formatUnits(rate, data.tokens[1].decimals)).toFixed(2)))
+        const liquidity = parseUnits(cutOffStr(value, data.tokens[1].decimals), data.tokens[1].decimals)
+          .mul(data.accountPairBalance)
+          .div(data.tokens[1].balanceOfPair)
+        setLiquidity(liquidity)
+        onLiquidityChange(
+          liquidity,
+          inputValueByFrom,
+          parseUnits(cutOffStr(value, data.tokens[1].decimals), data.tokens[1].decimals)
+        )
+        const rate = parseUnits(cutOffStr(value, data.tokens[1].decimals), data.tokens[1].decimals)
+          .mul(parseUnits('1', data.tokens[1].decimals))
+          .div(data.tokens[1].balanceOfPair)
+          .mul(parseUnits('1', 2))
+        setPercentRate(Number(Number(formatUnits(rate, data.tokens[1].decimals)).toFixed(2)))
+      }
     }
   }
   const onMaxFrom: TSwapSectionProps['onMax'] = (value) => {
@@ -219,7 +246,11 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
                 return (
                   <div className="currency-amount-item-wrapper" key={index}>
                     <span className="currency-amount">
-                      {item.balanceOfPair ? formatUnits(item.balanceOfPair, item.decimals) : undefined}
+                      {item.balanceOfPair
+                        ? item.balanceOfPair.eq(constants.Zero)
+                          ? '-'
+                          : formatUnits(item.balanceOfPair, item.decimals)
+                        : '-'}
                     </span>
                     <span className="currency-symbol-wrapper">
                       <Image className="currency-logo" src={currencyIcon} alt="" width={26} height={26} />

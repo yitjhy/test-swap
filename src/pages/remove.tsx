@@ -42,8 +42,6 @@ const RemoveLP = () => {
     setLiquidity(liquidity)
     setInputFromLiquidity(inputFromLiquidity)
     setInputToLiquidity(inputToLiquidity)
-    console.log(formatUnits(inputFromLiquidity, pairDetail.tokens[0].decimals))
-    console.log(formatUnits(inputToLiquidity, pairDetail.tokens[1].decimals))
   }
   const handleRemove = async () => {
     let res = false

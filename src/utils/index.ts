@@ -65,7 +65,13 @@ export const addPairAddressToStorage = (account: string, pairAddress: string) =>
       'pairAddressList',
       JSON.stringify({
         ...pairAddressData,
-        [account]: Array.from(new Set([...pairAddressData[account], pairAddress])),
+        ...(pairAddressData[account]
+          ? {
+              [account]: Array.from(new Set([...pairAddressData[account], pairAddress])),
+            }
+          : {
+              [account]: [pairAddress],
+            }),
       })
     )
   } else {

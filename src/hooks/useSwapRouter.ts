@@ -94,6 +94,9 @@ export function useSwap(tokenIn: string, tokenOut: string) {
     const {account, provider: web3Provider} = useWeb3React()
     const {openDialog, close} = useDialog()
     const hasPath = pairs.length > 0
+    const [loading, setLoading] = useState(false)
+    const [currentSlippage, setCurrentSlippage] = useState(0)
+    const [rate, setRate] = useState(0)
 
     useEffect(() => {
         if (mulRouter && provider) {
@@ -104,32 +107,40 @@ export function useSwap(tokenIn: string, tokenOut: string) {
         }
     }, [mulRouter, provider])
 
-    const rate = useMemo(() => {
-        if (parseValue(inAmount, tokenInInfo.decimals).gt(Zero)) return formatValue(outAmount, tokenOutInfo.decimals) / formatValue(inAmount, tokenInInfo.decimals)
-        return 0
-    }, [inAmount, outAmount, tokenInInfo, tokenOutInfo])
+    useEffect(() => {
+        if (parseValue(inAmount, tokenInInfo.decimals).gt(Zero) && !loading) {
+            setRate(formatValue(outAmount, tokenOutInfo.decimals) / formatValue(inAmount, tokenInInfo.decimals))
+        }
+    }, [inAmount, outAmount, tokenInInfo, tokenOutInfo, loading])
 
     useDebounceEffect(() => {
         if (lock === SwapLock.In && router && hasPath) {
             const inValue = parseValue(inAmount, tokenInInfo.decimals)
             if (inValue.eq(constants.Zero)) {
                 setOutAmount('0')
+                setLoading(false)
             } else {
                 router.getAmountOut(inValue.gt(MaxUint256) ? MaxUint256 : inValue, reserveIn, reserveOut).then((res) => {
                     setOutAmount(formatUnits(res, tokenOutInfo.decimals))
+                    setLoading(false)
                 })
             }
         }
     }, [lock, inAmount, reserveIn, reserveOut, tokenInInfo, tokenOutInfo, rate, hasPath])
+
     useDebounceEffect(() => {
         if (lock === SwapLock.Out && router && hasPath) {
             const outValue = parseValue(outAmount, tokenOutInfo.decimals)
             if (outValue.eq(constants.Zero)) {
                 setInAmount('0')
+                setLoading(false)
             } else {
                 router
                     .getAmountIn(outValue.gt(reserveOut) && reserveOut.gt(0) ? reserveOut.sub(1) : outValue, reserveIn, reserveOut)
-                    .then((res) => setInAmount(formatUnits(res, tokenInInfo.decimals)))
+                    .then((res) => {
+                        setInAmount(formatUnits(res, tokenInInfo.decimals))
+                        setLoading(false)
+                    })
             }
         }
     }, [lock, outAmount, reserveOut, reserveIn, tokenInInfo, tokenOutInfo, rate, hasPath])
@@ -138,6 +149,7 @@ export function useSwap(tokenIn: string, tokenOut: string) {
         (amount: number | string) => {
             setInAmount(amount + '')
             setLock(SwapLock.In)
+            setLoading(true)
         },
         [tokenInInfo]
     )
@@ -145,21 +157,25 @@ export function useSwap(tokenIn: string, tokenOut: string) {
         (amount: number | string) => {
             setOutAmount(amount + '')
             setLock(SwapLock.Out)
+            setLoading(true)
         },
         [tokenOutInfo]
     )
 
-    const currentSlippage = useMemo(() => {
-        const currentPrice = reserveOut.gt(constants.Zero)
-            ? +formatUnits(reserveOut, tokenOutInfo.decimals) / +formatUnits(reserveIn, tokenInInfo.decimals)
-            : 0
+    useEffect(() => {
+        if (!loading) {
+            const currentPrice = reserveOut.gt(constants.Zero)
+                ? +formatUnits(reserveOut, tokenOutInfo.decimals) / +formatUnits(reserveIn, tokenInInfo.decimals)
+                : 0
 
-        if (currentPrice === 0) return 0
-        const inValue = formatValue(inAmount, tokenInInfo.decimals)
-        const outValue = formatValue(outAmount, tokenOutInfo.decimals)
-        const _midOutValue = currentPrice * inValue
-        return Math.floor(((_midOutValue - outValue) / _midOutValue - 0.003) * 10000)
-    }, [reserveIn, reserveOut, inAmount, outAmount, tokenInInfo, tokenOutInfo])
+            if (currentPrice !== 0) {
+                const inValue = formatValue(inAmount, tokenInInfo.decimals)
+                const outValue = formatValue(outAmount, tokenOutInfo.decimals)
+                const _midOutValue = currentPrice * inValue
+                setCurrentSlippage(Math.floor(((_midOutValue - outValue) / _midOutValue - 0.003) * 10000))
+            }
+        }
+    }, [reserveIn, reserveOut, inAmount, outAmount, tokenInInfo, tokenOutInfo, loading])
 
     const [maxIn, minOut] = useMemo(() => {
         if (+inAmount == 0 || +outAmount == 0) return [constants.Zero, constants.Zero]
@@ -243,7 +259,8 @@ export function useSwap(tokenIn: string, tokenOut: string) {
         pairs,
         maxIn,
         minOut,
-        lock
+        lock,
+        loading
     }
 }
 

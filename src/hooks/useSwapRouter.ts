@@ -172,7 +172,7 @@ export function useSwap(tokenIn: string, tokenOut: string) {
                 const inValue = formatValue(inAmount, tokenInInfo.decimals)
                 const outValue = formatValue(outAmount, tokenOutInfo.decimals)
                 const _midOutValue = currentPrice * inValue
-                setCurrentSlippage(Math.floor(((_midOutValue - outValue) / _midOutValue - 0.003) * 10000))
+                setCurrentSlippage(Math.round(((_midOutValue - outValue) / _midOutValue - 0.003) * 10000))
             }
         }
     }, [reserveIn, reserveOut, inAmount, outAmount, tokenInInfo, tokenOutInfo, loading])
@@ -239,7 +239,6 @@ export function useSwap(tokenIn: string, tokenOut: string) {
             }, 1000)
         }
     }, [tokenIn, tokenOut, lock, inAmount, outAmount, router, tokenInInfo, tokenOutInfo, maxIn, minOut, deadLine, web3Provider])
-
     return {
         inAmount,
         outAmount,

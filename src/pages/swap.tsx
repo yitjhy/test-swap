@@ -55,6 +55,7 @@ function Swap() {
       : checkedFromCurrency.address,
     checkedToCurrency.address
   )
+  console.log(swap)
   const { approved, approve } = useERC20Approved(
     checkedFromCurrency.address,
     contractAddress.router,
@@ -62,14 +63,14 @@ function Swap() {
       ? parseUnits(cutOffStr(swap.inAmount, swap.tokenInInfo.decimals), swap.tokenInInfo.decimals)
       : constants.Zero
   )
-  const { routePair, routePath } = useRoutes(
-    checkedFromCurrency.address,
-    checkedToCurrency.address,
-    exactType === ExactType.exactIn ? swap.inAmount : swap.outAmount,
-    exactType
-  )
-  console.log(routePair)
-  console.log(routePath)
+  // const { routePair, routePath } = useRoutes(
+  //   checkedFromCurrency.address,
+  //   checkedToCurrency.address,
+  //   exactType === ExactType.exactIn ? swap.inAmount : swap.outAmount,
+  //   exactType
+  // )
+  // console.log(routePair)
+  // console.log(routePath)
   const updateBalance = async () => {
     let fromBalance = constants.Zero
     let toBalance = constants.Zero
@@ -219,8 +220,8 @@ function Swap() {
             outAmount={swap.outAmount}
             inAmount={swap.inAmount}
             rate={swap.rate}
-            inSymbol={swap.tokenInInfo.symbol}
-            outSymbol={swap.tokenOutInfo.symbol}
+            inSymbol={checkedFromCurrency.symbol}
+            outSymbol={checkedToCurrency.symbol}
             currentSlippage={swap.currentSlippage}
             lock={swap.lock}
             slippage={swap.slippage}
@@ -352,9 +353,9 @@ function Swap() {
               maxIn={swap.maxIn}
               minOut={swap.minOut}
               outAmount={swap.outAmount}
-              inSymbol={swap.tokenInInfo.symbol}
+              inSymbol={checkedFromCurrency.symbol}
               inDecimals={swap.tokenInInfo.decimals}
-              outSymbol={swap.tokenOutInfo.symbol}
+              outSymbol={checkedToCurrency.symbol}
               outDecimals={swap.tokenOutInfo.decimals}
               slippage={swap.slippage}
             />

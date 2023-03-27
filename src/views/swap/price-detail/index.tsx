@@ -14,16 +14,22 @@ type TPriceDetailProps = {
 }
 const PriceDetail: FC<TPriceDetailProps> = ({ rate, from, to, inDecimals, outDecimals }) => {
   const [isReversePrice, setIsReversePrice] = useState(false)
-  // const reverseRate = parseUnits('1', outDecimals).div(parseUnits(String(rate), outDecimals))
+  console.log(1 / rate)
+  // console.log(rate)
+  // console.log(outDecimals)
+  // console.log(cutOffStr(String(rate), outDecimals))
+  // const reverseRate = parseUnits('1', inDecimals).div(parseUnits(cutOffStr(String(rate), outDecimals), outDecimals))
   // const reverseRate = 1 / rate
   // const reverseRate = parseUnits('1', 16)
   //   .div(parseUnits(String(rate), outDecimals))
   //   .div(parseUnits('1', 16))
   // console.log(cutOffStr(String(reverseRate), outDecimals))
-  // console.log(formatUnits('0.452942', 7))
+  // console.log(formatUnits(reverseRate, outDecimals))
   const handleReversePrice = () => {
     setIsReversePrice(!isReversePrice)
   }
+  // console.log(1 / rate)
+  // console.log(cutOffStr(String(1 / Number(cutOffStr(String(rate), 8))), 8))
   return (
     <PriceDetailWrapper>
       <div className="price-label">
@@ -41,8 +47,13 @@ const PriceDetail: FC<TPriceDetailProps> = ({ rate, from, to, inDecimals, outDec
       </div>
       <div className="price-value">
         <span className="value" onClick={handleReversePrice}>
-          1 {isReversePrice ? to : from} ≈{' '}
-          {isReversePrice ? cutOffStr(String(1 / rate), 6) : cutOffStr(String(rate), 6)} {isReversePrice ? from : to}
+          1 {isReversePrice ? to : from} {isReversePrice && 1 / rate < 0.00001 ? ' = ' : '≈ '}
+          {isReversePrice
+            ? 1 / rate < 0.00001
+              ? '< 0.00001'
+              : cutOffStr(String(1 / rate), 6)
+            : cutOffStr(String(rate), 6)}{' '}
+          {isReversePrice ? from : to}
         </span>
         {/*<RefreshCw color="#9C9C9C" size={15} cursor="pointer" />*/}
       </div>

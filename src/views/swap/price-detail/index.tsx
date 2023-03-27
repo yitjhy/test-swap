@@ -14,7 +14,6 @@ type TPriceDetailProps = {
 }
 const PriceDetail: FC<TPriceDetailProps> = ({ rate, from, to, inDecimals, outDecimals }) => {
   const [isReversePrice, setIsReversePrice] = useState(false)
-  console.log(1 / rate)
   // console.log(rate)
   // console.log(outDecimals)
   // console.log(cutOffStr(String(rate), outDecimals))

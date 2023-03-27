@@ -1,9 +1,10 @@
 import { AlertCircle } from 'react-feather'
 import styled from 'styled-components'
+import { usePrevious } from 'ahooks'
 import Popover from '@/components/popover'
 import SubmitBtn from '@/components/submitBtn'
 import Image from 'next/image'
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { SwapLock } from '@/hooks/useSwapRouter'
 import { formatUnits } from 'ethers/lib/utils'
 import { BigNumber } from 'ethers'
@@ -26,6 +27,7 @@ type TConfirmWrapProps = {
   outDecimals: number
   maxIn: BigNumber
   inDecimals: number
+  isConfirmWrapModalOpen: boolean
 }
 const ConfirmWrap: FC<TConfirmWrapProps> = ({
   onSubmit,
@@ -41,14 +43,27 @@ const ConfirmWrap: FC<TConfirmWrapProps> = ({
   outDecimals,
   maxIn,
   inDecimals,
+  isConfirmWrapModalOpen,
 }) => {
   const [isReversePrice, setIsReversePrice] = useState(false)
+  const [isAccept, setIsAccept] = useState(false)
+  const [isRateChange, setIsRateChange] = useState(false)
+  const previousRate = usePrevious(rate)
+
+  const acceptPriceChange = () => {
+    setIsAccept(true)
+  }
   const handleSubmit = () => {
     onSubmit()
   }
   const handleReversePrice = () => {
     setIsReversePrice(!isReversePrice)
   }
+  useEffect(() => {
+    if (rate !== previousRate && isConfirmWrapModalOpen) {
+      setIsRateChange(true)
+    }
+  }, [rate])
   return (
     <ConfirmWrapWrapper>
       <div className="wrap-content">
@@ -103,20 +118,15 @@ const ConfirmWrap: FC<TConfirmWrapProps> = ({
           <span className="wrap-detail-value">- {currentSlippage / 100}%</span>
         </div>
       </div>
-      <div className="price-update-wrapper">
-        <div className="price-update-label-wrapper">
-          Price Updated {/*<Popover*/}
-          {/*  content={<span className="tip-text">如果兑换率超过百分百,则将还原该交易</span>}*/}
-          {/*  triger={*/}
-          {/*    <span style={{ marginLeft: '0.5rem' }}>*/}
-          {/*      <AlertCircle size={15} color="#9C9C9C" />*/}
-          {/*    </span>*/}
-          {/*  }*/}
-          {/*/>*/}
+      {isRateChange && (
+        <div className="price-update-wrapper">
+          <div className="price-update-label-wrapper">Price Updated</div>
+          <button className="update-button" onClick={acceptPriceChange}>
+            Accept
+          </button>
         </div>
-        <button className="update-button">Accept</button>
-      </div>
-      <SubmitBtn text="Confirm Swap" onSubmit={handleSubmit} />
+      )}
+      <SubmitBtn text="Confirm Swap" onSubmit={handleSubmit} disabled={isRateChange && !isAccept} />
     </ConfirmWrapWrapper>
   )
 }

@@ -55,7 +55,6 @@ function Swap() {
       : checkedFromCurrency.address,
     checkedToCurrency.address
   )
-  console.log(swap)
   const { approved, approve } = useERC20Approved(
     checkedFromCurrency.address,
     contractAddress.router,
@@ -216,6 +215,7 @@ function Swap() {
         title="Confirm Swap"
         content={
           <ConfirmWrap
+            isConfirmWrapModalOpen={isConfirmWrapModalOpen}
             onSubmit={handleSubmit}
             outAmount={swap.outAmount}
             inAmount={swap.inAmount}

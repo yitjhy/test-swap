@@ -118,7 +118,7 @@ const ConfirmWrap: FC<TConfirmWrapProps> = ({
           <span className="wrap-detail-value">- {currentSlippage / 100}%</span>
         </div>
       </div>
-      {isRateChange && (
+      {isRateChange && !isAccept && (
         <div className="price-update-wrapper">
           <div className="price-update-label-wrapper">Price Updated</div>
           <button className="update-button" onClick={acceptPriceChange}>

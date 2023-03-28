@@ -9,16 +9,14 @@ import {BigNumber, constants} from 'ethers'
 import {isSameAddress} from '@/utils/address'
 import {useMulProvider} from '@/hooks/contract/useMulProvider'
 import {useContracts} from '@/hooks/contract/useContracts'
-import {useDebounceEffect} from 'ahooks'
 import {formatUnits, parseUnits} from 'ethers/lib/utils'
 import {useWeb3React} from '@web3-react/core'
 import moment from 'moment'
 import {useDialog} from '@/components/dialog'
 import {TransactionResponse} from '@ethersproject/abstract-provider'
 import {getErrorMsg} from '@/utils'
-import {useSigner} from "@/hooks/contract/useSigner";
-import {AddressZero, MaxUint256, Zero} from "@ethersproject/constants";
-import de from "@walletconnect/qrcode-modal/dist/cjs/browser/languages/de";
+import {AddressZero, Zero} from "@ethersproject/constants";
+import useRoutes, {ExactType} from "@/hooks/useRoutes";
 
 const routerAddress = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'
 
@@ -83,18 +81,23 @@ export function useSwap(tokenIn: string, tokenOut: string) {
     const tokenOutInfo = useErc20Info(tokenOut)
     const [factoryAddress, setFactoryAddress] = useState('')
     const [wethAddress, setWethAddress] = useState('')
+    const _tokenIn = isSameAddress(tokenIn, constants.AddressZero) ? wethAddress : tokenIn
+    const _tokenOut = isSameAddress(tokenOut, constants.AddressZero) ? wethAddress : tokenOut
     const {contract: router, multiCallContract: mulRouter} = useContracts<HunterswapRouter02>(routerAddress, ABI.router)
+    const {
+        routes,
+        loading
+    } = useRoutes(_tokenIn, _tokenOut, lock === SwapLock.In ? inAmount : outAmount, lock === SwapLock.In ? ExactType.exactIn : ExactType.exactOut)
     const {reserveIn, reserveOut, pairs} = useReserves(
         factoryAddress,
-        isSameAddress(tokenIn, constants.AddressZero) ? wethAddress : tokenIn,
-        isSameAddress(tokenOut, constants.AddressZero) ? wethAddress : tokenOut
+        _tokenIn,
+        _tokenOut
     )
     const [deadLine, setDeadLine] = useState(300) // 5 min
     const provider = useMulProvider()
     const {account, provider: web3Provider} = useWeb3React()
     const {openDialog, close} = useDialog()
-    const hasPath = pairs.length > 0
-    const [loading, setLoading] = useState(false)
+
     const [currentSlippage, setCurrentSlippage] = useState(0)
     const [rate, setRate] = useState(0)
 
@@ -113,43 +116,38 @@ export function useSwap(tokenIn: string, tokenOut: string) {
         }
     }, [inAmount, outAmount, tokenInInfo, tokenOutInfo, loading])
 
-    useDebounceEffect(() => {
-        if (lock === SwapLock.In && router && hasPath) {
-            const inValue = parseValue(inAmount, tokenInInfo.decimals)
-            if (inValue.eq(constants.Zero)) {
-                setOutAmount('0')
-                setLoading(false)
-            } else {
-                router.getAmountOut(inValue.gt(MaxUint256) ? MaxUint256 : inValue, reserveIn, reserveOut).then((res) => {
-                    setOutAmount(formatUnits(res, tokenOutInfo.decimals))
-                    setLoading(false)
-                })
+    useEffect(() => {
+        if (lock === SwapLock.In) {
+            // console.log(loading, routes, lock)
+            if (!loading) {
+                const outRoute = routes[routes.length - 1]
+                if (routes.length > 0) {
+                    setOutAmount(formatUnits(outRoute.amountOut, +outRoute.tokenOut.decimals))
+                } else {
+                    setOutAmount('0')
+                }
             }
         }
-    }, [lock, inAmount, reserveIn, reserveOut, tokenInInfo, tokenOutInfo, rate, hasPath])
+    }, [routes, loading])
 
-    useDebounceEffect(() => {
-        if (lock === SwapLock.Out && router && hasPath) {
-            const outValue = parseValue(outAmount, tokenOutInfo.decimals)
-            if (outValue.eq(constants.Zero)) {
-                setInAmount('0')
-                setLoading(false)
-            } else {
-                router
-                    .getAmountIn(outValue.gt(reserveOut) && reserveOut.gt(0) ? reserveOut.sub(1) : outValue, reserveIn, reserveOut)
-                    .then((res) => {
-                        setInAmount(formatUnits(res, tokenInInfo.decimals))
-                        setLoading(false)
-                    })
+    useEffect(() => {
+        if (lock === SwapLock.Out) {
+            if (!loading) {
+                if (routes.length > 0) {
+                    const inRoute = routes[0]
+                    setInAmount(formatUnits(inRoute.amountIn, +inRoute.tokenIn.decimals))
+                } else {
+                    setInAmount('0')
+                }
             }
         }
-    }, [lock, outAmount, reserveOut, reserveIn, tokenInInfo, tokenOutInfo, rate, hasPath])
+    }, [routes, loading])
+
 
     const updateIn = useCallback(
         (amount: number | string) => {
             setInAmount(amount + '')
             setLock(SwapLock.In)
-            setLoading(true)
         },
         [tokenInInfo]
     )
@@ -157,25 +155,26 @@ export function useSwap(tokenIn: string, tokenOut: string) {
         (amount: number | string) => {
             setOutAmount(amount + '')
             setLock(SwapLock.Out)
-            setLoading(true)
         },
         [tokenOutInfo]
     )
 
     useEffect(() => {
         if (!loading) {
-            const currentPrice = reserveOut.gt(constants.Zero)
-                ? +formatUnits(reserveOut, tokenOutInfo.decimals) / +formatUnits(reserveIn, tokenInInfo.decimals)
-                : 0
-
-            if (currentPrice !== 0) {
-                const inValue = formatValue(inAmount, tokenInInfo.decimals)
-                const outValue = formatValue(outAmount, tokenOutInfo.decimals)
-                const _midOutValue = currentPrice * inValue
-                setCurrentSlippage(Math.round(((_midOutValue - outValue) / _midOutValue - 0.003) * 10000))
+            if (routes.length > 0) {
+                const prices = routes.map(route => {
+                    const [reserve0Amount, reserve1Amount] = [+formatUnits(route.reserve0.quotient, +route.reserve0.token.decimals), +formatUnits(route.reserve1.quotient, +route.reserve1.token.decimals)]
+                    const [reserveIn, reserveOut] = isSameAddress(route.tokenIn.address, route.reserve0.token.address) ? [reserve0Amount, reserve1Amount] : [reserve1Amount, reserve0Amount]
+                    return reserveOut / reserveIn
+                })
+                const inValue = +formatUnits(routes[0].amountIn, tokenInInfo.decimals)
+                const outValue = +formatUnits(routes[routes.length - 1].amountOut, tokenOutInfo.decimals)
+                const midPrice = prices.reduce((_midPrice, curPrice) => _midPrice * curPrice, 1)
+                const midOutValue = midPrice * inValue
+                setCurrentSlippage(Math.round(((midOutValue - outValue) / midOutValue - 0.003 * (routes.length)) * 10000))
             }
         }
-    }, [reserveIn, reserveOut, inAmount, outAmount, tokenInInfo, tokenOutInfo, loading])
+    }, [routes, loading])
 
     const [maxIn, minOut] = useMemo(() => {
         if (+inAmount == 0 || +outAmount == 0) return [constants.Zero, constants.Zero]
@@ -200,30 +199,31 @@ export function useSwap(tokenIn: string, tokenOut: string) {
         try {
             let tx: TransactionResponse | null = null
             openDialog({title: 'Swap', desc: 'Waiting for signature'})
+            const paths = routes.map(x => [x.tokenIn.address, x.tokenOut.address]).flat(10)
             if (isSameAddress(tokenIn, constants.AddressZero)) {
                 // eth for erc20
                 if (lock === SwapLock.In) {
-                    tx = await router.swapExactETHForTokens(_minOut, [wethAddress, tokenOut], account, _deadline, {
+                    tx = await router.swapExactETHForTokens(_minOut, paths, account, _deadline, {
                         value: inValue,
                     })
                 } else {
-                    tx = await router.swapETHForExactTokens(outValue, [wethAddress, tokenOut], account, _deadline, {
+                    tx = await router.swapETHForExactTokens(outValue, paths, account, _deadline, {
                         value: _maxIn,
                     })
                 }
             } else if (isSameAddress(tokenOut, constants.AddressZero)) {
                 // erc20 for eth
                 if (lock === SwapLock.In) {
-                    tx = await router.swapExactTokensForETH(inValue, _minOut, [tokenIn, wethAddress], account, _deadline)
+                    tx = await router.swapExactTokensForETH(inValue, _minOut, paths, account, _deadline)
                 } else {
-                    tx = await router.swapTokensForExactETH(outValue, _maxIn, [tokenIn, wethAddress], account, _deadline)
+                    tx = await router.swapTokensForExactETH(outValue, _maxIn, paths, account, _deadline)
                 }
             } else {
                 // erc20 for erc20
                 if (lock === SwapLock.In) {
-                    tx = await router.swapExactTokensForTokens(inValue, _minOut, [tokenIn, tokenOut], account, _deadline)
+                    tx = await router.swapExactTokensForTokens(inValue, _minOut, paths, account, _deadline)
                 } else {
-                    tx = await router.swapTokensForExactTokens(outValue, _maxIn, [tokenIn, tokenOut], account, _deadline)
+                    tx = await router.swapTokensForExactTokens(outValue, _maxIn, paths, account, _deadline)
                 }
             }
             openDialog({title: 'Swap', desc: 'Waiting for blockchain confirmation'})
@@ -259,11 +259,12 @@ export function useSwap(tokenIn: string, tokenOut: string) {
         maxIn,
         minOut,
         lock,
-        loading
+        loading,
+        routes
     }
 }
 
-function parseValue(value: string, decimals: number) {
+export function parseValue(value: string, decimals: number) {
     const length = value.length
     try {
         if (length > decimals) {
@@ -276,7 +277,7 @@ function parseValue(value: string, decimals: number) {
     }
 }
 
-function formatValue(value: string, decimals: number) {
+export function formatValue(value: string, decimals: number) {
     const parsedValue = parseValue(value, decimals)
     return +formatUnits(parsedValue, decimals)
 }

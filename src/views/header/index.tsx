@@ -78,7 +78,7 @@ const HeaderWrapper = styled.div`
   width: 100%;
   .nav-wrapper {
     display: flex;
-    column-gap: 7rem;
+    column-gap: 4rem;
     align-items: center;
     .website-logo-wrapper {
       display: flex;
@@ -88,6 +88,7 @@ const HeaderWrapper = styled.div`
         margin-top: -17px;
       }
       .website-name {
+        font-size: 0;
       }
     }
     .menu-wrapper {

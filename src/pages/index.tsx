@@ -156,7 +156,7 @@ const MainWrapper = styled.div<{ bgSize: number; bgPosition: { left: number; top
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    top: 300px;
+    top: 270px;
     width: 70vw;
     .title {
       font-size: 100px;
@@ -180,7 +180,7 @@ const MainWrapper = styled.div<{ bgSize: number; bgPosition: { left: number; top
       display: flex;
       color: #ffffff;
       justify-content: space-between;
-      margin-top: 200px;
+      margin-top: 170px;
       .statisticsItemWrapper {
         .count {
           font-size: 60px;
@@ -195,10 +195,9 @@ const MainWrapper = styled.div<{ bgSize: number; bgPosition: { left: number; top
   }
   .content {
     position: absolute;
-    margin-top: 160px;
-    margin-left: 25.6vw;
+    margin-top: 140px;
     width: 738px;
-    left: 25.6vw;
+    right: 7vw;
     .title {
       font-size: 80px;
       color: #ffffff;
@@ -233,7 +232,7 @@ const MainWrapper = styled.div<{ bgSize: number; bgPosition: { left: number; top
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    top: 300px;
+    top: 270px;
     width: 725px;
     color: #ffffff;
     .title {

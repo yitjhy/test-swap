@@ -59,10 +59,11 @@ const SwapSection: FC<TSwapSectionProps> = ({
     { wait: 500 }
   )
   const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
-    setInputAmount(e.target.value ? e.target.value : undefined)
-    onInputDebounce(e.target.value)
+    if (e.target.value.replace(/[^\d]/g, '') !== inputAmount) {
+      setInputAmount(e.target.value ? e.target.value.replace(/[^\d]/g, '') : undefined)
+      onInputDebounce(e.target.value.replace(/[^\d]/g, ''))
+    }
   }
-
   useEffect(() => {
     setCurrencyData(checkedCurrency)
   }, [checkedCurrency])

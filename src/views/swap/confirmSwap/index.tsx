@@ -74,7 +74,7 @@ const ConfirmWrap: FC<TConfirmWrapProps> = ({
             <span className="currency-symbol">{inSymbol}</span>
           </div>
           <div className="arrow-wrapper">
-            <Image src="/arrow.png" alt="" width={30} height={30} />
+            <Image src="/arrow.svg" alt="" width={30} height={30} />
           </div>
 
           <div className="currency-row-wrapper">

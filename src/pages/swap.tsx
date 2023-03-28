@@ -269,7 +269,7 @@ function Swap() {
               onInput={onInputByFrom}
             />
             <button className="switch-btn" onClick={handleSwitch}>
-              <Image src="/arrow.png" alt="" width={21} height={28} />
+              <Image src="/arrow.svg" alt="" width={21} height={28} />
             </button>
           </div>
           <SwapSection

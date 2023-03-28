@@ -1,5 +1,6 @@
 import React, { useState, FC, ChangeEvent, useEffect } from 'react'
 import styled from 'styled-components'
+import { useDebounceFn } from 'ahooks'
 import { ChevronDown } from 'react-feather'
 import { formatUnits } from 'ethers/lib/utils'
 import Modal from '@/components/modal'
@@ -51,10 +52,17 @@ const SwapSection: FC<TSwapSectionProps> = ({
     setInputAmount(balance)
     onMax?.(balance)
   }
+  const { run: onInputDebounce } = useDebounceFn(
+    (value: string) => {
+      onInput?.(value)
+    },
+    { wait: 500 }
+  )
   const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
     setInputAmount(e.target.value ? e.target.value : undefined)
-    onInput?.(e.target.value)
+    onInputDebounce(e.target.value)
   }
+
   useEffect(() => {
     setCurrencyData(checkedCurrency)
   }, [checkedCurrency])

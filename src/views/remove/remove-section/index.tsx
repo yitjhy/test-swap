@@ -69,7 +69,9 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
   const onInputFrom: TSwapSectionProps['onInput'] = (value) => {
     if (data.tokens[1].balanceOfPair && data.tokens[0].balanceOfPair) {
       if (
-        parseUnits(cutOffStr(value, data.tokens[0].decimals), data.tokens[0].decimals).gt(data.tokens[0].balanceOfPair)
+        parseUnits(cutOffStr(value || '0', data.tokens[0].decimals), data.tokens[0].decimals).gt(
+          data.tokens[0].balanceOfPair
+        )
       ) {
         setInputValueByTo('0')
         setLiquidity(constants.Zero)
@@ -77,31 +79,31 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
         onLiquidityChange(constants.Zero, constants.Zero, constants.Zero)
         const token0 = changeTokens[0]
         const token1 = changeTokens[1]
-        token0.balanceOfPair = parseUnits(cutOffStr(value, data.tokens[0].decimals), data.tokens[0].decimals)
+        token0.balanceOfPair = parseUnits(cutOffStr(value || '0', data.tokens[0].decimals), data.tokens[0].decimals)
         token1.balanceOfPair = constants.Zero
         setChangeTokens([token0, token1])
       } else {
-        const inputValueByTo = parseUnits(cutOffStr(value, data.tokens[0].decimals), data.tokens[0].decimals)
+        const inputValueByTo = parseUnits(cutOffStr(value || '0', data.tokens[0].decimals), data.tokens[0].decimals)
           .mul(data.tokens[1].balanceOfPair)
           .div(data.tokens[0].balanceOfPair)
         setInputValueByTo(formatUnits(inputValueByTo, data.tokens[1].decimals))
 
         const token0 = changeTokens[0]
         const token1 = changeTokens[1]
-        token0.balanceOfPair = parseUnits(cutOffStr(value, data.tokens[0].decimals), data.tokens[0].decimals)
+        token0.balanceOfPair = parseUnits(cutOffStr(value || '0', data.tokens[0].decimals), data.tokens[0].decimals)
         token1.balanceOfPair = inputValueByTo
         setChangeTokens([token0, token1])
 
-        const liquidity = parseUnits(cutOffStr(value, data.tokens[0].decimals), data.tokens[0].decimals)
+        const liquidity = parseUnits(cutOffStr(value || '0', data.tokens[0].decimals), data.tokens[0].decimals)
           .mul(data.accountPairBalance)
           .div(data.tokens[0].balanceOfPair)
         setLiquidity(liquidity)
         onLiquidityChange(
           liquidity,
-          parseUnits(cutOffStr(value, data.tokens[0].decimals), data.tokens[0].decimals),
+          parseUnits(cutOffStr(value || '0', data.tokens[0].decimals), data.tokens[0].decimals),
           inputValueByTo
         )
-        const rate = parseUnits(cutOffStr(value, data.tokens[0].decimals), data.tokens[0].decimals)
+        const rate = parseUnits(cutOffStr(value || '0', data.tokens[0].decimals), data.tokens[0].decimals)
           .mul(parseUnits('1', data.tokens[0].decimals))
           .div(data.tokens[0].balanceOfPair)
           .mul(parseUnits('1', 2))
@@ -112,7 +114,9 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
   const onInputTo: TSwapSectionProps['onInput'] = (value) => {
     if (data.tokens[0].balanceOfPair && data.tokens[1].balanceOfPair) {
       if (
-        parseUnits(cutOffStr(value, data.tokens[1].decimals), data.tokens[1].decimals).gt(data.tokens[1].balanceOfPair)
+        parseUnits(cutOffStr(value || '0', data.tokens[1].decimals), data.tokens[1].decimals).gt(
+          data.tokens[1].balanceOfPair
+        )
       ) {
         setInputValueByFrom('0')
         setLiquidity(constants.Zero)
@@ -121,10 +125,10 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
         const token0 = changeTokens[0]
         const token1 = changeTokens[1]
         token0.balanceOfPair = constants.Zero
-        token1.balanceOfPair = parseUnits(cutOffStr(value, data.tokens[1].decimals), data.tokens[1].decimals)
+        token1.balanceOfPair = parseUnits(cutOffStr(value || '0', data.tokens[1].decimals), data.tokens[1].decimals)
         setChangeTokens([token0, token1])
       } else {
-        const inputValueByFrom = parseUnits(cutOffStr(value, data.tokens[1].decimals), data.tokens[1].decimals)
+        const inputValueByFrom = parseUnits(cutOffStr(value || '0', data.tokens[1].decimals), data.tokens[1].decimals)
           .mul(data.tokens[0].balanceOfPair)
           .div(data.tokens[1].balanceOfPair)
         setInputValueByFrom(formatUnits(inputValueByFrom, data.tokens[0].decimals))
@@ -132,19 +136,19 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
         const token0 = changeTokens[0]
         const token1 = changeTokens[1]
         token0.balanceOfPair = inputValueByFrom
-        token1.balanceOfPair = parseUnits(cutOffStr(value, data.tokens[1].decimals), data.tokens[1].decimals)
+        token1.balanceOfPair = parseUnits(cutOffStr(value || '0', data.tokens[1].decimals), data.tokens[1].decimals)
         setChangeTokens([token0, token1])
 
-        const liquidity = parseUnits(cutOffStr(value, data.tokens[1].decimals), data.tokens[1].decimals)
+        const liquidity = parseUnits(cutOffStr(value || '0', data.tokens[1].decimals), data.tokens[1].decimals)
           .mul(data.accountPairBalance)
           .div(data.tokens[1].balanceOfPair)
         setLiquidity(liquidity)
         onLiquidityChange(
           liquidity,
           inputValueByFrom,
-          parseUnits(cutOffStr(value, data.tokens[1].decimals), data.tokens[1].decimals)
+          parseUnits(cutOffStr(value || '0', data.tokens[1].decimals), data.tokens[1].decimals)
         )
-        const rate = parseUnits(cutOffStr(value, data.tokens[1].decimals), data.tokens[1].decimals)
+        const rate = parseUnits(cutOffStr(value || '0', data.tokens[1].decimals), data.tokens[1].decimals)
           .mul(parseUnits('1', data.tokens[1].decimals))
           .div(data.tokens[1].balanceOfPair)
           .mul(parseUnits('1', 2))
@@ -183,7 +187,7 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
               }}
             />
             <div className="arrow-wrapper">
-              <Image src="/arrow.png" alt="" width={12} height={16} />
+              <Image src="/arrow.svg" alt="" width={12} height={16} />
             </div>
             <SwapSection
               style={{ marginTop: 7 }}

@@ -29,9 +29,11 @@ const Header = () => {
       <div className="nav-wrapper">
         <div className="website-logo-wrapper" onClick={() => router.push('/')}>
           <span className="website-log">
-            <Image src="/site-logo.png" alt="" width={48} height={48} />
+            <Image src="/site-logo.png" alt="" width={64} height={64} />
           </span>
-          <span className="website-name">HUNTERSWAP</span>
+          <span className="website-name">
+            <Image src="/site-name.svg" alt="" width={206} height={20} />
+          </span>
         </div>
         <div className="menu-wrapper">
           {routerMenu.map((item) => {
@@ -80,10 +82,10 @@ const HeaderWrapper = styled.div`
     align-items: center;
     .website-logo-wrapper {
       display: flex;
-      column-gap: 1rem;
       align-items: center;
       cursor: pointer;
       .website-log {
+        margin-top: -17px;
       }
       .website-name {
       }

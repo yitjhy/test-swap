@@ -171,7 +171,7 @@ export function useSwap(tokenIn: string, tokenOut: string) {
                 const outValue = +formatUnits(routes[routes.length - 1].amountOut, tokenOutInfo.decimals)
                 const midPrice = prices.reduce((_midPrice, curPrice) => _midPrice * curPrice, 1)
                 const midOutValue = midPrice * inValue
-                setCurrentSlippage(Math.round(((midOutValue - outValue) / midOutValue - 0.003) * 10000))
+                setCurrentSlippage(Math.round(((midOutValue - outValue) / midOutValue - 0.003 * (routes.length)) * 10000))
             }
         }
     }, [routes, loading])
@@ -199,30 +199,31 @@ export function useSwap(tokenIn: string, tokenOut: string) {
         try {
             let tx: TransactionResponse | null = null
             openDialog({title: 'Swap', desc: 'Waiting for signature'})
+            const paths = routes.map(x => [x.tokenIn.address, x.tokenOut.address]).flat(10)
             if (isSameAddress(tokenIn, constants.AddressZero)) {
                 // eth for erc20
                 if (lock === SwapLock.In) {
-                    tx = await router.swapExactETHForTokens(_minOut, [wethAddress, tokenOut], account, _deadline, {
+                    tx = await router.swapExactETHForTokens(_minOut, paths, account, _deadline, {
                         value: inValue,
                     })
                 } else {
-                    tx = await router.swapETHForExactTokens(outValue, [wethAddress, tokenOut], account, _deadline, {
+                    tx = await router.swapETHForExactTokens(outValue, paths, account, _deadline, {
                         value: _maxIn,
                     })
                 }
             } else if (isSameAddress(tokenOut, constants.AddressZero)) {
                 // erc20 for eth
                 if (lock === SwapLock.In) {
-                    tx = await router.swapExactTokensForETH(inValue, _minOut, [tokenIn, wethAddress], account, _deadline)
+                    tx = await router.swapExactTokensForETH(inValue, _minOut, paths, account, _deadline)
                 } else {
-                    tx = await router.swapTokensForExactETH(outValue, _maxIn, [tokenIn, wethAddress], account, _deadline)
+                    tx = await router.swapTokensForExactETH(outValue, _maxIn, paths, account, _deadline)
                 }
             } else {
                 // erc20 for erc20
                 if (lock === SwapLock.In) {
-                    tx = await router.swapExactTokensForTokens(inValue, _minOut, [tokenIn, tokenOut], account, _deadline)
+                    tx = await router.swapExactTokensForTokens(inValue, _minOut, paths, account, _deadline)
                 } else {
-                    tx = await router.swapTokensForExactTokens(outValue, _maxIn, [tokenIn, tokenOut], account, _deadline)
+                    tx = await router.swapTokensForExactTokens(outValue, _maxIn, paths, account, _deadline)
                 }
             }
             openDialog({title: 'Swap', desc: 'Waiting for blockchain confirmation'})

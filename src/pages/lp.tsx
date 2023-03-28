@@ -41,7 +41,7 @@ function LP() {
           the pool, accrue in real time and can be claimed by withdrawing your liquidity.
         </p>
       </LpIntroWrapper>
-      <VideoBg src="https://cdn.name3.net/video/liquidity.mp4" />
+      <VideoBg src="https://d26w3tglonh3r.cloudfront.net/video/liquidity.mp4" />
       <SwapWrapper>
         <div className="nav-wrapper">
           <span className="title">Your Liquidity</span>
@@ -112,7 +112,7 @@ const LPWrapper = styled.div`
   }
 `
 const LpIntroWrapper = styled.div`
-  margin-top: 68px;
+  margin-top: 168px;
   background: url('/lp.png');
   height: 10rem;
   padding: 2rem 2rem 2.375rem 2rem;

@@ -5,7 +5,7 @@ import React from 'react'
 const Docs = () => {
   return (
     <DocsWrapper>
-      <VideoBg src="https://cdn.name3.net/video/swap.mp4" />
+      <VideoBg src="https://d26w3tglonh3r.cloudfront.net/video/swap.mp4" />
       <h1>The Function Is Under Development...</h1>
     </DocsWrapper>
   )
@@ -13,7 +13,7 @@ const Docs = () => {
 const DocsWrapper = styled.div`
   display: flex;
   justify-content: center;
-  margin-top: 28vh;
+  margin-top: 38vh;
   h1 {
     font-size: 80px;
     user-select: none;

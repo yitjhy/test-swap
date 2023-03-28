@@ -51,7 +51,7 @@ function Find() {
         open={isToCurrencyListModalOpen}
         onClose={handleToCurrencyListModalOpen}
       />
-      <VideoBg src="https://cdn.name3.net/video/liquidity.mp4" />
+      <VideoBg src="https://d26w3tglonh3r.cloudfront.net/video/liquidity.mp4" />
       <div
         style={{
           position: 'relative',
@@ -117,7 +117,7 @@ function Find() {
 }
 const LPWrapper = styled.div`
   max-width: 480px;
-  margin: 68px auto 0;
+  margin: 168px auto 0;
   background: #1a1a1a;
   padding: 21px 19px;
   row-gap: 14px;

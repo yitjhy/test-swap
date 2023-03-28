@@ -69,8 +69,11 @@ const HeaderWrapper = styled.div`
   padding: 37px 5vw 0 49px;
   font-size: 20px;
   color: #d9d9d9;
-  position: relative;
-  z-index: 5;
+  //position: relative;
+  position: fixed;
+  top: 0;
+  z-index: 7;
+  width: 100%;
   .nav-wrapper {
     display: flex;
     column-gap: 7rem;

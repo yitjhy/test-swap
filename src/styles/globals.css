@@ -14,10 +14,18 @@ body {
   color: #fefefe;
   max-width: 100vw;
   overflow-x: hidden;
+    height: 100vh;
   background: #040404;
   font-family: 'ERASBD', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
+/*.HUNTERSWAP {*/
+/*    background: none;*/
+/*}*/
+/*.Home_HUNTERSWAP___HHGB {*/
+/*    background: none;*/
+/*    height: calc(100vh + 435px);*/
+/*}*/
 button, input {
   font-family: 'ERASBD', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
@@ -25,7 +33,9 @@ button, input {
 input {
   color: #FEFEFE;
 }
-
+body::-webkit-scrollbar {
+    width: 0;
+}
 a {
   color: inherit;
   text-decoration: none;

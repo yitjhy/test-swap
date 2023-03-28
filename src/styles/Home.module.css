@@ -13,9 +13,10 @@
   background: url("/images/home/home-bg2.png");
   background-size: cover;
 }
-.HUNTERSWAP {
-  background: none;
-}
+/*.HUNTERSWAP {*/
+/*    background: none;*/
+/*    height: calc(100vh + 435px);*/
+/*}*/
 .content {
   margin-top: 160px;
   margin-left: 25.6vw;

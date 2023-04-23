@@ -13,7 +13,7 @@ export default function Head() {
   return (
     <>
       <NextHead>
-        <title>Combo</title>
+        <title>HUNTERSWAP</title>
         <meta name="viewport" content="width=device-width, initial-scale=0.72" />
         {/* <meta name="viewport" content="minimum-scale=1, maximum-scale=1, user-scalable=no" /> */}
         {/* <meta name="viewport" content="user-scalable=no" /> */}

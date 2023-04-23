@@ -9,8 +9,8 @@ import { getEllipsisStr } from '@/utils'
 const routerMenu = [
   { name: 'Swap', route: '/swap', key: 'swap' },
   { name: 'Liquidity', route: '/lp', key: 'Liquidity' },
-  { name: 'Bridge', route: '/bridge', key: 'Bridge' },
-  { name: 'Docs', route: '/docs', key: 'Docs' },
+  // { name: 'Bridge', route: '/bridge', key: 'Bridge' },
+  // { name: 'Docs', route: '/docs', key: 'Docs' },
 ]
 const Header = () => {
   const { account } = useWeb3React()
@@ -94,8 +94,9 @@ const HeaderWrapper = styled.div`
     .menu-wrapper {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      width: 30vw;
+      //justify-content: space-between;
+      column-gap: 5rem;
+      //width: 30vw;
       .menu-item {
         cursor: pointer;
         color: #d9d9d9;

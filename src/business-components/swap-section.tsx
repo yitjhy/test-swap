@@ -59,9 +59,10 @@ const SwapSection: FC<TSwapSectionProps> = ({
     { wait: 500 }
   )
   const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value.replace(/[^\d]/g, '') !== inputAmount) {
-      setInputAmount(e.target.value ? e.target.value.replace(/[^\d]/g, '') : undefined)
-      onInputDebounce(e.target.value.replace(/[^\d]/g, ''))
+    const reg = /[^\d.]/g
+    if (e.target.value.replace(reg, '') !== inputAmount) {
+      setInputAmount(e.target.value ? e.target.value.replace(reg, '') : undefined)
+      onInputDebounce(e.target.value.replace(reg, ''))
     }
   }
   useEffect(() => {

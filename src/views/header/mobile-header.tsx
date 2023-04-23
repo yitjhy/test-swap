@@ -3,23 +3,29 @@ import { useWallet } from '@/context/WalletContext'
 import { useWeb3React } from '@web3-react/core'
 import { routerMenu } from './constants'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
+import { useClickAway } from 'ahooks'
 
 const MobileHeader = () => {
   const { isActive } = useWeb3React()
   const { active } = useWallet()
   const router = useRouter()
+  const menuWrapperRef = useRef<HTMLDivElement>(null)
+  const [checkedMenu, setCheckedMenu] = useState(router.pathname)
   const [isShowMenu, setIsShowMenu] = useState(false)
   const goConnectWallet = async () => {
     await active('metaMask')
   }
   const goRouter = (route: string) => {
-    // setCheckedMenu(route)
+    setCheckedMenu(route)
     router.push(route).then()
   }
+  useClickAway(() => {
+    setIsShowMenu(false)
+  }, menuWrapperRef)
   return (
     <MobileHeaderWrapper>
-      <div className="menu-wrapper">
+      <div className="menu-wrapper" ref={menuWrapperRef}>
         <img
           src="/images/header/menu_white.svg"
           alt=""
@@ -35,6 +41,7 @@ const MobileHeader = () => {
           {routerMenu.map((item) => {
             return (
               <div
+                style={{ color: checkedMenu === item.route ? '#BFFF37' : '#FFFFFF' }}
                 className="menu-item-wrapper"
                 key={item.key}
                 onClick={() => {

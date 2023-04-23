@@ -59,10 +59,23 @@ const SwapSection: FC<TSwapSectionProps> = ({
     { wait: 500 }
   )
   const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
-    const reg = /[^\d.]/g
-    if (e.target.value.replace(reg, '') !== inputAmount) {
-      setInputAmount(e.target.value ? e.target.value.replace(reg, '') : undefined)
-      onInputDebounce(e.target.value.replace(reg, ''))
+    // 清除“数字”和“.”以外的字符
+    // const reg = /[^\d.]/g
+    //首位不能输入“.”
+    // const reg2 = /^\./g
+    //只保留第一个. 清除多余的
+    // const reg3 = /\.{2,}/g
+    // const replaceValue = e.target.value.replace(reg, '').replace(reg2, '0.').replace(reg3, '.')
+    const replaceValue = e.target.value
+      .replace(/[^\d.]/g, '')
+      .replace(/\.{2,}/g, '.')
+      .replace('.', '$#$')
+      .replace(/\./g, '')
+      .replace('$#$', '.')
+      .replace(/^\./g, '')
+    if (replaceValue !== inputAmount) {
+      setInputAmount(e.target.value ? replaceValue : undefined)
+      onInputDebounce(replaceValue)
     }
   }
   useEffect(() => {

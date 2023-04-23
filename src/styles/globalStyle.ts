@@ -1,6 +1,6 @@
 import { createGlobalStyle } from 'styled-components'
-export const GlobalHomeStyle = createGlobalStyle`
+export const GlobalHomeStyle = createGlobalStyle<{ isFullWindow: boolean }>`
     body {
-      height: calc(100vh + 435px);
+      height: ${({ isFullWindow }) => (isFullWindow ? '100vh' : 'calc(100vh + 435px)')};
     }
 `

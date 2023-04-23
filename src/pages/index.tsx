@@ -9,12 +9,12 @@ import { GlobalHomeStyle } from '@/styles/globalStyle'
 export default function Home() {
   const router = useRouter()
   const [statisticsOpacity, setStatisticsOpacity] = useState(1)
+  const [isFullWindow, setIsFullWindow] = useState(true)
   const [opacity2, setOpacity2] = useState(0)
   const [opacity3, setOpacity3] = useState(0)
   const [bgSize, setBgSize] = useState(100)
   const [bgPosition, setBgPosition] = useState<{ left: number; top: number }>({ left: 0, top: 0 })
   const scroll = useScroll(() => document)
-  console.log(scroll)
   useEffect(() => {
     if (scroll && scroll.top) {
       if (scroll.top < 50) {
@@ -63,9 +63,14 @@ export default function Home() {
       }
     }
   }, [scroll])
+  useEffect(() => {
+    return () => {
+      setIsFullWindow(false)
+    }
+  }, [])
   return (
     <div>
-      <GlobalHomeStyle />
+      <GlobalHomeStyle isFullWindow={isFullWindow} />
       <Head>
         <title>HUNTERSWAP</title>
         <meta name="description" content="HUNTERSWAP" />

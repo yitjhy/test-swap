@@ -9,7 +9,7 @@ import { GlobalHomeStyle } from '@/styles/globalStyle'
 export default function Home() {
   const router = useRouter()
   const [statisticsOpacity, setStatisticsOpacity] = useState(1)
-  const [isFullWindow, setIsFullWindow] = useState(true)
+  const [isFullWindow, setIsFullWindow] = useState(false)
   const [opacity2, setOpacity2] = useState(0)
   const [opacity3, setOpacity3] = useState(0)
   const [bgSize, setBgSize] = useState(100)
@@ -65,7 +65,7 @@ export default function Home() {
   }, [scroll])
   useEffect(() => {
     return () => {
-      setIsFullWindow(false)
+      setIsFullWindow(true)
     }
   }, [])
   return (

@@ -8,6 +8,7 @@ import Header from '@/views/header'
 import { WalletProvider } from '@/context/WalletContext'
 import { RemoteCurrencyListProvider } from '@/context/remoteCurrencyListContext'
 import DialogProvider from '@/components/dialog'
+import Head from './Head'
 
 const usedConnectors: [MetaMask | WalletConnect | CoinbaseWallet, Web3ReactHooks][] = connectors.map((connector) => [
   connector[0],
@@ -19,6 +20,7 @@ const Layout: React.FC<PropsWithChildren<{}>> = (props) => {
       <WalletProvider>
         <DialogProvider>
           <RemoteCurrencyListProvider>
+            <Head />
             <Header />
             {props.children}
           </RemoteCurrencyListProvider>

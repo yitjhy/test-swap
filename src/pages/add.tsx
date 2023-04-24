@@ -26,8 +26,10 @@ import { isSameAddress } from '@/utils/address'
 import { Global } from '@/types/global'
 import moment from 'moment'
 import VideoBg from '@/business-components/videoBg'
+import useMobile from '@/hooks/useMobile'
 
 const IncreaseLP = () => {
+  const isMobile = useMobile()
   const router = useRouter()
   const { query } = useRouter()
   const [slippage, setSlippage] = useState<number>(0)
@@ -265,7 +267,7 @@ const IncreaseLP = () => {
         open={isConfigModalOpen}
         onClose={handleConfigModalOpen}
       />
-      <VideoBg src="https://d26w3tglonh3r.cloudfront.net/video/liquidity.mp4" />
+      {!isMobile && <VideoBg src="https://d26w3tglonh3r.cloudfront.net/video/liquidity.mp4" />}
       <div style={{ position: 'relative', zIndex: 5 }}>
         <div style={{ background: '#1a1a1a', padding: '1rem' }}>
           <div className="header">

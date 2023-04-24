@@ -14,12 +14,12 @@ const LPDetail: FC<{ data: Global.TPairInfo }> = ({ data }) => {
     <LPShareWrapper>
       <div className="lp-share-item-wrapper">
         <span className="lp-share-label">
-          <div className="img-wrapper">
-            <Image src={imgSrc2} alt="" width={20} height={20} />
-            <div className="s-img-wrapper">
-              <Image src={imgSrc} alt="" width={20} height={20} />
-            </div>
-          </div>
+          {/*<div className="img-wrapper">*/}
+          {/*  <Image src={imgSrc2} alt="" width={20} height={20} />*/}
+          {/*  <div className="s-img-wrapper">*/}
+          {/*    <Image src={imgSrc} alt="" width={20} height={20} />*/}
+          {/*  </div>*/}
+          {/*</div>*/}
           {`${data.tokens?.length > 0 ? data.tokens[0]?.symbol : ''}/${
             data.tokens?.length > 0 ? data.tokens[1]?.symbol : ''
           }`}

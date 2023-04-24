@@ -257,7 +257,7 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
                         : '-'}
                     </span>
                     <span className="currency-symbol-wrapper">
-                      <Image className="currency-logo" src={currencyIcon} alt="" width={26} height={26} />
+                      {/*<Image className="currency-logo" src={currencyIcon} alt="" width={26} height={26} />*/}
                       {item.symbol}
                     </span>
                   </div>

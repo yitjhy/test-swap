@@ -28,6 +28,7 @@ import { useWeb3React } from '@web3-react/core'
 import { useRemoteCurrencyList } from '@/context/remoteCurrencyListContext'
 import useRoutes from '@/hooks/useRoutes'
 import VideoBg from '@/business-components/videoBg'
+import useMobile from '@/hooks/useMobile'
 
 enum ExactType {
   exactIn = 'exactIn',
@@ -35,6 +36,7 @@ enum ExactType {
 }
 
 function Swap() {
+  const isMobile = useMobile()
   const router = useRouter()
   const { account, provider } = useWeb3React()
   const [checkedFromCurrency, setCheckedFromCurrency] = useState<Global.TErc20InfoWithPair>(
@@ -249,7 +251,7 @@ function Swap() {
         open={isConfigModalOpen}
         onClose={handleConfigModalOpen}
       />
-      <VideoBg src="https://d26w3tglonh3r.cloudfront.net/video/swap.mp4" />
+      {!isMobile && <VideoBg src="https://d26w3tglonh3r.cloudfront.net/video/swap.mp4" />}
       <div style={{ position: 'relative', zIndex: 5 }}>
         <SwapWrapper>
           <Header

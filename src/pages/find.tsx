@@ -10,8 +10,10 @@ import { getAddress, addPairAddressToStorage } from '@/utils'
 import { Global } from '@/types/global'
 import { useWeb3React } from '@web3-react/core'
 import VideoBg from '@/business-components/videoBg'
+import useMobile from '@/hooks/useMobile'
 
 function Find() {
+  const isMobile = useMobile()
   const router = useRouter()
   const { account } = useWeb3React()
   const [isFromCurrencyListModalOpen, handleFromCurrencyListModalOpen] = useState(false)
@@ -51,7 +53,7 @@ function Find() {
         open={isToCurrencyListModalOpen}
         onClose={handleToCurrencyListModalOpen}
       />
-      <VideoBg src="https://d26w3tglonh3r.cloudfront.net/video/liquidity.mp4" />
+      {!isMobile && <VideoBg src="https://d26w3tglonh3r.cloudfront.net/video/liquidity.mp4" />}
       <div
         style={{
           position: 'relative',

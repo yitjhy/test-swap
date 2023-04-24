@@ -15,7 +15,7 @@ const Header = () => {
   }, [])
   return (
     <HeaderWrapper>
-      <GlobalHomeStyle isFullWindow={isFullWindow && isMobile} />
+      <GlobalHomeStyle isFullWindow={isFullWindow || isMobile} />
       {isMobile ? <MobileIndex /> : <PCIndex />}
     </HeaderWrapper>
   )

@@ -24,10 +24,10 @@ const Header = () => {
       <div className="nav-wrapper">
         <div className="website-logo-wrapper" onClick={() => router.push('/')}>
           <span className="website-log">
-            <Image src="/site-logo.png" alt="" width={64} height={64} />
+            <Image src="/site-logo.png" alt="" width={56} height={56} />
           </span>
           <span className="website-name">
-            <Image src="/site-name.svg" alt="" width={206} height={20} />
+            <Image src="/site-name.svg" alt="" width={185} height={18} />
           </span>
         </div>
         <div className="menu-wrapper">
@@ -95,6 +95,7 @@ const HeaderWrapper = styled.div`
       .menu-item {
         cursor: pointer;
         color: #d9d9d9;
+        font-size: 18px;
       }
     }
   }
@@ -105,6 +106,7 @@ const HeaderWrapper = styled.div`
       display: flex;
       align-items: center;
       column-gap: 0.75rem;
+      font-size: 18px;
       .chain-logo {
         width: 28px;
         height: 28px;
@@ -114,11 +116,11 @@ const HeaderWrapper = styled.div`
     }
     .connect-wallet {
       outline: none;
-      padding: 13px 34px;
+      padding: 10px 28px;
       border: 1px solid #d9d9d9;
       cursor: pointer;
       background: none;
-      font-size: 20px;
+      font-size: 18px;
       color: #d9d9d9;
     }
   }

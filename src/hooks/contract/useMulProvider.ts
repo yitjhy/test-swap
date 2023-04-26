@@ -18,6 +18,12 @@ export function useMulProvider() {
       //@ts-ignore
       _provider._multicallAddress = '0xC04548628D69ea2640357B43511174C6458Ab573'
     }
+    if (chainId === 91715) {
+      // multicall:0xC04548628D69ea2640357B43511174C6458Ab573
+      // 0x0118EF741097D0d3cc88e46233Da1e407d9ac139
+      //@ts-ignore
+      _provider._multicallAddress = '0x7afc25fAA56318E57dE68e60Cf2633444EE22505'
+    }
     return _provider
   }, [provider, chainId, isActive])
 }

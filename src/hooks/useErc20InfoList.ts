@@ -30,7 +30,7 @@ export default function useErc20InfoList(addressList: string[]) {
     }, [])
   useEffect(() => {
     if (!addressList) return
-    if (multiCallContractList && provider && active) {
+    if (multiCallContractList && multiCallContractList.length > 0 && provider && active) {
       // @ts-ignore
       const promise: Promise<TErc20Info[]> = provider.all(multiCallContractList).then((res) => {
         const res2 = addressList

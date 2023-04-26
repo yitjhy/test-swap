@@ -30,6 +30,11 @@ const Goerli: AddEthereumChainParameter['nativeCurrency'] = {
   symbol: 'gETH',
   decimals: 18,
 }
+const COMBOTEST: AddEthereumChainParameter['nativeCurrency'] = {
+  name: 'Binance Chain Native Token',
+  symbol: 'tcBNB',
+  decimals: 18,
+}
 
 interface BasicChainInformation {
   urls: string[]
@@ -89,6 +94,12 @@ export const CHAINS: {
     nativeCurrency: ETH,
     blockExplorerUrls: ['https://goerli-optimism.etherscan.io'],
   },
+  [Chain.COMBOTest]: {
+    name: 'Combo Testnet',
+    nativeCurrency: COMBOTEST,
+    urls: ['https://test-rpc.combonetwork.io'],
+    blockExplorerUrls: ['https://combotrace-testnet.nodereal.io/'],
+  },
 }
 
 export const URLS: { [chainId: number]: string[] } = Object.keys(CHAINS).reduce<{ [chainId: number]: string[] }>(
@@ -105,4 +116,5 @@ export const URLS: { [chainId: number]: string[] } = Object.keys(CHAINS).reduce<
 )
 
 // export const supportChainIds = [Chain.BSC, Chain.ETH]
-export const supportChainIds = [Chain.OPT, Chain.Goerli, Chain.ETH, Chain.BSC]
+export const supportChainIds = [Chain.COMBOTest, Chain.OPT, Chain.Goerli, Chain.ETH, Chain.BSC]
+// export const supportChainIds = [Chain.COMBOTest]

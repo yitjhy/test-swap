@@ -49,8 +49,8 @@ const Header = () => {
       </div>
       <div className="operation-wrapper">
         <div className="chain-wrapper">
-          <div className="chain-logo" />
-          Cocos Smart Chain
+          <img className="chain-logo" src="/images/header/logo_rel.svg" alt="" />
+          Combo Test-Network
         </div>
         <button className="connect-wallet" onClick={goConnectWallet}>
           {account ? getEllipsisStr(account) : 'Connect Wallet'}
@@ -110,8 +110,8 @@ const HeaderWrapper = styled.div`
       .chain-logo {
         width: 28px;
         height: 28px;
-        border-radius: 50%;
-        background: #d9d9d9;
+        //border-radius: 50%;
+        //background: #d9d9d9;
       }
     }
     .connect-wallet {

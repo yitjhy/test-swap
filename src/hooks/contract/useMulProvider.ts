@@ -1,6 +1,7 @@
 import { useWeb3React } from '@web3-react/core'
 import { useMemo } from 'react'
 import { Provider } from 'ethers-multicall'
+import { Chain } from '@/types/enum'
 
 export function useMulProvider() {
   const { chainId, provider, isActive } = useWeb3React()
@@ -18,7 +19,7 @@ export function useMulProvider() {
       //@ts-ignore
       _provider._multicallAddress = '0xC04548628D69ea2640357B43511174C6458Ab573'
     }
-    if (chainId === 91715) {
+    if (chainId === Chain.COMBOTest) {
       // multicall:0xC04548628D69ea2640357B43511174C6458Ab573
       // 0x0118EF741097D0d3cc88e46233Da1e407d9ac139
       //@ts-ignore

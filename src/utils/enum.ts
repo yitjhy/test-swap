@@ -4,6 +4,7 @@
 //   'weth' = '0xc771287bC4a851e6fA49a349701539DBC92c7AaF',
 // }
 import { constants } from 'ethers'
+import { Chain } from '@/types/enum'
 
 // export enum contractAddress {
 //   'factory' = '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f',
@@ -24,4 +25,4 @@ export const platformCurrencyData = {
   decimals: 18,
   address: platFormAddress,
 }
-export const chainId = 5
+export const chainId = Chain.COMBOTest

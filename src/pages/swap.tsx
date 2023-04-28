@@ -64,6 +64,7 @@ function Swap() {
       ? parseUnits(cutOffStr(swap.inAmount, swap.tokenInInfo.decimals), swap.tokenInInfo.decimals)
       : constants.Zero
   )
+  console.log(swap)
   // const { routePair, routePath } = useRoutes(
   //   checkedFromCurrency.address,
   //   checkedToCurrency.address,
@@ -302,7 +303,7 @@ function Swap() {
               parseUnits(cutOffStr(inAmount || '0', checkedFromCurrency.decimals), checkedFromCurrency.decimals).lte(
                 checkedFromCurrency.balance
               ) && <ApproveBtn onClick={approve}>Approve {checkedFromCurrency.symbol}</ApproveBtn>}
-            {swap.pairs.length > 0 && !isSameAddress(swap.pairs[0], constants.AddressZero) && (
+            {swap.routes.length > 0 && (
               <SubmitBtn
                 text={getSubmitBtnText()}
                 onSubmit={() => {
@@ -312,19 +313,17 @@ function Swap() {
                 disabled={getSubmitBtnStatus()}
               />
             )}
-            {swap.pairs.length > 0 &&
-              isSameAddress(swap.pairs[0], constants.AddressZero) &&
-              checkedFromCurrency.address !== checkedToCurrency.address && (
-                <SubmitBtn
-                  disabled={false}
-                  text="Create Pair"
-                  onSubmit={() => {
-                    router
-                      .push(`/add?addressIn=${checkedFromCurrency.address}&addressOut=${checkedToCurrency.address}`)
-                      .then()
-                  }}
-                />
-              )}
+            {swap.routes.length === 0 && checkedFromCurrency.address !== checkedToCurrency.address && (
+              <SubmitBtn
+                disabled={false}
+                text="Create Pair"
+                onSubmit={() => {
+                  router
+                    .push(`/add?addressIn=${checkedFromCurrency.address}&addressOut=${checkedToCurrency.address}`)
+                    .then()
+                }}
+              />
+            )}
             {(!checkedFromCurrency.address || !checkedToCurrency.address) && (
               <SubmitBtn disabled={true} text="Select a token" onSubmit={() => {}} />
             )}

@@ -42,7 +42,7 @@ const RateWrapper = styled.div`
   .rate-title {
   }
   .rate-detail-wrapper {
-    padding: 0 3rem;
+    padding: 0 2rem;
     display: flex;
     margin-top: 35px;
     justify-content: space-between;

@@ -12,6 +12,7 @@ import { BigNumber, constants } from 'ethers'
 import { HunterswapPair } from '@/utils/abis/HunterswapPair'
 import { contractAddress, platformCurrencyData } from '@/utils/enum'
 import { Global } from '@/types/global'
+import { cutOffStr } from '@/utils'
 
 const usePairInfo = (pairAddress: string) => {
   const [pairDetail, setPairDetail] = useState<Global.TPairInfo>({} as Global.TPairInfo)

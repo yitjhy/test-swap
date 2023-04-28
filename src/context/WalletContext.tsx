@@ -80,6 +80,7 @@ export const WalletProvider: React.FC<PropsWithChildren> = ({ children }) => {
       try {
         // @ts-ignore
         await wallet.activate(Chain.COMBOTest)
+        // await wallet.activate(Chain.Goerli)
         // if (!chainId || !supportChainIds.includes(chainId)) {
         //   // @ts-ignore
         //   await wallet.activate(getAddChainParameters(supportChainIds[0] as Chain))

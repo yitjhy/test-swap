@@ -9,7 +9,13 @@ import { WalletProvider } from '@/context/WalletContext'
 import { RemoteCurrencyListProvider } from '@/context/remoteCurrencyListContext'
 import DialogProvider from '@/components/dialog'
 import Head from './Head'
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client'
 
+const client = new ApolloClient({
+  uri: 'https://tests-graph.huterswap.net/subgraphs/name/combo/hunterswap',
+  // uri: 'https://flyby-router-demo.herokuapp.com/',
+  cache: new InMemoryCache(),
+})
 const usedConnectors: [MetaMask | WalletConnect | CoinbaseWallet, Web3ReactHooks][] = connectors.map((connector) => [
   connector[0],
   connector[1],
@@ -20,9 +26,11 @@ const Layout: React.FC<PropsWithChildren<{}>> = (props) => {
       <WalletProvider>
         <DialogProvider>
           <RemoteCurrencyListProvider>
-            <Head />
-            <Header />
-            {props.children}
+            <ApolloProvider client={client}>
+              <Head />
+              <Header />
+              {props.children}
+            </ApolloProvider>
           </RemoteCurrencyListProvider>
         </DialogProvider>
       </WalletProvider>

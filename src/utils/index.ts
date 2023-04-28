@@ -40,7 +40,7 @@ export function getErrorMsg(e: any) {
   return e.reason || e.data?.message || e.message
 }
 
-export const getStrByDecimalPlaces = (val: string, decimalPlaces = 6) => {
+export const getStrByDecimalPlaces = (val: string, decimalPlaces = 12) => {
   if (val.includes('.')) {
     const arr = val.split('.')
     return arr[0] + '.' + arr[1].slice(0, decimalPlaces)
@@ -89,4 +89,49 @@ export const parseParams = (data: Record<string, string | number>) => {
     pre += `${cur}=${data[cur]}&`
     return pre
   }, '')
+}
+
+export const findAllPaths = (
+  graph: Record<string, (string | number)[]>,
+  startNode: string | number,
+  endNode: string | number
+) => {
+  const stack: any = [[startNode, [startNode]]]
+  const result: (string | number)[][] = []
+  while (stack.length) {
+    const [currentNode, currentPath] = stack.pop()
+    if (currentNode === endNode) {
+      result.push(currentPath)
+    } else {
+      if (!graph[currentNode]) {
+        return []
+      }
+      for (let neighbor of graph[currentNode]) {
+        if (!currentPath.includes(neighbor)) {
+          stack.push([neighbor, [...currentPath, neighbor]])
+        }
+      }
+    }
+  }
+  return result
+}
+
+export const generateGraph = (vertexesParams: (string | number)[], edges: (string | number)[][]) => {
+  const vertexes = [...vertexesParams]
+  const adjList: Record<string, (string | number)[]> = {}
+  const addVertex = (value: string | number) => {
+    vertexes.push(value)
+    adjList[value] = []
+  }
+  const addEdge = (value1: string | number, value2: string | number) => {
+    adjList[value1].push(value2)
+    adjList[value2].push(value1)
+  }
+  vertexesParams.map((item) => {
+    addVertex(item)
+  })
+  edges.map((item) => {
+    addEdge(item[0], item[1])
+  })
+  return adjList
 }

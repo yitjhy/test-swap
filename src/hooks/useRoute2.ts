@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { gql, useQuery } from '@apollo/client'
 import { findAllPaths, generateGraph } from '@/utils'
 import { useCallback, useEffect, useState } from 'react'

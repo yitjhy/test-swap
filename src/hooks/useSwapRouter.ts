@@ -12,14 +12,12 @@ import { useContracts } from '@/hooks/contract/useContracts'
 import { formatUnits, parseUnits } from 'ethers/lib/utils'
 import { useWeb3React } from '@web3-react/core'
 import moment from 'moment'
-import { useDialog } from '@/components/dialog'
+import { DialogType, useDialog } from '@/components/dialog'
 import { TransactionResponse } from '@ethersproject/abstract-provider'
-import { getErrorMsg } from '@/utils'
+import { getErrorMsg, sleep } from '@/utils'
 import { AddressZero, Zero } from '@ethersproject/constants'
 import useRoutes, { ExactType } from '@/hooks/useRoute2'
 import { contractAddress } from '@/utils/enum'
-
-const routerAddress = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'
 
 export enum SwapLock {
   In,
@@ -210,9 +208,8 @@ export function useSwap(tokenIn: string, tokenOut: string) {
       const _deadline = moment().add(deadLine, 'second').unix()
       try {
         let tx: TransactionResponse | null = null
-        openDialog({ title: 'Swap', desc: 'Waiting for signature' })
+        openDialog({ title: 'Swap', desc: 'Waiting for signature', type: DialogType.loading })
         const paths = Array.from(new Set([...routes.map((x) => [x.tokenIn.address, x.tokenOut.address]).flat(10)]))
-        console.log(paths)
         if (isSameAddress(tokenIn, constants.AddressZero)) {
           // eth for erc20
           if (lock === SwapLock.In) {
@@ -239,17 +236,15 @@ export function useSwap(tokenIn: string, tokenOut: string) {
             tx = await router.swapTokensForExactTokens(outValue, _maxIn, paths, account, _deadline)
           }
         }
-        openDialog({ title: 'Swap', desc: 'Waiting for blockchain confirmation' })
+        openDialog({ title: 'Swap', desc: 'Waiting for blockchain confirmation', type: DialogType.loading })
         await tx.wait()
-        openDialog({ title: 'Success', desc: 'Swap Successed' })
-        setTimeout(() => {
-          close()
-        }, 1000)
+        openDialog({ title: 'Success', desc: 'Swap Successed', type: DialogType.success })
+        await sleep(1500)
+        close()
       } catch (e: any) {
-        openDialog({ title: 'Error', desc: getErrorMsg(e) })
-        setTimeout(() => {
-          close()
-        }, 1000)
+        openDialog({ title: 'Error', desc: getErrorMsg(e), type: DialogType.warn })
+        await sleep(1500)
+        close()
       }
     },
     [

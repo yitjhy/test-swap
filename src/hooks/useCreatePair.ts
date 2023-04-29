@@ -4,8 +4,8 @@ import { contractAddress } from '@/utils/enum'
 import { useWeb3React } from '@web3-react/core'
 import { BigNumber } from 'ethers'
 import { useCallback } from 'react'
-import { useDialog } from '@/components/dialog'
-import { getErrorMsg } from '@/utils'
+import { DialogType, useDialog } from '@/components/dialog'
+import { getErrorMsg, sleep } from '@/utils'
 
 type TAddLiquidity = (
   fromAddress: string,
@@ -31,7 +31,7 @@ const useAddLiquidity = () => {
   const addLiquidity: TAddLiquidity = useCallback(
     async (fromAddress, toAddress, amountFrom, amountTo, amountFromMin, amountToMin, deadline) => {
       try {
-        openDialog({ title: 'Add Liquidity', desc: 'Waiting for signing.' })
+        openDialog({ title: 'Add Liquidity', desc: 'Waiting for signing', type: DialogType.loading })
         const operation = await LPContract?.addLiquidity(
           fromAddress,
           toAddress,
@@ -42,16 +42,16 @@ const useAddLiquidity = () => {
           account,
           deadline
         )
-        openDialog({ title: 'Add Liquidity', desc: 'Waiting for blockchain confirmation.' })
+        openDialog({ title: 'Add Liquidity', desc: 'Waiting for blockchain confirmation', type: DialogType.loading })
         await operation.wait()
-        openDialog({ title: 'Success', desc: 'Add Liquidity Successed' })
+        openDialog({ title: 'Success', desc: 'Add Liquidity Successed', type: DialogType.success })
+        await sleep(1500)
         close()
         return true
       } catch (e) {
-        openDialog({ title: 'Error', desc: getErrorMsg(e) })
-        setTimeout(() => {
-          close()
-        }, 2000)
+        openDialog({ title: 'Error', desc: getErrorMsg(e), type: DialogType.warn })
+        await sleep(1500)
+        close()
         return false
       }
     },
@@ -60,7 +60,7 @@ const useAddLiquidity = () => {
   const addLiquidityETH: TAddLiquidityETH = useCallback(
     async (address, amount, amountTokenMin, amountETHMin, deadline, ethValue) => {
       try {
-        openDialog({ title: 'Add Liquidity', desc: 'Waiting for signing.' })
+        openDialog({ title: 'Add Liquidity', desc: 'Waiting for signing', type: DialogType.loading })
         const operation = await LPContract?.addLiquidityETH(
           address,
           amount,
@@ -70,16 +70,16 @@ const useAddLiquidity = () => {
           deadline,
           ethValue
         )
-        openDialog({ title: 'Add Liquidity', desc: 'Waiting for blockchain confirmation.' })
+        openDialog({ title: 'Add Liquidity', desc: 'Waiting for blockchain confirmation', type: DialogType.loading })
         await operation.wait()
-        openDialog({ title: 'Success', desc: 'Add Liquidity Successed' })
+        openDialog({ title: 'Success', desc: 'Add Liquidity Successed', type: DialogType.success })
+        await sleep(1500)
         close()
         return true
       } catch (e) {
-        openDialog({ title: 'Error', desc: getErrorMsg(e) })
-        setTimeout(() => {
-          close()
-        }, 2000)
+        openDialog({ title: 'Error', desc: getErrorMsg(e), type: DialogType.warn })
+        await sleep(1500)
+        close()
         return false
       }
     },

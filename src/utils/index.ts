@@ -3,6 +3,10 @@ import { contractAddress, invalidAddress } from '@/utils/enum'
 
 const spliter = new Graphemer()
 
+export function sleep(time: number) {
+  return new Promise((resolve, reject) => setTimeout(resolve, time))
+}
+
 export const getEllipsisStr = (str: string, prefixLength = 6, breakPoints = prefixLength + 4) => {
   let res = str
   const ellipsis = '...'

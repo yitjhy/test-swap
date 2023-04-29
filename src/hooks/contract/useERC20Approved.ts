@@ -4,7 +4,7 @@ import { BigNumber, BigNumberish, constants } from 'ethers'
 import useERC20Allowance from './useERC20Allowance'
 import { ABI } from '@/utils/abis'
 import { ERC20 } from '@/utils/abis/ERC20'
-import { useDialog } from '@/components/dialog'
+import { DialogType, useDialog } from '@/components/dialog'
 import useErc20Info from '@/hooks/contract/useERC20Info'
 import { formatUnits, parseUnits } from 'ethers/lib/utils'
 import { MaxUint256 } from '@ethersproject/constants'
@@ -25,9 +25,9 @@ export default function useERC20Approved(address: string, spender: string, amoun
   const approve = useCallback(async () => {
     if (contract) {
       try {
-        openDialog({ title: 'Approve', desc: 'Waiting for signing.' })
+        openDialog({ title: 'Approve', desc: 'Waiting for signing', type: DialogType.loading })
         const operation = await contract.approve(spender, constants.MaxUint256)
-        openDialog({ title: 'Approve', desc: 'Waiting for blockchain confirmation.' })
+        openDialog({ title: 'Approve', desc: 'Waiting for blockchain confirmation', type: DialogType.loading })
         await operation.wait()
         close()
         return true

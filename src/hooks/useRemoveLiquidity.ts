@@ -4,8 +4,8 @@ import { contractAddress } from '@/utils/enum'
 import { ABI } from '@/utils/abis'
 import { useCallback } from 'react'
 import { BigNumber } from 'ethers'
-import { useDialog } from '@/components/dialog'
-import { getErrorMsg } from '@/utils'
+import { DialogType, useDialog } from '@/components/dialog'
+import { getErrorMsg, sleep } from '@/utils'
 
 type TRemoveLiquidity = (
   fromAddress: string,
@@ -29,7 +29,7 @@ const useRemoveLiquidity = () => {
   const removeLiquidity: TRemoveLiquidity = useCallback(
     async (fromAddress, toAddress, liquidity, fromLiquidityTokenMin, toLiquidityTokenMin, deadline) => {
       try {
-        openDialog({ title: 'Remove', desc: 'Waiting for signing.' })
+        openDialog({ title: 'Remove', desc: 'Waiting for signing', type: DialogType.loading })
         const operation = await routerContract?.removeLiquidity(
           fromAddress,
           toAddress,
@@ -39,16 +39,16 @@ const useRemoveLiquidity = () => {
           account,
           deadline
         )
-        openDialog({ title: 'Remove', desc: 'Waiting for blockchain confirmation.' })
+        openDialog({ title: 'Remove', desc: 'Waiting for blockchain confirmation', type: DialogType.loading })
         await operation.wait()
-        openDialog({ title: 'Remove', desc: 'Remove Successed' })
+        openDialog({ title: 'Remove', desc: 'Remove Successed', type: DialogType.success })
+        await sleep(1500)
         close()
         return true
       } catch (e) {
-        openDialog({ title: 'Error', desc: getErrorMsg(e) })
-        setTimeout(() => {
-          close()
-        }, 2000)
+        openDialog({ title: 'Error', desc: getErrorMsg(e), type: DialogType.warn })
+        await sleep(1500)
+        close()
         return false
       }
     },
@@ -57,7 +57,7 @@ const useRemoveLiquidity = () => {
   const removeLiquidityETH: TRemoveLiquidityETH = useCallback(
     async (fromAddress, liquidity, erc20LiquidityTokenMin, ethLiquidityTokenMin, deadline) => {
       try {
-        openDialog({ title: 'Remove', desc: 'Waiting for signing.' })
+        openDialog({ title: 'Remove', desc: 'Waiting for signing', type: DialogType.loading })
         const operation = await routerContract?.removeLiquidityETH(
           fromAddress,
           liquidity,
@@ -66,16 +66,16 @@ const useRemoveLiquidity = () => {
           account,
           deadline
         )
-        openDialog({ title: 'Remove', desc: 'Waiting for blockchain confirmation.' })
+        openDialog({ title: 'Remove', desc: 'Waiting for blockchain confirmation', type: DialogType.loading })
         await operation.wait()
-        openDialog({ title: 'Remove', desc: 'Remove Successed' })
+        openDialog({ title: 'Remove', desc: 'Remove Successed', type: DialogType.success })
+        await sleep(1500)
         close()
         return true
       } catch (e) {
-        openDialog({ title: 'Error', desc: getErrorMsg(e) })
-        setTimeout(() => {
-          close()
-        }, 2000)
+        openDialog({ title: 'Error', desc: getErrorMsg(e), type: DialogType.warn })
+        await sleep(1500)
+        close()
         return false
       }
     },

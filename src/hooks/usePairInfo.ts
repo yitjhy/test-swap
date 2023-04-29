@@ -6,7 +6,7 @@ import { useWeb3React } from '@web3-react/core'
 import { useSigner } from '@/hooks/contract/useSigner'
 import useAmountOut from '@/hooks/useAmountOut'
 import { useCallback, useEffect, useState } from 'react'
-import { useDialog } from '@/components/dialog'
+import { useDialog, DialogType } from '@/components/dialog'
 import { isSameAddress } from '@/utils/address'
 import { BigNumber, constants } from 'ethers'
 import { HunterswapPair } from '@/utils/abis/HunterswapPair'
@@ -24,7 +24,7 @@ const usePairInfo = (pairAddress: string) => {
   const getPairDetail = useCallback(
     async (pairAddress: string) => {
       if (pairAddress && !isSameAddress(pairAddress, constants.AddressZero)) {
-        openDialog({ title: 'Fetch', desc: 'Waiting for Fetch Liquidity Detail' })
+        openDialog({ title: 'Fetch', desc: 'Waiting for Fetch Liquidity Detail', type: DialogType.loading })
         const pairContract = await getContract<HunterswapPair>(pairAddress, ABI.pair, signer)
 
         // const pairListener = (_reserve0: BigNumber, _reserve1: BigNumber) => {

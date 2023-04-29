@@ -64,7 +64,6 @@ function Swap() {
       ? parseUnits(cutOffStr(swap.inAmount, swap.tokenInInfo.decimals), swap.tokenInInfo.decimals)
       : constants.Zero
   )
-  console.log(swap)
   // const { routePair, routePath } = useRoutes(
   //   checkedFromCurrency.address,
   //   checkedToCurrency.address,

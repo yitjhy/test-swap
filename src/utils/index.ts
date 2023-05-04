@@ -1,5 +1,6 @@
 import Graphemer from 'graphemer'
 import { contractAddress, invalidAddress } from '@/utils/enum'
+import { TRoutePair } from '@/hooks/useRoute2'
 
 const spliter = new Graphemer()
 
@@ -138,4 +139,17 @@ export const generateGraph = (vertexesParams: (string | number)[], edges: (strin
     addEdge(item[0], item[1])
   })
   return adjList
+}
+
+export const findShortestSubArray = (array: TRoutePair[][]) => {
+  let minLength = Infinity
+  let shortestSubArray = null
+  for (let i = 0; i < array.length; i++) {
+    const subArray = array[i]
+    if (subArray.length < minLength) {
+      minLength = subArray.length
+      shortestSubArray = subArray
+    }
+  }
+  return shortestSubArray
 }

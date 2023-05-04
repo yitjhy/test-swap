@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { gql, useQuery } from '@apollo/client'
-import { findAllPaths, generateGraph } from '@/utils'
+import { findAllPaths, generateGraph, findShortestSubArray } from '@/utils'
 import { useCallback, useEffect, useState } from 'react'
 import { parseUnits } from 'ethers/lib/utils'
 import { getContract, useContract } from '@/hooks/contract/useContract'
@@ -57,7 +57,7 @@ type TRouteToken = {
   symbol: string
   chainId: Chain
 }
-type TRoutePair = {
+export type TRoutePair = {
   address: string
   amountIn: string
   amountOut: string
@@ -215,7 +215,7 @@ const useRoute2 = (inToken: string, outToken: string, amount: string, exactType:
                 })
               }
             })
-          setRoutes(res[0] || [])
+          setRoutes(findShortestSubArray(res) || [])
         }
       } else {
         setRoutes([])

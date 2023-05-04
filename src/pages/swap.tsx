@@ -19,14 +19,13 @@ import useERC20Approved from '@/hooks/contract/useERC20Approved'
 import { contractAddress } from '@/utils/enum'
 import { ConfirmBtn } from '@/components/button'
 import SwapDetail from '@/views/swap/swap-detail'
-import { cutOffStr, parseParams } from '@/utils'
+import { cutOffStr } from '@/utils'
 import { getContract } from '@/hooks/contract/useContract'
 import { ABI } from '@/utils/abis'
 import { ERC20 } from '@/utils/abis/ERC20'
 import { useSigner } from '@/hooks/contract/useSigner'
 import { useWeb3React } from '@web3-react/core'
 import { useRemoteCurrencyList } from '@/context/remoteCurrencyListContext'
-import useRoutes from '@/hooks/useRoutes'
 import VideoBg from '@/business-components/videoBg'
 import useMobile from '@/hooks/useMobile'
 
@@ -70,8 +69,6 @@ function Swap() {
   //   exactType === ExactType.exactIn ? swap.inAmount : swap.outAmount,
   //   exactType
   // )
-  // console.log(routePair)
-  // console.log(routePath)
   const updateBalance = async () => {
     let fromBalance = constants.Zero
     let toBalance = constants.Zero
@@ -99,9 +96,9 @@ function Swap() {
   }
 
   const handleSubmit = () => {
-    // handleConfirmWrapModalOpen(true)
-    // swap()
-    swap.swap(isExpertMode).then((data) => {
+    swap.swap(isExpertMode).then(() => {
+      swap.refreshRoute()
+      handleConfirmWrapModalOpen(false)
       updateBalance().then()
     })
   }
@@ -139,12 +136,6 @@ function Swap() {
     if (swap.outAmount === '0' || swap.inAmount === '0') {
       return 'Enter an amount'
     }
-    // if (
-    //   checkedToCurrency.address &&
-    //   Number(swap.outAmount) > Number(formatUnits(checkedToCurrency.balance, checkedToCurrency.decimals))
-    // ) {
-    //   return 'Insufficient balance'
-    // }
     if (
       checkedFromCurrency.address &&
       Number(swap.inAmount) > Number(formatUnits(checkedFromCurrency.balance, checkedFromCurrency.decimals))
@@ -326,19 +317,6 @@ function Swap() {
             {(!checkedFromCurrency.address || !checkedToCurrency.address) && (
               <SubmitBtn disabled={true} text="Select a token" onSubmit={() => {}} />
             )}
-            {/*{swap.pairs.length > 0 && !isSameAddress(swap.pairs[0], constants.AddressZero) ? (*/}
-            {/*  <SubmitBtn text={getSubmitBtnText()} onSubmit={handleSubmit} disabled={getSubmitBtnStatus()} />*/}
-            {/*) : (*/}
-            {/*  <SubmitBtn*/}
-            {/*    disabled={false}*/}
-            {/*    text="Create Pair"*/}
-            {/*    onSubmit={() => {*/}
-            {/*      router*/}
-            {/*        .push(`/add?addressIn=${checkedFromCurrency.address}&addressOut=${checkedToCurrency.address}`)*/}
-            {/*        .then()*/}
-            {/*    }}*/}
-            {/*  />*/}
-            {/*)}*/}
           </>
         </SwapWrapper>
         {checkedFromCurrency.address &&

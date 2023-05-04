@@ -119,14 +119,7 @@ const useRoute2 = (inToken: string, outToken: string, amount: string, exactType:
         return routerContract?.getAmountsOut(_amount, item)
       }
     })
-    // return await Promise.all(promiseList)
     return await Promise.allSettled(promiseList)
-    // const res2 = amountList.map((item) => {
-    //   return item?.map((item2) => {
-    //     return item2.toString()
-    //   })
-    // })
-    // console.log(res2)
   }
 
   const getRoutes = useCallback(
@@ -134,7 +127,6 @@ const useRoute2 = (inToken: string, outToken: string, amount: string, exactType:
       if (data && data.pairs && data.pairs.length) {
         const pairGraph = generateGraph(getGraphVertexes(data.pairs), getGraphEdge(data.pairs))
         const routes = findAllPaths(pairGraph, inToken.toLowerCase(), outToken.toLowerCase())
-        console.log(routes)
         const resAmount = await getAmount(routes as string[][], amount, exactType, inToken, outToken).then()
         if (!resAmount || resAmount.length === 0 || !routes || routes.length === 0) {
           setRoutes([])
@@ -163,7 +155,6 @@ const useRoute2 = (inToken: string, outToken: string, amount: string, exactType:
                       address: pair.token1.id,
                       chainId: Chain.COMBOTest,
                     }
-                    // @ts-ignore
                     const baseObj = {
                       address: pair.id,
                       reserve0: {
@@ -223,6 +214,16 @@ const useRoute2 = (inToken: string, outToken: string, amount: string, exactType:
     },
     [data]
   )
+  const refresh = () => {
+    if (data && data.pairs && data.pairs.length && inToken && outToken && amount && amount !== '0') {
+      getRoutes(
+        isSameAddress(inToken, AddressZero) ? contractAddress.weth : inToken,
+        isSameAddress(outToken, AddressZero) ? contractAddress.weth : outToken,
+        amount,
+        exactType
+      ).then()
+    }
+  }
   useEffect(() => {
     if (data && data.pairs && data.pairs.length && inToken && outToken && amount && amount !== '0') {
       getRoutes(
@@ -233,7 +234,7 @@ const useRoute2 = (inToken: string, outToken: string, amount: string, exactType:
       ).then()
     }
   }, [data, inToken, outToken, amount, exactType])
-  return { routes, getRoutes, loading }
+  return { routes, getRoutes, loading, refresh }
 }
 
 export default useRoute2

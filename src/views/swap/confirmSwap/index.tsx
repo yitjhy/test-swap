@@ -69,7 +69,7 @@ const ConfirmWrap: FC<TConfirmWrapProps> = ({
       <div className="wrap-content">
         <div className="wrap-switch-wrapper">
           <div className="currency-row-wrapper">
-            <Image className="currency-logo" src={currencyIcon} alt="" width={30} height={30} />
+            {/*<Image className="currency-logo" src={currencyIcon} alt="" width={30} height={30} />*/}
             <span className="currency-amount">{inAmount}</span>
             <span className="currency-symbol">{inSymbol}</span>
           </div>
@@ -78,7 +78,7 @@ const ConfirmWrap: FC<TConfirmWrapProps> = ({
           </div>
 
           <div className="currency-row-wrapper">
-            <Image className="currency-logo" src={currencyIcon} alt="" width={30} height={30} />
+            {/*<Image className="currency-logo" src={currencyIcon} alt="" width={30} height={30} />*/}
             <span className="currency-amount">{outAmount}</span>
             <span className="currency-symbol">{outSymbol}</span>
           </div>
@@ -115,7 +115,7 @@ const ConfirmWrap: FC<TConfirmWrapProps> = ({
 
         <div className="wrap-detail-item-wrapper">
           <span className="wrap-detail-label">Price Impact</span>
-          <span className="wrap-detail-value">- {currentSlippage / 100}%</span>
+          <span className="wrap-detail-value"> {currentSlippage / 100}%</span>
         </div>
       </div>
       {isRateChange && !isAccept && (

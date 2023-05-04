@@ -86,7 +86,11 @@ export function useSwap(tokenIn: string, tokenOut: string) {
     contractAddress.router,
     ABI.router
   )
-  const { routes, loading } = useRoutes(
+  const {
+    routes,
+    loading,
+    refresh: refreshRoute,
+  } = useRoutes(
     _tokenIn,
     _tokenOut,
     lock === SwapLock.In ? inAmount : outAmount,
@@ -284,6 +288,7 @@ export function useSwap(tokenIn: string, tokenOut: string) {
     lock,
     loading,
     routes,
+    refreshRoute,
   }
 }
 

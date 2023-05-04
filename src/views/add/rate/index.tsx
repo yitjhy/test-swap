@@ -21,7 +21,8 @@ const Rate: FC<TRateProps> = ({ rate, shareOfPool }) => {
                 {getStrByDecimalPlaces(formatUnits(item.rate, item.toCurrency.decimals))}
               </span>
               <span className="rate-label">
-                {item.fromCurrency?.symbol?.slice(0, 3)} per {item.toCurrency?.symbol?.slice(0, 3)}
+                <span className="token">{item.fromCurrency?.symbol}</span> per{' '}
+                <span className="token">{item.toCurrency?.symbol}</span>
               </span>
             </div>
           )
@@ -59,6 +60,9 @@ const RateWrapper = styled.div`
         display: block;
         text-transform: lowercase;
         text-align: center;
+        .token {
+          text-transform: uppercase;
+        }
       }
     }
   }

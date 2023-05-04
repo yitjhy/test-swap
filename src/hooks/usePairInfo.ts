@@ -24,7 +24,7 @@ const usePairInfo = (pairAddress: string) => {
   const getPairDetail = useCallback(
     async (pairAddress: string) => {
       if (pairAddress && !isSameAddress(pairAddress, constants.AddressZero)) {
-        openDialog({ title: 'Fetch', desc: 'Waiting for Fetch Liquidity Detail', type: DialogType.loading })
+        openDialog({ title: '', desc: 'Waiting for Liquidity Details', type: DialogType.loading })
         const pairContract = await getContract<HunterswapPair>(pairAddress, ABI.pair, signer)
 
         // const pairListener = (_reserve0: BigNumber, _reserve1: BigNumber) => {

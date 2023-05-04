@@ -8,6 +8,7 @@ import { formatUnits, parseUnits } from 'ethers/lib/utils'
 import { BigNumber, constants } from 'ethers'
 import { Global } from '@/types/global'
 import { cutOffStr } from '@/utils'
+import TokenIcon from '@/business-components/tokenIcon'
 
 enum RemoveType {
   simple = 'simple',
@@ -258,6 +259,7 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
                     </span>
                     <span className="currency-symbol-wrapper">
                       {/*<Image className="currency-logo" src={currencyIcon} alt="" width={26} height={26} />*/}
+                      <TokenIcon symbol={item.symbol} width={35} style={{ fontSize: 13 }} />
                       {item.symbol}
                     </span>
                   </div>

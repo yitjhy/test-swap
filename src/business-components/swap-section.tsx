@@ -7,6 +7,7 @@ import Modal from '@/components/modal'
 import CurrencyList, { TSelectCurrencyProps } from '@/business-components/currencyList'
 import { judgeImgUrl } from '@/utils'
 import { Global } from '@/types/global'
+import TokenIcon from '@/business-components/tokenIcon'
 
 export enum TInputCurrency {
   simple = 'simple',
@@ -112,11 +113,7 @@ const SwapSection: FC<TSwapSectionProps> = ({
         >
           {currencyData && Object.keys(currencyData).length > 0 ? (
             <>
-              {judgeImgUrl('') ? (
-                <img className="currency-icon" src={''} alt="" width={30} height={30} />
-              ) : (
-                <div className="logo-wrapper">{currencyData.symbol?.slice(0, 3)}</div>
-              )}
+              <TokenIcon symbol={currencyData.symbol} />
               <div className="currency-symbol">{currencyData.symbol}</div>
             </>
           ) : (
@@ -185,21 +182,6 @@ const SwapSectionWrapper = styled.div`
       font-size: 20px;
       font-weight: bolder;
       color: #d9d9d9;
-      .currency-icon {
-        width: 30px;
-        height: 30px;
-      }
-      .logo-wrapper {
-        width: 30px;
-        height: 30px;
-        border-radius: 40px;
-        background: #262626;
-        font-size: 11px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-transform: uppercase;
-      }
       .currency-symbol {
         font-size: 20px;
       }

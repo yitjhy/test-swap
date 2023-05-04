@@ -4,6 +4,7 @@ import { BigNumber } from 'ethers'
 import { FC } from 'react'
 import { formatUnits } from 'ethers/lib/utils'
 import { Global } from '@/types/global'
+import TokenIcon from '@/business-components/tokenIcon'
 
 const imgSrc =
   'https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984/logo.png'
@@ -15,9 +16,9 @@ const LPDetail: FC<{ data: Global.TPairInfo }> = ({ data }) => {
       <div className="lp-share-item-wrapper">
         <span className="lp-share-label">
           {/*<div className="img-wrapper">*/}
-          {/*  <Image src={imgSrc2} alt="" width={20} height={20} />*/}
+          {/*  <TokenIcon symbol={data.tokens[0]?.symbol} width={20} style={{ fontSize: 8 }} />*/}
           {/*  <div className="s-img-wrapper">*/}
-          {/*    <Image src={imgSrc} alt="" width={20} height={20} />*/}
+          {/*    <TokenIcon symbol={data.tokens[1]?.symbol} width={20} style={{ fontSize: 8 }} />*/}
           {/*  </div>*/}
           {/*</div>*/}
           {`${data.tokens?.length > 0 ? data.tokens[0]?.symbol : ''}/${

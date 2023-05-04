@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { gql, useQuery } from '@apollo/client'
-import { findAllPaths, generateGraph, findShortestSubArray } from '@/utils'
+import { findAllPaths, generateGraph, findShortestSubArray, cutOffStr } from '@/utils'
 import { useCallback, useEffect, useState } from 'react'
 import { parseUnits } from 'ethers/lib/utils'
 import { getContract, useContract } from '@/hooks/contract/useContract'
@@ -98,10 +98,10 @@ const useRoute2 = (inToken: string, outToken: string, amount: string, exactType:
     const outContract = await getContract(outToken as string, ABI.ERC20, signer)
     if (exactType === ExactType.exactOut) {
       const outDecimals = await outContract?.decimals()
-      return parseUnits(amount, outDecimals)
+      return parseUnits(cutOffStr(amount || '0', outDecimals), outDecimals)
     } else {
       const inDecimals = await inContract?.decimals()
-      return parseUnits(amount, inDecimals)
+      return parseUnits(cutOffStr(amount || '0', inDecimals), inDecimals, inDecimals)
     }
   }
   const getAmount = async (

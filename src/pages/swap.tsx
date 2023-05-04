@@ -133,7 +133,7 @@ function Swap() {
     if (!checkedFromCurrency.address || !checkedToCurrency.address) {
       return 'Select a token'
     }
-    if (swap.outAmount === '0' || swap.inAmount === '0') {
+    if (swap.outAmount === '0' && swap.inAmount === '0') {
       return 'Enter an amount'
     }
     if (
@@ -202,6 +202,16 @@ function Swap() {
       setOutAmount('')
     }
   }, [swap.inAmount, swap.outAmount])
+  const getIsShowCreatePair = () => {
+    if (
+      swap.routes.length === 0 &&
+      checkedFromCurrency.address &&
+      checkedToCurrency.address &&
+      checkedFromCurrency.address !== checkedToCurrency.address
+    ) {
+      return (swap.inAmount && swap.inAmount !== '0') || (swap.outAmount && swap.outAmount !== '0')
+    }
+  }
   return (
     <div style={{ maxWidth: 480, margin: '0 auto' }}>
       <Modal
@@ -275,6 +285,7 @@ function Swap() {
           />
           {checkedFromCurrency.address &&
             checkedToCurrency.address &&
+            swap.routes.length > 0 &&
             swap.inAmount &&
             swap.inAmount !== '0' &&
             swap.outAmount &&
@@ -293,17 +304,16 @@ function Swap() {
               parseUnits(cutOffStr(inAmount || '0', checkedFromCurrency.decimals), checkedFromCurrency.decimals).lte(
                 checkedFromCurrency.balance
               ) && <ApproveBtn onClick={approve}>Approve {checkedFromCurrency.symbol}</ApproveBtn>}
-            {swap.routes.length > 0 && (
-              <SubmitBtn
-                text={getSubmitBtnText()}
-                onSubmit={() => {
-                  handleConfirmWrapModalOpen(true)
-                  // handleSubmit()
-                }}
-                disabled={getSubmitBtnStatus()}
-              />
-            )}
-            {swap.routes.length === 0 && checkedFromCurrency.address !== checkedToCurrency.address && (
+            {/*{*/}
+            {/*  <SubmitBtn*/}
+            {/*    text={getSubmitBtnText()}*/}
+            {/*    onSubmit={() => {*/}
+            {/*      handleConfirmWrapModalOpen(true)*/}
+            {/*    }}*/}
+            {/*    disabled={getSubmitBtnStatus()}*/}
+            {/*  />*/}
+            {/*}*/}
+            {getIsShowCreatePair() ? (
               <SubmitBtn
                 disabled={false}
                 text="Create Pair"
@@ -313,10 +323,18 @@ function Swap() {
                     .then()
                 }}
               />
+            ) : (
+              <SubmitBtn
+                text={getSubmitBtnText()}
+                onSubmit={() => {
+                  handleConfirmWrapModalOpen(true)
+                }}
+                disabled={getSubmitBtnStatus()}
+              />
             )}
-            {(!checkedFromCurrency.address || !checkedToCurrency.address) && (
-              <SubmitBtn disabled={true} text="Select a token" onSubmit={() => {}} />
-            )}
+            {/*{(!checkedFromCurrency.address || !checkedToCurrency.address) && (*/}
+            {/*  <SubmitBtn disabled={true} text="Select a token" onSubmit={() => {}} />*/}
+            {/*)}*/}
           </>
         </SwapWrapper>
         {checkedFromCurrency.address &&

@@ -242,14 +242,25 @@ export function useSwap(tokenIn: string, tokenOut: string) {
         }
         openDialog({ title: 'Swap', desc: 'Waiting for blockchain confirmation', type: DialogType.loading })
         const res = await tx.wait()
-        console.log(res.transactionHash)
-        openDialog({ title: 'Success', desc: 'Swap Successed', type: DialogType.success })
-        await sleep(1500)
+        console.log(res)
+        console.log(res.effectiveGasPrice.toString())
+        // openDialog({ title: 'Success', desc: 'Swap Successed', type: DialogType.success })
+        // await sleep(1500)
         close()
+        return {
+          success: true,
+          transHash: res.transactionHash,
+          errMsg: null,
+        }
       } catch (e: any) {
-        openDialog({ title: 'Error', desc: getErrorMsg(e), type: DialogType.warn })
-        await sleep(1500)
+        // openDialog({ title: 'Error', desc: getErrorMsg(e), type: DialogType.warn })
+        // await sleep(1500)
         close()
+        return {
+          success: false,
+          transHash: null,
+          errMsg: getErrorMsg(e),
+        }
       }
     },
     [

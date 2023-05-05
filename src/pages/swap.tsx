@@ -29,6 +29,7 @@ import { useRemoteCurrencyList } from '@/context/remoteCurrencyListContext'
 import VideoBg from '@/business-components/videoBg'
 import useMobile from '@/hooks/useMobile'
 import { useWallet } from '@/context/WalletContext'
+import { useMessage } from '@/context/MessageContext'
 
 enum ExactType {
   exactIn = 'exactIn',
@@ -36,6 +37,7 @@ enum ExactType {
 }
 
 function Swap() {
+  const message = useMessage()
   const isMobile = useMobile()
   const router = useRouter()
   const { account, provider } = useWeb3React()
@@ -101,10 +103,28 @@ function Swap() {
   }
 
   const handleSubmit = () => {
-    swap.swap(isExpertMode).then(() => {
-      swap.refreshRoute()
-      handleConfirmWrapModalOpen(false)
-      updateBalance().then()
+    swap.swap(isExpertMode).then((res) => {
+      if (res && res.success && res.transHash) {
+        swap.refreshRoute()
+        handleConfirmWrapModalOpen(false)
+        updateBalance().then()
+        message.success(
+          <div
+            style={{ cursor: 'pointer' }}
+            onClick={() => {
+              window.open(`https://combotrace-testnet.nodereal.io/tx/${res.transHash}`, '__blank')
+            }}
+          >
+            View on Combo Optimism Explorer: {res.transHash?.slice(0, 28)}...
+          </div>,
+          2000
+        )
+      } else {
+        message.error(
+          <div style={{ wordWrap: 'break-word' }}>View on Combo Optimism Explorer: {res?.errMsg}</div>,
+          2000
+        )
+      }
     })
   }
   const onSelectedCurrencyByFrom: TSwapSectionProps['onSelectedCurrency'] = (balance, currency) => {

@@ -10,6 +10,7 @@ import { RemoteCurrencyListProvider } from '@/context/remoteCurrencyListContext'
 import DialogProvider from '@/components/dialog'
 import Head from './Head'
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client'
+import MessageProvider from '@/context/MessageContext'
 
 const client = new ApolloClient({
   uri: 'https://tests-graph.huterswap.net/subgraphs/name/combo/hunterswap',
@@ -25,13 +26,15 @@ const Layout: React.FC<PropsWithChildren<{}>> = (props) => {
     <Web3ReactProvider connectors={usedConnectors}>
       <WalletProvider>
         <DialogProvider>
-          <RemoteCurrencyListProvider>
-            <ApolloProvider client={client}>
-              <Head />
-              <Header />
-              {props.children}
-            </ApolloProvider>
-          </RemoteCurrencyListProvider>
+          <MessageProvider>
+            <RemoteCurrencyListProvider>
+              <ApolloProvider client={client}>
+                <Head />
+                <Header />
+                {props.children}
+              </ApolloProvider>
+            </RemoteCurrencyListProvider>
+          </MessageProvider>
         </DialogProvider>
       </WalletProvider>
     </Web3ReactProvider>

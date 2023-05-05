@@ -4,6 +4,8 @@ import { TRoutePair } from '@/hooks/useRoute2'
 
 const spliter = new Graphemer()
 
+export function NoOperation() {}
+
 export function sleep(time: number) {
   return new Promise((resolve, reject) => setTimeout(resolve, time))
 }

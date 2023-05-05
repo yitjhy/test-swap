@@ -22,7 +22,7 @@ const ExpertMode: FC<{ onTurnOnExpertMode: () => void }> = ({ onTurnOnExpertMode
           rates and lost funds.
         </p>
       </div>
-      <p className="description-text">Only use this mode if you know what you are doing.</p>
+      <p className="description-text">ONLY USE THIS MODE IF YOU KNOW WHAT YOU ARE DOING.</p>
       {/*<CheckBox text="Dont show this again" value={isShowExpertModeAgain} onChange={setIsShowExpertModeAgain} />*/}
       <ConfirmBtn onClick={handleTurnOnExpertMode}>Turn On Expert Mode</ConfirmBtn>
       {/*<CancelBtn>Cancel</CancelBtn>*/}

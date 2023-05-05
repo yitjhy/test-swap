@@ -8,10 +8,12 @@ import { DialogType, useDialog } from '@/components/dialog'
 import useErc20Info from '@/hooks/contract/useERC20Info'
 import { formatUnits, parseUnits } from 'ethers/lib/utils'
 import { MaxUint256 } from '@ethersproject/constants'
+import { useWeb3React } from '@web3-react/core'
 
 const halfMaxUint256 = MaxUint256.div(2)
 // 币的地址  合约的地址
 export default function useERC20Approved(address: string, spender: string, amount: BigNumberish = halfMaxUint256) {
+  const { account } = useWeb3React()
   const allowance = useERC20Allowance(address, spender)
   const contract = useContract<ERC20>(address, ABI.ERC20)
   const erc20Info = useErc20Info(address)
@@ -23,7 +25,7 @@ export default function useERC20Approved(address: string, spender: string, amoun
   const { openDialog, close } = useDialog()
 
   const approve = useCallback(async () => {
-    if (contract) {
+    if (contract && account) {
       try {
         openDialog({ title: 'Approve', desc: 'Waiting for signing', type: DialogType.loading })
         const operation = await contract.approve(spender, constants.MaxUint256)
@@ -35,6 +37,6 @@ export default function useERC20Approved(address: string, spender: string, amoun
         return false
       }
     }
-  }, [contract, spender])
+  }, [contract, spender, account])
   return { approved, approve }
 }

@@ -6,10 +6,12 @@ import { useWeb3React } from '@web3-react/core'
 import { useWallet } from '@/context/WalletContext'
 import { getEllipsisStr } from '@/utils'
 import { routerMenu } from './constants'
+import Dropdown, { MenuItemText, MenuItemWrapper } from '@/components/dropdown/components/dropdown'
+import { LogoutOutlined } from '@ant-design/icons'
 
 const Header = () => {
   const { account } = useWeb3React()
-  const { active } = useWallet()
+  const { active, deActive } = useWallet()
   const router = useRouter()
   const [checkedMenu, setCheckedMenu] = useState(router.pathname)
   const goRouter = (route: string) => {
@@ -22,7 +24,12 @@ const Header = () => {
   return (
     <HeaderWrapper>
       <div className="nav-wrapper">
-        <div className="website-logo-wrapper" onClick={() => router.push('/')}>
+        <div
+          className="website-logo-wrapper"
+          onClick={() => {
+            goRouter('/')
+          }}
+        >
           <span className="website-log">
             <Image src="/site-logo.png" alt="" width={56} height={56} />
           </span>
@@ -52,9 +59,34 @@ const Header = () => {
           <img className="chain-logo" src="/images/header/logo_rel.svg" alt="" />
           Combo Test-Network
         </div>
-        <button className="connect-wallet" onClick={goConnectWallet}>
-          {account ? getEllipsisStr(account) : 'Connect Wallet'}
-        </button>
+        {/*<button className="connect-wallet" onClick={goConnectWallet}>*/}
+        {/*  {account ? getEllipsisStr(account) : 'Connect Wallet'}*/}
+        {/*</button>*/}
+        <Dropdown
+          menu={
+            account
+              ? [
+                  {
+                    key: 'copy',
+                    label: (
+                      <MenuItemWrapper
+                        onClick={() => {
+                          deActive().then()
+                        }}
+                      >
+                        <MenuItemText style={{ marginRight: 26 }}>Disconnect</MenuItemText>
+                        <LogoutOutlined />
+                      </MenuItemWrapper>
+                    ),
+                  },
+                ]
+              : []
+          }
+        >
+          <button className="connect-wallet" onClick={goConnectWallet}>
+            {account ? getEllipsisStr(account) : 'Connect Wallet'}
+          </button>
+        </Dropdown>
       </div>
     </HeaderWrapper>
   )
@@ -122,6 +154,7 @@ const HeaderWrapper = styled.div`
       background: none;
       font-size: 18px;
       color: #d9d9d9;
+      border-radius: 8px;
     }
   }
 `

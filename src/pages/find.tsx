@@ -24,7 +24,6 @@ function Find() {
     getAddress(fromCurrency.address, toCurrency.address).fromAddress,
     getAddress(fromCurrency.address, toCurrency.address).toAddress
   )
-  console.log(pairAddress)
   const handleSelectedFromCurrency: TSelectCurrencyProps['onChecked'] = (data) => {
     handleFromCurrencyListModalOpen(false)
     setFromCurrency(data)

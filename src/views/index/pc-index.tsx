@@ -83,19 +83,19 @@ export default function Home() {
           </span>
           <div className="statisticsContent">
             <div className="statisticsItemWrapper">
-              <div className="count">115 B+</div>
+              <div className="count">-</div>
               <div className="label">All Time Volume</div>
             </div>
             <div className="statisticsItemWrapper">
-              <div className="count">72 K+</div>
+              <div className="count">-</div>
               <div className="label">Number of users</div>
             </div>
             <div className="statisticsItemWrapper">
-              <div className="count">34 M</div>
+              <div className="count">-</div>
               <div className="label">All Time Trades</div>
             </div>
             <div className="statisticsItemWrapper">
-              <div className="count">200</div>
+              <div className="count">-</div>
               <div className="label">Project Partner</div>
             </div>
           </div>
@@ -150,7 +150,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="copyRight">Copyright © 2023 coco-dex Team Foundation Ltd. All rights reserved.</div>
+        <div className="copyRight">©2023 Huterswap . All Rights Reserved</div>
       </MainWrapper>
     </div>
   )
@@ -208,6 +208,7 @@ const MainWrapper = styled.div<{ bgSize: number; bgPosition: { left: number; top
         .count {
           font-size: 58px;
           line-height: 69px;
+          text-align: center;
         }
         .label {
           font-size: 18px;

@@ -3,10 +3,10 @@ import { CaretDownOutlined } from '@ant-design/icons'
 import { FC } from 'react'
 
 const countMap = [
-  { label: 'All Time Volume', value: '115 B+' },
-  { label: 'Number of users', value: '72 K+' },
-  { label: 'All Time Trades', value: '34 M' },
-  { label: 'Project Partner', value: '200' },
+  { label: 'All Time Volume', value: '-' },
+  { label: 'Number of users', value: '-' },
+  { label: 'All Time Trades', value: '-' },
+  { label: 'Project Partner', value: '-' },
 ]
 const MobileView1: FC<{ onNext: (id: 'view1' | 'view2' | 'view3') => void }> = ({ onNext }) => {
   const handleNext = () => {

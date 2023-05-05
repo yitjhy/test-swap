@@ -19,8 +19,12 @@ import moment from 'moment'
 import VideoBg from '@/business-components/videoBg'
 import Popover from '@/components/popover'
 import useMobile from '@/hooks/useMobile'
+import { useWeb3React } from '@web3-react/core'
+import { useWallet } from '@/context/WalletContext'
 
 const RemoveLP = () => {
+  const { account } = useWeb3React()
+  const { active } = useWallet()
   const isMobile = useMobile()
   const router = useRouter()
   const { removeLiquidity, removeLiquidityETH } = useRemoveLiquidity()
@@ -43,6 +47,9 @@ const RemoveLP = () => {
     setLiquidity(liquidity)
     setInputFromLiquidity(inputFromLiquidity)
     setInputToLiquidity(inputToLiquidity)
+  }
+  const goConnectWallet = async () => {
+    await active('metaMask')
   }
   const handleRemove = async () => {
     let res = false
@@ -181,35 +188,48 @@ const RemoveLP = () => {
               {pairDetail.rate?.map((item, index) => {
                 return (
                   <div className="rate-item" key={index}>
-                    1{item.fromCurrency.symbol}={formatUnits(item.rate, item.toCurrency.decimals)}
+                    1 {item.fromCurrency.symbol} = {formatUnits(item.rate, item.toCurrency.decimals)}{' '}
                     {item.toCurrency.symbol}
                   </div>
                 )
               })}
             </div>
           </div>
-          <div className="button-wrapper">
-            {(!approved || !pairDetail.pairAddress) && (
-              <>
-                <ApproveBtn onClick={approve}>Approve</ApproveBtn>
-                <div className="triangle" />
-              </>
-            )}
-            <RemoveBtn
-              className={`${
-                liquidity?.isZero() ||
-                !approved ||
-                !pairDetail.pairAddress ||
-                liquidity?.gt(pairDetail.accountPairBalance)
-                  ? 'disabledOther'
-                  : ''
-              }`}
-              onClick={handleRemove}
-              disabled={liquidity?.isZero() || liquidity?.gt(pairDetail.accountPairBalance || !approved)}
-            >
-              Remove
-            </RemoveBtn>
-          </div>
+          {account ? (
+            <div className="button-wrapper">
+              {}
+              {(!approved || !pairDetail.pairAddress) && (
+                <>
+                  <ApproveBtn onClick={approve}>Approve</ApproveBtn>
+                  <div className="triangle" />
+                </>
+              )}
+              <RemoveBtn
+                className={`${
+                  liquidity?.isZero() ||
+                  !approved ||
+                  !pairDetail.pairAddress ||
+                  liquidity?.gt(pairDetail.accountPairBalance)
+                    ? 'disabledOther'
+                    : ''
+                }`}
+                onClick={handleRemove}
+                disabled={liquidity?.isZero() || liquidity?.gt(pairDetail.accountPairBalance || !approved)}
+              >
+                Remove
+              </RemoveBtn>
+            </div>
+          ) : (
+            <div className="button-wrapper">
+              <RemoveBtn
+                onClick={() => {
+                  goConnectWallet().then()
+                }}
+              >
+                Connect Wallet
+              </RemoveBtn>
+            </div>
+          )}
         </div>
         <div style={{ padding: '0.3rem 0.7rem' }}>
           {pairDetail.tokens && pairDetail.tokens.length > 0 && <LPDetail data={pairDetail} />}

@@ -108,7 +108,8 @@ const Config: FC<TConfig> = ({ onSlippageChange, onDeadlineChange, onExpertModeC
             <Popover
               content={
                 <span className="tip-text">
-                  Your transaction will revert if the price changes unfavorably by more than this percentage.
+                  Setting a high slippage tolerance can help transactions succeed, but you may not get such a good
+                  price. Use with caution.
                 </span>
               }
               triger={

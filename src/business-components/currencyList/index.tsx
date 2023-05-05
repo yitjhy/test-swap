@@ -198,7 +198,7 @@ const RecommendCurrency = styled.div`
       border-radius: 50%;
     }
     .currency-symbol {
-      font-size: 14px;
+      font-size: 13px;
     }
   }
 `
@@ -222,8 +222,8 @@ const SelectCurrencyWrapper = styled.div`
     text-transform: uppercase;
   }
   .recommend-logo-wrapper {
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     background: #f2f4f7;
     color: #131313;
@@ -257,7 +257,7 @@ const SelectCurrencyWrapper = styled.div`
           row-gap: 2px;
           .currency-name {
             color: #d9d9d9;
-            font-size: 16px;
+            font-size: 14px;
             display: block;
           }
           .currency-symbol {

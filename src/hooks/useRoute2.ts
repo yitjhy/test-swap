@@ -12,6 +12,7 @@ import { Chain } from '@/types/enum'
 import { useSigner } from '@/hooks/contract/useSigner'
 import { isSameAddress } from '@/utils/address'
 import { AddressZero } from '@ethersproject/constants'
+import { useWeb3React } from '@web3-react/core'
 
 export enum ExactType {
   exactIn = 'exactIn',
@@ -89,6 +90,7 @@ const getGraphEdge = (pairs: TPair[]) => {
 }
 
 const useRoute2 = (inToken: string, outToken: string, amount: string, exactType: ExactType) => {
+  const { account, provider } = useWeb3React()
   const { loading, error, data, refetch } = useQuery<{ pairs: TPair[] }>(GET_All_PAIRS)
   const [routes, setRoutes] = useState<TRoutePair[]>([])
   const routerContract = useContract<HunterswapRouter02>(contractAddress.router, ABI.router)
@@ -215,7 +217,7 @@ const useRoute2 = (inToken: string, outToken: string, amount: string, exactType:
     [data]
   )
   const refresh = () => {
-    if (data && data.pairs && data.pairs.length && inToken && outToken && amount && amount !== '0') {
+    if (data && data.pairs && data.pairs.length && inToken && outToken && amount && amount !== '0' && account) {
       getRoutes(
         isSameAddress(inToken, AddressZero) ? contractAddress.weth : inToken,
         isSameAddress(outToken, AddressZero) ? contractAddress.weth : outToken,
@@ -225,7 +227,7 @@ const useRoute2 = (inToken: string, outToken: string, amount: string, exactType:
     }
   }
   useEffect(() => {
-    if (data && data.pairs && data.pairs.length && inToken && outToken && amount && amount !== '0') {
+    if (data && data.pairs && data.pairs.length && inToken && outToken && amount && amount !== '0' && account) {
       getRoutes(
         isSameAddress(inToken, AddressZero) ? contractAddress.weth : inToken,
         isSameAddress(outToken, AddressZero) ? contractAddress.weth : outToken,
@@ -233,7 +235,7 @@ const useRoute2 = (inToken: string, outToken: string, amount: string, exactType:
         exactType
       ).then()
     }
-  }, [data, inToken, outToken, amount, exactType])
+  }, [data, inToken, outToken, amount, exactType, account])
   return { routes, getRoutes, loading, refresh }
 }
 

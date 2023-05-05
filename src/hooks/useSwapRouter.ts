@@ -241,7 +241,8 @@ export function useSwap(tokenIn: string, tokenOut: string) {
           }
         }
         openDialog({ title: 'Swap', desc: 'Waiting for blockchain confirmation', type: DialogType.loading })
-        await tx.wait()
+        const res = await tx.wait()
+        console.log(res.transactionHash)
         openDialog({ title: 'Success', desc: 'Swap Successed', type: DialogType.success })
         await sleep(1500)
         close()

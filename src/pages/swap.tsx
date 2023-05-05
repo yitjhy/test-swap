@@ -28,6 +28,7 @@ import { useWeb3React } from '@web3-react/core'
 import { useRemoteCurrencyList } from '@/context/remoteCurrencyListContext'
 import VideoBg from '@/business-components/videoBg'
 import useMobile from '@/hooks/useMobile'
+import { useWallet } from '@/context/WalletContext'
 
 enum ExactType {
   exactIn = 'exactIn',
@@ -38,6 +39,7 @@ function Swap() {
   const isMobile = useMobile()
   const router = useRouter()
   const { account, provider } = useWeb3React()
+  const { active } = useWallet()
   const [checkedFromCurrency, setCheckedFromCurrency] = useState<Global.TErc20InfoWithPair>(
     {} as Global.TErc20InfoWithPair
   )
@@ -69,6 +71,9 @@ function Swap() {
   //   exactType === ExactType.exactIn ? swap.inAmount : swap.outAmount,
   //   exactType
   // )
+  const goConnectWallet = async () => {
+    await active('metaMask')
+  }
   const updateBalance = async () => {
     let fromBalance = constants.Zero
     let toBalance = constants.Zero
@@ -313,23 +318,39 @@ function Swap() {
             {/*    disabled={getSubmitBtnStatus()}*/}
             {/*  />*/}
             {/*}*/}
-            {getIsShowCreatePair() ? (
-              <SubmitBtn
-                disabled={false}
-                text="Create Pair"
-                onSubmit={() => {
-                  router
-                    .push(`/add?addressIn=${checkedFromCurrency.address}&addressOut=${checkedToCurrency.address}`)
-                    .then()
-                }}
-              />
-            ) : (
+            {/*{getIsShowCreatePair() ? (*/}
+            {/*  <SubmitBtn*/}
+            {/*    disabled={false}*/}
+            {/*    text="Create Pair"*/}
+            {/*    onSubmit={() => {*/}
+            {/*      router*/}
+            {/*        .push(`/add?addressIn=${checkedFromCurrency.address}&addressOut=${checkedToCurrency.address}`)*/}
+            {/*        .then()*/}
+            {/*    }}*/}
+            {/*  />*/}
+            {/*) : (*/}
+            {/*  <SubmitBtn*/}
+            {/*    text={getSubmitBtnText()}*/}
+            {/*    onSubmit={() => {*/}
+            {/*      handleConfirmWrapModalOpen(true)*/}
+            {/*    }}*/}
+            {/*    disabled={getSubmitBtnStatus()}*/}
+            {/*  />*/}
+            {/*)}*/}
+            {account ? (
               <SubmitBtn
                 text={getSubmitBtnText()}
                 onSubmit={() => {
                   handleConfirmWrapModalOpen(true)
                 }}
                 disabled={getSubmitBtnStatus()}
+              />
+            ) : (
+              <SubmitBtn
+                text="Connect Wallet"
+                onSubmit={() => {
+                  goConnectWallet().then()
+                }}
               />
             )}
             {/*{(!checkedFromCurrency.address || !checkedToCurrency.address) && (*/}

@@ -55,7 +55,7 @@ export default function useErc20InfoList(addressList: string[]) {
             const platformCurrency = {
               address: platFormAddress,
               name: 'HUNTERS',
-              symbol: 'ETH',
+              symbol: 'TCBNB',
               decimals: 18,
               balance,
             }

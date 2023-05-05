@@ -27,11 +27,15 @@ import { Global } from '@/types/global'
 import moment from 'moment'
 import VideoBg from '@/business-components/videoBg'
 import useMobile from '@/hooks/useMobile'
+import { useWallet } from '@/context/WalletContext'
+import { useWeb3React } from '@web3-react/core'
 
 const IncreaseLP = () => {
+  const { account } = useWeb3React()
   const isMobile = useMobile()
   const router = useRouter()
   const { query } = useRouter()
+  const { active } = useWallet()
   const [slippage, setSlippage] = useState<number>(0)
   const [deadline, setDeadline] = useState<number>(0)
   const [isExpertMode, setIsExpertMode] = useState(false)
@@ -67,6 +71,9 @@ const IncreaseLP = () => {
     { address: checkedFromCurrency.address, inputValue: inputValueByFrom },
     { address: checkedToCurrency.address, inputValue: inputValueByTo }
   )
+  const goConnectWallet = async () => {
+    await active('metaMask')
+  }
   const onSelectedCurrencyByFrom: TSwapSectionProps['onSelectedCurrency'] = (balance, currency) => {
     setCheckedFromCurrency(currency)
   }
@@ -315,22 +322,36 @@ const IncreaseLP = () => {
           checkedToCurrency.address ? (
             <Rate shareOfPool={shareOfPool} rate={pairDetail.rate} />
           ) : null}
-          <div className="approve-wrapper">
-            {!isApprovedCurrencyFrom &&
-              checkedFromCurrency.address &&
-              parseUnits(
-                cutOffStr(inputValueByFrom || '0', checkedFromCurrency.decimals),
-                checkedFromCurrency.decimals
-              ).lte(checkedFromCurrency.balance) && (
-                <ApproveBtn onClick={approveCurrencyFrom}>Approve {checkedFromCurrency.symbol}</ApproveBtn>
-              )}
-            {!isApprovedCurrencyTo &&
-              checkedToCurrency.address &&
-              parseUnits(cutOffStr(inputValueByTo || '0', checkedToCurrency.decimals), checkedToCurrency.decimals).lte(
-                checkedToCurrency.balance
-              ) && <ApproveBtn onClick={approveCurrencyTo}>Approve {checkedToCurrency.symbol}</ApproveBtn>}
-          </div>
-          <SubmitBtn text={getSubmitBtnText()} onSubmit={handleSubmit} disabled={getSubmitBtnStatus()} />
+          {account ? (
+            <>
+              <div className="approve-wrapper">
+                {!isApprovedCurrencyFrom &&
+                  checkedFromCurrency.address &&
+                  parseUnits(
+                    cutOffStr(inputValueByFrom || '0', checkedFromCurrency.decimals),
+                    checkedFromCurrency.decimals
+                  ).lte(checkedFromCurrency.balance) && (
+                    <ApproveBtn onClick={approveCurrencyFrom}>Approve {checkedFromCurrency.symbol}</ApproveBtn>
+                  )}
+                {!isApprovedCurrencyTo &&
+                  checkedToCurrency.address &&
+                  parseUnits(
+                    cutOffStr(inputValueByTo || '0', checkedToCurrency.decimals),
+                    checkedToCurrency.decimals
+                  ).lte(checkedToCurrency.balance) && (
+                    <ApproveBtn onClick={approveCurrencyTo}>Approve {checkedToCurrency.symbol}</ApproveBtn>
+                  )}
+              </div>
+              <SubmitBtn text={getSubmitBtnText()} onSubmit={handleSubmit} disabled={getSubmitBtnStatus()} />
+            </>
+          ) : (
+            <SubmitBtn
+              text="Connect Wallet"
+              onSubmit={() => {
+                goConnectWallet().then()
+              }}
+            />
+          )}
         </div>
         <div style={{ padding: '0 0.7rem' }}>
           {pairDetail.tokens && pairDetail.tokens.length > 0 && <LPDetail data={pairDetail} />}

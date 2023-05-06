@@ -122,6 +122,8 @@ function Swap() {
       if (swapTransHistory && swapTransHistory.length) {
         swapTransHistory.unshift(data)
         localStorage.setItem('swapTransHistory', JSON.stringify(swapTransHistory))
+      } else {
+        localStorage.setItem('swapTransHistory', JSON.stringify([data]))
       }
     } else {
       localStorage.setItem('swapTransHistory', JSON.stringify([data]))

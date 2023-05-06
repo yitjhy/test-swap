@@ -1,10 +1,9 @@
 import Head from 'next/head'
 import styled from 'styled-components'
-import { useScroll } from 'ahooks'
+import { useDebounceFn, useScroll } from 'ahooks'
 import { useEffect, useState } from 'react'
 import { CaretRightOutlined } from '@ant-design/icons'
 import { useRouter } from 'next/router'
-import { GlobalHomeStyle } from '@/styles/globalStyle'
 
 export default function Home() {
   const router = useRouter()
@@ -14,54 +13,63 @@ export default function Home() {
   const [bgSize, setBgSize] = useState(100)
   const [bgPosition, setBgPosition] = useState<{ left: number; top: number }>({ left: 0, top: 0 })
   const scroll = useScroll(() => document)
+  const [scrollTop, setScrollTop] = useState(0)
+  const [currentView, setCurrentView] = useState<number>(1)
+  const switchView = (index: number) => {
+    if (index === 1) {
+      setStatisticsOpacity(1)
+      setOpacity2(0)
+      setOpacity3(0)
+      setBgSize(100)
+    }
+    if (index === 2) {
+      setBgSize(170)
+      setStatisticsOpacity(0)
+      setOpacity2(1)
+      setOpacity3(0)
+      setBgPosition({
+        left: 0,
+        top: 0,
+      })
+    }
+    if (index === 3) {
+      setBgPosition({
+        left: (435 - 210) / 3,
+        top: (435 - 210) / 7,
+      })
+      setStatisticsOpacity(0)
+      setOpacity3((435 - 210) / 225)
+      setOpacity2(0)
+    }
+  }
+  const { run } = useDebounceFn(
+    (realScrollTop) => {
+      console.log(realScrollTop)
+      if (realScrollTop > scrollTop) {
+        if (currentView < 3) {
+          setCurrentView(currentView + 1)
+        } else {
+          setCurrentView(3)
+        }
+      } else {
+        if (currentView === 1) {
+          setCurrentView(1)
+        } else {
+          setCurrentView(currentView - 1)
+        }
+      }
+      setScrollTop(realScrollTop)
+    },
+    { wait: 50 }
+  )
   useEffect(() => {
     if (scroll && scroll.top) {
-      if (scroll.top < 50) {
-        setStatisticsOpacity(1)
-        setOpacity2(0)
-        setOpacity3(0)
-        setBgSize(100)
-      }
-      if (scroll.top < 210 && scroll.top > 50) {
-        // 切换到第二屏
-        // const newSize = 100 + scroll.top / 3
-        // setBgSize(newSize)
-        setBgSize(170)
-        // setStatisticsOpacity(1 - scroll.top / 210)
-        setStatisticsOpacity(0)
-        // setOpacity2(scroll.top / 210)
-        setOpacity2(1)
-        setOpacity3(0)
-        setBgPosition({
-          left: 0,
-          top: 0,
-        })
-      }
-      if (scroll.top >= 300 && scroll.top < 435) {
-        // const leftPosition = (scroll.top - 210) / 3
-        // const topPosition = (scroll.top - 210) / 7
-        // setBgPosition({
-        //   left: leftPosition,
-        //   top: topPosition,
-        // })
-        // setStatisticsOpacity(0)
-        // setOpacity3((scroll.top - 210) / 225)
-        // setOpacity2(1 - (scroll.top - 210) / 225)
-        setBgPosition({
-          left: (435 - 210) / 3,
-          top: (435 - 210) / 7,
-        })
-        setStatisticsOpacity(0)
-        setOpacity3((435 - 210) / 225)
-        setOpacity2(0)
-      }
-      if (scroll.top === 435) {
-        // setStatisticsOpacity(0)
-        // setOpacity2(0)
-        // setOpacity3(1)
-      }
+      run(scroll.top)
     }
   }, [scroll])
+  useEffect(() => {
+    switchView(currentView)
+  }, [currentView])
   return (
     <div>
       <Head>

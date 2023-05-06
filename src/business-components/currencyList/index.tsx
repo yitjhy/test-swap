@@ -21,6 +21,9 @@ export type TSelectCurrencyProps = {
 const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }) => {
   const [isWarningModalOpen, handleWarningModalOpen] = useState(false)
   const [searchValue, setSearchValue] = useState('')
+  const [noTradedAddressData, setNoTradedAddressData] = useState<{ address: string; symbol: string }>(
+    {} as { address: string; symbol: string }
+  )
   const [currencyList, setCurrencyList] = useState<Global.TErc20InfoWithPair[]>([])
   const { currencyList: currencyListByContext, update: updateCurrencyList } = useRemoteCurrencyList()
   const [searchAddress, setSearchAddress] = useState('')
@@ -87,7 +90,14 @@ const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }
     <SelectCurrencyWrapper>
       <Modal
         title=""
-        content={<NotTradedWaning onConfirm={onNotTradedWaningConfirm} onCancel={onNotTradedWaningCancel} />}
+        content={
+          <NotTradedWaning
+            onConfirm={onNotTradedWaningConfirm}
+            onCancel={onNotTradedWaningCancel}
+            address={noTradedAddressData.address}
+            symbol={noTradedAddressData.symbol}
+          />
+        }
         open={isWarningModalOpen}
         contentStyle={{ width: 480 }}
         onClose={handleWarningModalOpen}
@@ -135,6 +145,10 @@ const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }
                   } else {
                     e.stopPropagation()
                     handleWarningModalOpen(true)
+                    setNoTradedAddressData({
+                      address: item.address,
+                      symbol: item.symbol,
+                    })
                   }
                 }}
               >

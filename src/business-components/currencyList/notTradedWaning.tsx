@@ -3,22 +3,30 @@ import Image from 'next/image'
 import { FC } from 'react'
 import { Copy, Link } from 'react-feather'
 import { ConfirmBtn, CancelBtn } from '@/components/button'
+import copy from 'copy-to-clipboard'
 
 type TNotTradedWaning = {
+  address: string
+  symbol: string
   onCancel: () => void
   onConfirm: () => void
 }
-const NotTradedWaning: FC<TNotTradedWaning> = ({ onConfirm, onCancel }) => {
+const NotTradedWaning: FC<TNotTradedWaning> = ({ onConfirm, onCancel, address, symbol }) => {
   const handleConfirm = () => {
     onConfirm()
   }
   const handleCancel = () => {
     onCancel()
   }
+  const url = `https://combotrace-testnet.nodereal.io/address/${address}`
+  const viewScanAddress = () => {
+    window.open(url, '__blank')
+  }
   return (
     <NotTradedWaningWrapper>
       <div className="not-traded-waning-icon">
-        <Image className="currency-icon" src="/waning-modal-icon.png" alt="" width={40} height={40} />
+        {/*<Image className="currency-icon" src="/waning-modal-icon.png" alt="" width={40} height={40} />*/}
+        <div className="logo-wrapper">{symbol?.slice(0, 3)}</div>
       </div>
       <span className="waning-title">
         Wrapped Ether{' '}
@@ -28,9 +36,16 @@ const NotTradedWaning: FC<TNotTradedWaning> = ({ onConfirm, onCancel }) => {
       </span>
       <span className="description-text">The token is not included and is not traded on Hunterswap</span>
       <div className="help-wrapper">
-        <div className="currncy-url">https://bscscan.com/address/0x000000000002132123</div>
-        <Link color="#9C9C9C" size={16} cursor="pointer" />
-        <Copy color="#9C9C9C" size={16} cursor="pointer" />
+        <div className="currncy-url">{url}</div>
+        <Link color="#9C9C9C" size={16} cursor="pointer" onClick={viewScanAddress} />
+        <Copy
+          color="#9C9C9C"
+          size={16}
+          cursor="pointer"
+          onClick={() => {
+            copy(address)
+          }}
+        />
       </div>
       <ConfirmBtn onClick={handleConfirm}>I Know</ConfirmBtn>
       <CancelBtn style={{ background: '#1A1A1A' }} onClick={onCancel}>
@@ -45,6 +60,18 @@ const NotTradedWaningWrapper = styled.div`
   font-size: 16px;
   line-height: 19px;
   color: #d9d9d9;
+  .logo-wrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f2f4f7;
+    color: #131313;
+    font-size: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-transform: uppercase;
+  }
   .not-traded-waning-icon {
     display: flex;
     justify-content: center;
@@ -75,6 +102,8 @@ const NotTradedWaningWrapper = styled.div`
     .currncy-url {
       flex: 1;
       font-size: 12px;
+      width: 100px;
+      overflow: hidden;
     }
   }
 `

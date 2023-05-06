@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import styled from 'styled-components'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 import { NoOperation } from '@/utils'
-import { Image } from '@/components/Image'
+// import { Image } from '@/components/Image'
 
 interface MessageParams {
   success: (text: string | React.ReactNode, duration?: number) => void
@@ -99,7 +99,7 @@ function MessageContent(props: { messages: MessageItem[] }) {
     : null
 }
 
-const StyledIcon = styled(Image)`
+const StyledIcon = styled('img')`
   width: 20px;
   height: 20px;
   position: absolute;

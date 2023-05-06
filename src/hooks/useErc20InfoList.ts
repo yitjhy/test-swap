@@ -54,8 +54,8 @@ export default function useErc20InfoList(addressList: string[]) {
           singleProvider?.getBalance(account as string).then((balance) => {
             const platformCurrency = {
               address: platFormAddress,
-              name: 'HUNTERS',
-              symbol: 'TCBNB',
+              name: 'tcBNB',
+              symbol: 'BNB',
               decimals: 18,
               balance,
             }

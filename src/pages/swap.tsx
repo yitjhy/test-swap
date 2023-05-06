@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import Image from 'next/image'
 import { Settings } from 'react-feather'
+import { HistoryOutlined } from '@ant-design/icons'
 import Config, { TConfig } from '@/views/add/config'
 import Modal from '@/components/modal'
 import Header from '@/components/header'
@@ -9,6 +10,7 @@ import SubmitBtn from '@/components/submitBtn'
 import SwapSection, { TSwapSectionProps } from '@/business-components/swap-section'
 import ConfirmWrap from '@/views/swap/confirmSwap'
 import PriceDetail from '@/views/swap/price-detail'
+import History from '@/views/swap/history'
 import { formatUnits, parseUnits } from 'ethers/lib/utils'
 import { useSwap } from '@/hooks/useSwapRouter'
 import { BigNumber, constants } from 'ethers'
@@ -19,7 +21,7 @@ import useERC20Approved from '@/hooks/contract/useERC20Approved'
 import { contractAddress } from '@/utils/enum'
 import { ConfirmBtn } from '@/components/button'
 import SwapDetail from '@/views/swap/swap-detail'
-import { cutOffStr } from '@/utils'
+import { cutOffStr, getErrorMsg } from '@/utils'
 import { getContract } from '@/hooks/contract/useContract'
 import { ABI } from '@/utils/abis'
 import { ERC20 } from '@/utils/abis/ERC20'
@@ -30,6 +32,7 @@ import VideoBg from '@/business-components/videoBg'
 import useMobile from '@/hooks/useMobile'
 import { useWallet } from '@/context/WalletContext'
 import { useMessage } from '@/context/MessageContext'
+import { DialogType, useDialog } from '@/components/dialog'
 
 enum ExactType {
   exactIn = 'exactIn',
@@ -38,6 +41,7 @@ enum ExactType {
 
 function Swap() {
   const message = useMessage()
+  const { openDialog, close } = useDialog()
   const isMobile = useMobile()
   const router = useRouter()
   const { account, provider } = useWeb3React()
@@ -52,6 +56,7 @@ function Swap() {
   const [checkedToCurrency, setCheckedToCurrency] = useState<Global.TErc20InfoWithPair>({} as Global.TErc20InfoWithPair)
   const [isConfirmWrapModalOpen, handleConfirmWrapModalOpen] = useState(false)
   const [isConfigModalOpen, handleConfigModalOpen] = useState(false)
+  const [isHistoryModalOpen, handleHistoryModalOpen] = useState(false)
   const { currencyList: currencyListByContext } = useRemoteCurrencyList()
   const signer = useSigner()
   const swap = useSwap(
@@ -102,28 +107,65 @@ function Swap() {
     })
   }
 
+  const storeTransactions = (transHash: string) => {
+    const data = {
+      lock: swap.lock,
+      inAmount: swap.inAmount,
+      outAmount: swap.outAmount,
+      inSymbol: swap.tokenInInfo.symbol,
+      outSymbol: swap.tokenOutInfo.symbol,
+      transHash: transHash,
+    }
+    const swapTransHistoryStr = localStorage.getItem('swapTransHistory')
+    if (swapTransHistoryStr) {
+      const swapTransHistory = JSON.parse(swapTransHistoryStr)
+      if (swapTransHistory && swapTransHistory.length) {
+        swapTransHistory.unshift(data)
+        localStorage.setItem('swapTransHistory', JSON.stringify(swapTransHistory))
+      }
+    } else {
+      localStorage.setItem('swapTransHistory', JSON.stringify([data]))
+    }
+  }
+
   const handleSubmit = () => {
     swap.swap(isExpertMode).then((res) => {
       if (res && res.success && res.transHash) {
+        storeTransactions(res.transHash)
         swap.refreshRoute()
         handleConfirmWrapModalOpen(false)
         updateBalance().then()
-        message.success(
-          <div
-            style={{ cursor: 'pointer' }}
-            onClick={() => {
-              window.open(`https://combotrace-testnet.nodereal.io/tx/${res.transHash}`, '__blank')
-            }}
-          >
-            View on Combo Optimism Explorer: {res.transHash?.slice(0, 28)}...
-          </div>,
-          2000
-        )
+        openDialog({
+          title: 'Success',
+          desc: (
+            <div
+              style={{ cursor: 'pointer' }}
+              onClick={() => {
+                window.open(`https://combotrace-testnet.nodereal.io/tx/${res.transHash}`, '__blank')
+              }}
+            >
+              View on COMBOTrace
+            </div>
+          ),
+          type: DialogType.success,
+        })
+        // message.success(
+        //   <div
+        //     style={{ cursor: 'pointer' }}
+        //     onClick={() => {
+        //       window.open(`https://combotrace-testnet.nodereal.io/tx/${res.transHash}`, '__blank')
+        //     }}
+        //   >
+        //     View on Combo Optimism Explorer: {res.transHash?.slice(0, 28)}...
+        //   </div>,
+        //   2000
+        // )
       } else {
-        message.error(
-          <div style={{ wordWrap: 'break-word' }}>View on Combo Optimism Explorer: {res?.errMsg}</div>,
-          2000
-        )
+        // openDialog({ title: 'Error', desc: res?.errMsg, type: DialogType.warn })
+        // message.error(
+        //   <div style={{ wordWrap: 'break-word' }}>View on Combo Optimism Explorer: {res?.errMsg}</div>,
+        //   2000
+        // )
       }
     })
   }
@@ -277,15 +319,27 @@ function Swap() {
         open={isConfigModalOpen}
         onClose={handleConfigModalOpen}
       />
+      <Modal
+        contentStyle={{ width: 480 }}
+        title="Recent Transactions"
+        content={<History isShow={isHistoryModalOpen} />}
+        open={isHistoryModalOpen}
+        onClose={handleHistoryModalOpen}
+      />
       {!isMobile && <VideoBg src="https://d26w3tglonh3r.cloudfront.net/video/swap.mp4" />}
       <div style={{ position: 'relative', zIndex: 5 }}>
         <SwapWrapper>
           <Header
             title="Swap"
             operation={
-              <span className="swap-header-settings-icon" onClick={() => handleConfigModalOpen(true)}>
-                <Settings color="#D9D9D9" size={23} />
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', columnGap: 15 }}>
+                <span className="swap-header-settings-icon" onClick={() => handleConfigModalOpen(true)}>
+                  <Settings color="#D9D9D9" size={23} />
+                </span>
+                <span className="swap-header-settings-icon" onClick={() => handleHistoryModalOpen(true)}>
+                  <HistoryOutlined style={{ color: '#D9D9D9', fontSize: 23 }} />
+                </span>
+              </div>
             }
           />
           <div style={{ position: 'relative' }}>

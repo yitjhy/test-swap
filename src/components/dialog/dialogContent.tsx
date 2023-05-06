@@ -1,11 +1,11 @@
-import { FC } from 'react'
-import { CheckOutlined, LoadingOutlined, WarningOutlined } from '@ant-design/icons'
+import React, { FC } from 'react'
+import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons'
 import styled from 'styled-components'
 import { DialogType } from '@/components/dialog/index'
 // import { Images } from '@/utils/images'
 // import { Image } from '@/views/common/Image'
 
-const DialogContent: FC<{ title: string; desc: string; type: DialogType; onClose: () => void }> = ({
+const DialogContent: FC<{ title: string; desc: string | React.ReactNode; type: DialogType; onClose: () => void }> = ({
   title,
   desc,
   type = true,
@@ -15,46 +15,48 @@ const DialogContent: FC<{ title: string; desc: string; type: DialogType; onClose
     <DialogContentWrapper>
       {type === DialogType.loading && (
         <div className="icon-wrapper">
-          <LoadingOutlined style={{ fontSize: 95 }} />
+          <img src="/images/common/runfid.gif" style={{ width: 100, height: 100 }} />
+          {/*<LoadingOutlined style={{ fontSize: 95 }} />*/}
         </div>
       )}
       {type === DialogType.success && (
         <div className="icon-wrapper">
-          <CheckOutlined style={{ fontSize: 80 }} />
+          <CheckCircleOutlined style={{ fontSize: 80 }} />
+          {/*<Image src="/images/common/success.svg" />*/}
           {/*<Image src={Images.COMMON.DIALOG_SUCCESS_SVG} />*/}
         </div>
       )}
       {type === DialogType.warn && (
         <div className="icon-wrapper">
-          <WarningOutlined style={{ fontSize: 80 }} />
+          <CloseCircleOutlined style={{ fontSize: 80 }} />
           {/*<Image src={Images.COMMON.DIALOG_FAIL_SVG} />*/}
         </div>
       )}
       <div className="title">{title}</div>
       <div className="desc">{desc}</div>
-      {/*{type !== DialogType.loading && (*/}
-      {/*  <>*/}
-      {/*    {type === DialogType.warn ? (*/}
-      {/*      <div*/}
-      {/*        className="btn"*/}
-      {/*        onClick={() => {*/}
-      {/*          onClose()*/}
-      {/*        }}*/}
-      {/*      >*/}
-      {/*        Close*/}
-      {/*      </div>*/}
-      {/*    ) : (*/}
-      {/*      <div*/}
-      {/*        className="btn"*/}
-      {/*        onClick={() => {*/}
-      {/*          onClose()*/}
-      {/*        }}*/}
-      {/*      >*/}
-      {/*        OK*/}
-      {/*      </div>*/}
-      {/*    )}*/}
-      {/*  </>*/}
-      {/*)}*/}
+      {type !== DialogType.loading && (
+        <>
+          {type === DialogType.warn ? (
+            <div
+              className="btn"
+              onClick={() => {
+                onClose()
+              }}
+            >
+              Close
+            </div>
+          ) : (
+            <div
+              className="btn"
+              onClick={() => {
+                onClose()
+              }}
+            >
+              Close
+            </div>
+          )}
+        </>
+      )}
     </DialogContentWrapper>
   )
 }
@@ -90,16 +92,13 @@ const DialogContentWrapper = styled.div`
     width: 227px;
     height: 33px;
     margin: 38px auto 0;
-    background: #6f6f6f;
+    background: #bfff37;
     font-size: 16px;
     color: #0c0c0c;
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
-    &:hover {
-      background: linear-gradient(122.1deg, #a98ef8 -0.78%, #00dcf0 122.45%);
-    }
   }
 `
 export default DialogContent

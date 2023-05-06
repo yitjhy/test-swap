@@ -1,5 +1,5 @@
 import Modal from './../modal'
-import { createContext, FC, PropsWithChildren, useContext, useState } from 'react'
+import React, { createContext, FC, PropsWithChildren, useContext, useState } from 'react'
 import DialogContent from './dialogContent'
 
 export enum DialogType {
@@ -10,7 +10,7 @@ export enum DialogType {
 type TDialogContext = {
   isDialogOpen: boolean
   close: () => void
-  openDialog: (data: { title: string; desc: string; type: DialogType }) => void
+  openDialog: (data: { title: string; desc: string | React.ReactNode; type: DialogType }) => void
   type: DialogType
 }
 const DialogContext = createContext({ isDialogOpen: false } as TDialogContext)
@@ -21,7 +21,7 @@ export function useDialog() {
 const DialogProvider: FC<PropsWithChildren> = ({ children }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [title, setTitle] = useState('')
-  const [desc, setDesc] = useState('')
+  const [desc, setDesc] = useState<string | React.ReactNode>('')
   const [dialogType, setDialogType] = useState<DialogType>(DialogType.loading)
   const close = () => {
     setIsDialogOpen(false)

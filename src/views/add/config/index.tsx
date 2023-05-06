@@ -124,7 +124,7 @@ const Config: FC<TConfig> = ({ onSlippageChange, onDeadlineChange, onExpertModeC
           {[0.1, 0.5, 1.0].map((item, index) => {
             return (
               <SlippageToleranceBtn
-                style={{ background: slippage === item ? '#383838' : '#262626' }}
+                checked={slippage === item}
                 key={index}
                 onClick={() => {
                   handleSlippageChange(item)
@@ -218,15 +218,16 @@ const Config: FC<TConfig> = ({ onSlippageChange, onDeadlineChange, onExpertModeC
     </ConfigWrapper>
   )
 }
-const SlippageToleranceBtn = styled.button`
+const SlippageToleranceBtn = styled.button<{ checked: boolean }>`
   border: none;
   outline: none;
   height: 2rem;
   width: 5.44rem;
-  background: #262626;
-  color: #d9d9d9;
+  background: ${({ checked }) => (checked ? '#bfff37' : '#262626')};
+  color: ${({ checked }) => (checked ? '#120D00' : '#d9d9d9')};
   font-size: 13px;
   cursor: pointer;
+  transition: all linear 0.12s;
 `
 const ConfigWrapper = styled.div`
   display: grid;
@@ -234,7 +235,7 @@ const ConfigWrapper = styled.div`
   row-gap: 25px;
   color: #d9d9d9;
   font-size: 14px;
-  padding-bottom: 2rem;
+  padding-bottom: 0.8rem;
   .split-line {
     border-top: 1px solid #262626;
   }

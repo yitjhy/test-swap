@@ -113,22 +113,22 @@ const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }
           borderRadius: 0,
           background: '#262626',
           color: '#D9D9D9',
+          fontSize: 14,
         }}
         placeholder="Search name or paste address"
       />
       <RecommendCurrency>
         {currencyListByContext.length > 0 &&
           currencyListByContext.slice(0, 4).map((item, index) => (
-            <div
-              className="currency-btn"
+            <CurrencyBtn
               key={index}
-              style={{ opacity: checkedCurrency?.address === item.address ? 0.5 : 1 }}
+              isChecked={checkedCurrency?.address === item.address}
               onClick={() => handleChecked(item as TCurrencyListItem)}
             >
               {/*<img src="" alt="" width={24} height={24} />*/}
               <div className="recommend-logo-wrapper">{item.symbol?.slice(0, 3)}</div>
               <span className="currency-symbol">{item.symbol}</span>
-            </div>
+            </CurrencyBtn>
           ))}
       </RecommendCurrency>
       <div className="split-line" />
@@ -196,27 +196,39 @@ const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }
     </SelectCurrencyWrapper>
   )
 }
+const CurrencyBtn = styled.div<{ isChecked: boolean }>`
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 6px 11px;
+  color: ${({ isChecked }) => (isChecked ? '#120D00' : '#d9d9d9')};
+  background: ${({ isChecked }) => (isChecked ? '#bfff37' : '#262626')};
+  column-gap: 0.55rem;
+  cursor: pointer;
+  .recommend-logo-wrapper {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: ${({ isChecked }) => (isChecked ? '#262626' : '#f2f4f7')};
+    color: ${({ isChecked }) => (isChecked ? '#d9d9d9' : '#131313')};
+    font-size: 13px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-transform: uppercase;
+  }
+  .currency-logo {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+  }
+  .currency-symbol {
+    font-size: 13px;
+  }
+`
 const RecommendCurrency = styled.div`
   display: flex;
   column-gap: 0.5rem;
-  .currency-btn {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 6px 11px;
-    color: #d9d9d9;
-    background: #262626;
-    column-gap: 0.55rem;
-    cursor: pointer;
-    .currency-logo {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-    }
-    .currency-symbol {
-      font-size: 13px;
-    }
-  }
 `
 const SelectCurrencyWrapper = styled.div`
   /* width: 400px; */
@@ -228,18 +240,6 @@ const SelectCurrencyWrapper = styled.div`
   .logo-wrapper {
     width: 40px;
     height: 40px;
-    border-radius: 50%;
-    background: #f2f4f7;
-    color: #131313;
-    font-size: 13px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-transform: uppercase;
-  }
-  .recommend-logo-wrapper {
-    width: 28px;
-    height: 28px;
     border-radius: 50%;
     background: #f2f4f7;
     color: #131313;
@@ -289,7 +289,7 @@ const SelectCurrencyWrapper = styled.div`
         align-items: center;
         .currency-balance {
           font-size: 14px;
-          max-width: 200px;
+          max-width: 240px;
           overflow-wrap: anywhere;
         }
         .currency-status {

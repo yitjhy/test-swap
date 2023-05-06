@@ -86,7 +86,7 @@ const ConfigWrapper = styled.div`
   row-gap: 25px;
   color: #d9d9d9;
   font-size: 14px;
-  padding-bottom: 2rem;
+  padding-bottom: 0.8rem;
   .split-line {
     border-top: 1px solid #262626;
   }

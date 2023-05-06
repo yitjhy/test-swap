@@ -162,7 +162,7 @@ const SwapWrapper = styled.div`
       }
       .increase-lp-btn {
         height: 2.5rem;
-        background: #00ffd1;
+        background: #bfff37;
         color: #120d00;
         border: none;
         outline: none;

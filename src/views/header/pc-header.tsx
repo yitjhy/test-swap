@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import Image from 'next/image'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { useWeb3React } from '@web3-react/core'
 import { useWallet } from '@/context/WalletContext'
@@ -21,6 +21,9 @@ const Header = () => {
   const goConnectWallet = async () => {
     await active('metaMask')
   }
+  useEffect(() => {
+    setCheckedMenu(router.pathname)
+  }, [router])
   return (
     <HeaderWrapper>
       <div className="nav-wrapper">

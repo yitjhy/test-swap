@@ -3,9 +3,9 @@ import { CaretDownOutlined } from '@ant-design/icons'
 import { FC } from 'react'
 
 const countMap = [
-  { label: 'All Time Volume', value: '-' },
+  { label: 'Total trading volume', value: '-' },
+  { label: 'Total transaction amount', value: '-' },
   { label: 'Number of users', value: '-' },
-  { label: 'All Time Trades', value: '-' },
   { label: 'Project Partner', value: '-' },
 ]
 const MobileView1: FC<{ onNext: (id: 'view1' | 'view2' | 'view3') => void }> = ({ onNext }) => {
@@ -15,21 +15,24 @@ const MobileView1: FC<{ onNext: (id: 'view1' | 'view2' | 'view3') => void }> = (
   return (
     <MobileView1Wrapper>
       <span className="title">HUNTERSWAP</span>
-      <span className="des">The hunterswap on First-ever Game OPTIMISTIC Rollup on BSC CHAIN</span>
-      <span className="des des2">
-        As BSC's first ever zkRollup, Thehuterswap allows you to avoid costly gas fees and network congestion with the
-        same security as mainnet - 100x cheaper and faster.
+      <span className="des">
+        HunterSwap allows you to avoid costly gas fees and network congestion while benefiting from the mainnet’s
+        unrivaled security mechanisms - 100x cheaper and faster!
       </span>
-      <div className="count-wrapper">
-        {countMap.map((item, index) => {
-          return (
-            <div className="count-item-wrapper" key={index}>
-              <div className="count-value">{item.value}</div>
-              <div className="count-label">{item.label}</div>
-            </div>
-          )
-        })}
-      </div>
+      {/*<span className="des des2">*/}
+      {/*  As BSC's first ever zkRollup, Thehuterswap allows you to avoid costly gas fees and network congestion with the*/}
+      {/*  same security as mainnet - 100x cheaper and faster.*/}
+      {/*</span>*/}
+      {/*<div className="count-wrapper">*/}
+      {/*  {countMap.map((item, index) => {*/}
+      {/*    return (*/}
+      {/*      <div className="count-item-wrapper" key={index}>*/}
+      {/*        <div className="count-value">{item.value}</div>*/}
+      {/*        <div className="count-label">{item.label}</div>*/}
+      {/*      </div>*/}
+      {/*    )*/}
+      {/*  })}*/}
+      {/*</div>*/}
       <div className="next-btn">
         <CaretDownOutlined onClick={handleNext} />
       </div>
@@ -47,7 +50,7 @@ const MobileView1Wrapper = styled.div`
   .des {
     font-size: 14px;
     color: #ffffff;
-    text-align: center;
+    text-align: left;
     display: block;
     margin-top: 15px;
   }

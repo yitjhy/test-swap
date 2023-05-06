@@ -140,14 +140,13 @@ function Swap() {
         openDialog({
           title: 'Success',
           desc: (
-            <div
-              style={{ cursor: 'pointer' }}
+            <ScanView
               onClick={() => {
                 window.open(`https://combotrace-testnet.nodereal.io/tx/${res.transHash}`, '__blank')
               }}
             >
               View on COMBOTrace
-            </div>
+            </ScanView>
           ),
           type: DialogType.success,
         })
@@ -457,6 +456,17 @@ function Swap() {
     </div>
   )
 }
+
+const ScanView = styled.div`
+  cursor: pointer;
+  color: #627e27;
+  transition: all linear 0.12s;
+  padding: 0 8px;
+  border-bottom: 1px solid #1a1a1a;
+  &:hover {
+    border-bottom: 1px solid #627e27;
+  }
+`
 const ApproveBtn = styled(ConfirmBtn)`
   flex: 1;
   padding: 0 0.8rem;

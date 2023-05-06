@@ -76,29 +76,32 @@ export default function Home() {
           style={{ opacity: statisticsOpacity, transform: `translateX(-50%) scale(${statisticsOpacity})` }}
         >
           <span className="title">HUNTERSWAP</span>
-          <span className="des">The hunterswap on First-ever Game OPTIMISTIC Rollup on BSC CHAIN</span>
-          <span className="des2">
-            As BSC's first ever zkRollup, Thehuterswap allows you to avoid costly gas fees and network congestion with
-            the same security as mainnet - 100x cheaper and faster.
+          <span className="des">
+            HunterSwap allows you to avoid costly gas fees and network congestion while benefiting from the mainnet’s
+            unrivaled security mechanisms - 100x cheaper and faster!
           </span>
-          <div className="statisticsContent">
-            <div className="statisticsItemWrapper">
-              <div className="count">-</div>
-              <div className="label">All Time Volume</div>
-            </div>
-            <div className="statisticsItemWrapper">
-              <div className="count">-</div>
-              <div className="label">Number of users</div>
-            </div>
-            <div className="statisticsItemWrapper">
-              <div className="count">-</div>
-              <div className="label">All Time Trades</div>
-            </div>
-            <div className="statisticsItemWrapper">
-              <div className="count">-</div>
-              <div className="label">Project Partner</div>
-            </div>
-          </div>
+          {/*<span className="des2">*/}
+          {/*  HunterSwap allows you to avoid costly gas fees and network congestion while benefiting from the mainnet’s*/}
+          {/*  unrivaled security mechanisms - 100x cheaper and faster!*/}
+          {/*</span>*/}
+          {/*<div className="statisticsContent">*/}
+          {/*  <div className="statisticsItemWrapper">*/}
+          {/*    <div className="count">-</div>*/}
+          {/*    <div className="label">Total trading volume</div>*/}
+          {/*  </div>*/}
+          {/*  <div className="statisticsItemWrapper">*/}
+          {/*    <div className="count">-</div>*/}
+          {/*    <div className="label">Total transaction amount</div>*/}
+          {/*  </div>*/}
+          {/*  <div className="statisticsItemWrapper">*/}
+          {/*    <div className="count">-</div>*/}
+          {/*    <div className="label">Number of users</div>*/}
+          {/*  </div>*/}
+          {/*  <div className="statisticsItemWrapper">*/}
+          {/*    <div className="count">-</div>*/}
+          {/*    <div className="label">Project Partner</div>*/}
+          {/*  </div>*/}
+          {/*</div>*/}
         </div>
         <div
           className="introduceWrapper"
@@ -150,7 +153,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="copyRight">©2023 Huterswap . All Rights Reserved</div>
+        <div className="copyRight">©2023 HunterSwap . All Rights Reserved</div>
       </MainWrapper>
     </div>
   )
@@ -191,7 +194,7 @@ const MainWrapper = styled.div<{ bgSize: number; bgPosition: { left: number; top
       font-size: 20px;
       line-height: 25px;
       display: block;
-      text-align: center;
+      text-align: left;
     }
     .des2 {
       display: block;

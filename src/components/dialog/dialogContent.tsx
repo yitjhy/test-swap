@@ -21,14 +21,16 @@ const DialogContent: FC<{ title: string; desc: string | React.ReactNode; type: D
       )}
       {type === DialogType.success && (
         <div className="icon-wrapper">
-          <CheckCircleOutlined style={{ fontSize: 80 }} />
+          <img src="/images/common/success.svg" style={{ width: 100, height: 100 }} />
+          {/*<CheckCircleOutlined style={{ fontSize: 80 }} />*/}
           {/*<Image src="/images/common/success.svg" />*/}
           {/*<Image src={Images.COMMON.DIALOG_SUCCESS_SVG} />*/}
         </div>
       )}
       {type === DialogType.warn && (
         <div className="icon-wrapper">
-          <CloseCircleOutlined style={{ fontSize: 80 }} />
+          <img src="/images/common/warn.svg" style={{ width: 100, height: 100 }} />
+          {/*<CloseCircleOutlined style={{ fontSize: 80 }} />*/}
           {/*<Image src={Images.COMMON.DIALOG_FAIL_SVG} />*/}
         </div>
       )}

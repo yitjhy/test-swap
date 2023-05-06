@@ -109,7 +109,8 @@ export default function Home() {
         >
           <span className="title">Millisecond Speed</span>
           <span className="desc">
-            The TPS can be increased by multiple orders of magnitude. While users enjoy a smooth transaction experience
+            HunterSwap’s TPS can be increased by multiple orders of magnitude, providing users with seamless, low-cost
+            on-chain interactions
           </span>
           <div
             className="swap"
@@ -122,12 +123,10 @@ export default function Home() {
         </div>
         <div className="content" style={{ opacity: opacity3, transform: `scale(${opacity3})` }}>
           {/*<div>{JSON.stringify(scroll)}</div>*/}
-          <div className="title">Ecological Partner</div>
+          <div className="title">Ecosystem Partner</div>
           <div className="introduce">
-            Collect the application partners of BNB Chain to form an entire ecosystemBuild scalable payment apps,
-            non-custodial exchanges, and NFT marketpl-aces on Ethereum with Loopring's time-tested zkRollup technology.
-            Get started with quick-start guides, protocol documentation, a Javascript SDK, and a fully open source
-            codebase.
+            At HunterSwap, we have established partnerships with various collaborators across business, technology, and
+            funding to cultivate an ecological economy and bolster the growth of the ecosystem.
           </div>
           <div className="menuWrapper">
             <div className="itemWrapper">
@@ -153,7 +152,19 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="copyRight">©2023 HunterSwap . All Rights Reserved</div>
+        <div className="copyRight">
+          <div />
+          <div>©2023 HunterSwap . All Rights Reserved</div>
+          <div className="btn-group">
+            <img
+              src="/images/common/twitter.svg"
+              alt=""
+              onClick={() => {
+                window.open('https://twitter.com/Hunterswap2023', '__blank')
+              }}
+            />
+          </div>
+        </div>
       </MainWrapper>
     </div>
   )
@@ -290,10 +301,19 @@ const MainWrapper = styled.div<{ bgSize: number; bgPosition: { left: number; top
     }
   }
   .copyRight {
+    display: flex;
     position: fixed;
     text-align: center;
     font-size: 12px;
     color: #a6a6a6;
     bottom: 20px;
+    width: 100%;
+    padding: 0 30px;
+    justify-content: space-between;
+    .btn-group {
+      display: flex;
+      column-gap: 10px;
+      cursor: pointer;
+    }
   }
 `

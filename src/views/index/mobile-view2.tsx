@@ -19,7 +19,8 @@ const MobileView2: FC<TMobileView2> = ({ onNext, onPre }) => {
     <MobileView1Wrapper>
       <span className="title">Millisecond Speed</span>
       <span className="des">
-        The TPS can be increased by multiple orders of magnitude. While users enjoy a smooth transaction experience
+        HunterSwap’s TPS can be increased by multiple orders of magnitude, providing users with seamless, low-cost
+        on-chain interactions
       </span>
       <div
         className="swap"

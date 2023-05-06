@@ -8,7 +8,7 @@ const MobileView3: FC<{ onPre: (id: 'view1' | 'view2' | 'view3') => void }> = ({
   }
   return (
     <MobileView3Wrapper>
-      <span className="title">Ecological Partner</span>
+      <span className="title">Ecosystem Partner</span>
       <div className="menuWrapper">
         <div className="itemWrapper">
           <div className="item">

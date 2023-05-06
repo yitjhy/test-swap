@@ -44,18 +44,21 @@ export default function Home() {
   }
   const { run } = useDebounceFn(
     (realScrollTop) => {
-      console.log(realScrollTop)
       if (realScrollTop > scrollTop) {
         if (currentView < 3) {
           setCurrentView(currentView + 1)
+          switchView(currentView + 1)
         } else {
           setCurrentView(3)
+          switchView(3)
         }
       } else {
         if (currentView === 1) {
           setCurrentView(1)
+          switchView(1)
         } else {
           setCurrentView(currentView - 1)
+          switchView(currentView - 1)
         }
       }
       setScrollTop(realScrollTop)
@@ -67,9 +70,6 @@ export default function Home() {
       run(scroll.top)
     }
   }, [scroll])
-  useEffect(() => {
-    switchView(currentView)
-  }, [currentView])
   return (
     <div>
       <Head>

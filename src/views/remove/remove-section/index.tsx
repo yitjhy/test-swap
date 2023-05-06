@@ -192,6 +192,7 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
             </div>
             <SwapSection
               style={{ marginTop: 7 }}
+              disableSelectCurrency={true}
               onInput={onInputFrom}
               checkedCurrency={swapSectionTokens[0]}
               amount={inputValueByFrom}
@@ -202,6 +203,7 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
             </div>
             <SwapSection
               style={{ marginTop: 7 }}
+              disableSelectCurrency={true}
               onInput={onInputTo}
               checkedCurrency={swapSectionTokens[1]}
               amount={inputValueByTo}

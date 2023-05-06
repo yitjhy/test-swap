@@ -11,8 +11,6 @@ import { useRemoteCurrencyList, TCurrencyListItem, baseAddress } from '@/context
 import { judgeImgUrl } from '@/utils'
 import { Global } from '@/types/global'
 import useErc20Info from '@/hooks/contract/useERC20Info'
-import useErc20InfoList from '@/hooks/useErc20InfoList'
-import { constants } from 'ethers'
 
 export type TSelectCurrencyProps = {
   checkedCurrency: Global.TErc20InfoWithPair
@@ -34,9 +32,7 @@ const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }
     setCurrencyList(currencyListByContext)
     setSearchValue('')
   }
-  // const currencyList = useErc20InfoList([searchAddress])
   const searchErc20Info = useErc20Info(searchAddress)
-  // console.log(searchErc20Info)
   const onSearch = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     setSearchValue(e.target.value)

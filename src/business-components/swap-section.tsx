@@ -5,7 +5,6 @@ import { ChevronDown } from 'react-feather'
 import { formatUnits } from 'ethers/lib/utils'
 import Modal from '@/components/modal'
 import CurrencyList, { TSelectCurrencyProps } from '@/business-components/currencyList'
-import { judgeImgUrl } from '@/utils'
 import { Global } from '@/types/global'
 import TokenIcon from '@/business-components/tokenIcon'
 
@@ -23,6 +22,7 @@ export type TSwapSectionProps = {
   readonly?: boolean
   style?: React.CSSProperties
   hiddenMax?: boolean
+  disableSelectCurrency?: boolean
 }
 
 const SwapSection: FC<TSwapSectionProps> = ({
@@ -35,6 +35,7 @@ const SwapSection: FC<TSwapSectionProps> = ({
   onInput,
   checkedCurrency,
   hiddenMax,
+  disableSelectCurrency,
 }) => {
   const [inputAmount, setInputAmount] = useState<string | undefined>()
   const [isCurrencyListModalOpen, handleCurrencyListModalOpen] = useState(false)
@@ -103,12 +104,12 @@ const SwapSection: FC<TSwapSectionProps> = ({
           onChange={handleInput}
         />
         <button
-          style={{ cursor: readonly ? 'default' : 'pointer' }}
+          style={{ cursor: readonly || disableSelectCurrency ? 'default' : 'pointer' }}
           className="currency-button"
           onClick={() => {
-            if (!readonly) {
-              goSelectCurrency()
-            }
+            if (readonly) return false
+            if (disableSelectCurrency) return false
+            goSelectCurrency()
           }}
         >
           {currencyData && Object.keys(currencyData).length > 0 ? (

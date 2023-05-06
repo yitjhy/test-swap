@@ -8,10 +8,11 @@ import copy from 'copy-to-clipboard'
 type TNotTradedWaning = {
   address: string
   symbol: string
+  name: string
   onCancel: () => void
   onConfirm: () => void
 }
-const NotTradedWaning: FC<TNotTradedWaning> = ({ onConfirm, onCancel, address, symbol }) => {
+const NotTradedWaning: FC<TNotTradedWaning> = ({ onConfirm, onCancel, address, symbol, name }) => {
   const handleConfirm = () => {
     onConfirm()
   }
@@ -29,7 +30,7 @@ const NotTradedWaning: FC<TNotTradedWaning> = ({ onConfirm, onCancel, address, s
         <div className="logo-wrapper">{symbol?.slice(0, 3)}</div>
       </div>
       <span className="waning-title">
-        Wrapped Ether{' '}
+        {name}
         <span className="image-wrapper">
           <Image src="/warning.png" alt="" width={15} height={15} />
         </span>

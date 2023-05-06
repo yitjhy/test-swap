@@ -21,8 +21,8 @@ export type TSelectCurrencyProps = {
 const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }) => {
   const [isWarningModalOpen, handleWarningModalOpen] = useState(false)
   const [searchValue, setSearchValue] = useState('')
-  const [noTradedAddressData, setNoTradedAddressData] = useState<{ address: string; symbol: string }>(
-    {} as { address: string; symbol: string }
+  const [noTradedAddressData, setNoTradedAddressData] = useState<{ address: string; symbol: string; name: string }>(
+    {} as { address: string; symbol: string; name: string }
   )
   const [currencyList, setCurrencyList] = useState<Global.TErc20InfoWithPair[]>([])
   const { currencyList: currencyListByContext, update: updateCurrencyList } = useRemoteCurrencyList()
@@ -96,6 +96,7 @@ const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }
             onCancel={onNotTradedWaningCancel}
             address={noTradedAddressData.address}
             symbol={noTradedAddressData.symbol}
+            name={noTradedAddressData.name}
           />
         }
         open={isWarningModalOpen}
@@ -148,6 +149,7 @@ const SelectCurrency: FC<TSelectCurrencyProps> = ({ onChecked, checkedCurrency }
                     setNoTradedAddressData({
                       address: item.address,
                       symbol: item.symbol,
+                      name: item.name,
                     })
                   }
                 }}

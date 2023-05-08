@@ -62,7 +62,7 @@ const Header = () => {
       <div className="operation-wrapper">
         <div className="chain-wrapper">
           <img className="chain-logo" src="/images/header/logo_rel.svg" alt="" />
-          Combo Test-Network
+          COMBO Testnet
         </div>
         {/*<button className="connect-wallet" onClick={goConnectWallet}>*/}
         {/*  {account ? getEllipsisStr(account) : 'Connect Wallet'}*/}

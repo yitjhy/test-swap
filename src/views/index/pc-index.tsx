@@ -136,29 +136,24 @@ export default function Home() {
             At HunterSwap, we have established partnerships with various collaborators across business, technology, and
             funding to cultivate an ecological economy and bolster the growth of the ecosystem.
           </div>
-          <div className="menuWrapper">
-            <div className="itemWrapper">
-              <div className="item">
-                <img src="/images/home/nodereal.svg" alt="" width={315} height={48} />
-              </div>
-              <div className="item">
-                <img src="/images/home/unco.svg" alt="" width={150} height={67} />
-              </div>
-              {/*<div className="blockChain">*/}
-              {/*  <div className="blockChainItem">COCOS</div>*/}
-              {/*  <div className="blockChainItem">BLOCKCHAIN</div>*/}
-              {/*  <div className="blockChainItem">EXPEDITION</div>*/}
-              {/*</div>*/}
-            </div>
-            <div className="itemWrapper">
-              <div className="item">
-                <img src="/images/home/bnbchain.svg" alt="" width={271} height={54} />
-              </div>
-              <div className="item">
-                <img src="/images/home/optmism.svg" alt="" width={211} height={28} />
-              </div>
-            </div>
-          </div>
+          {/*<div className="menuWrapper">*/}
+          {/*  <div className="itemWrapper">*/}
+          {/*    <div className="item">*/}
+          {/*      <img src="/images/home/nodereal.svg" alt="" width={315} height={48} />*/}
+          {/*    </div>*/}
+          {/*    <div className="item">*/}
+          {/*      <img src="/images/home/unco.svg" alt="" width={150} height={67} />*/}
+          {/*    </div>*/}
+          {/*  </div>*/}
+          {/*  <div className="itemWrapper">*/}
+          {/*    <div className="item">*/}
+          {/*      <img src="/images/home/bnbchain.svg" alt="" width={271} height={54} />*/}
+          {/*    </div>*/}
+          {/*    <div className="item">*/}
+          {/*      <img src="/images/home/optmism.svg" alt="" width={211} height={28} />*/}
+          {/*    </div>*/}
+          {/*  </div>*/}
+          {/*</div>*/}
         </div>
         <div className="copyRight">
           <div />
@@ -249,7 +244,7 @@ const MainWrapper = styled.div<{ bgSize: number; bgPosition: { left: number; top
   }
   .content {
     position: absolute;
-    margin-top: 140px;
+    margin-top: 170px;
     width: 738px;
     right: 7vw;
     .title {

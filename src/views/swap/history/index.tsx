@@ -40,7 +40,7 @@ const History: FC<THistory> = ({ isShow }) => {
     <ConfigWrapper>
       <div className="split-line" />
       <div className="header">
-        <span className="chain-name">Combo Test-Network</span>
+        <span className="chain-name">COMBO Testnet</span>
         <span
           className="clear"
           onClick={() => {

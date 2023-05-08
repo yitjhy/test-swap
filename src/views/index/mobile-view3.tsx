@@ -13,28 +13,28 @@ const MobileView3: FC<{ onPre: (id: 'view1' | 'view2' | 'view3') => void }> = ({
         At HunterSwap, we have established partnerships with various collaborators across business, technology, and
         funding to cultivate an ecological economy and bolster the growth of the ecosystem.
       </span>
-      <div className="menuWrapper">
-        <div className="itemWrapper">
-          <div className="item">
-            <img src="/images/home/nodereal.svg" alt="" width={226} height={35} />
-          </div>
-        </div>
-        <div className="itemWrapper">
-          <div className="item">
-            <img src="/images/home/bnbchain.svg" alt="" width={194} height={39} />
-          </div>
-        </div>
-        <div className="itemWrapper">
-          <div className="item">
-            <img src="/images/home/unco.svg" alt="" width={107} height={48} />
-          </div>
-        </div>
-        <div className="itemWrapper">
-          <div className="item">
-            <img src="/images/home/optmism.svg" alt="" width={151} height={20} />
-          </div>
-        </div>
-      </div>
+      {/*<div className="menuWrapper">*/}
+      {/*  <div className="itemWrapper">*/}
+      {/*    <div className="item">*/}
+      {/*      <img src="/images/home/nodereal.svg" alt="" width={226} height={35} />*/}
+      {/*    </div>*/}
+      {/*  </div>*/}
+      {/*  <div className="itemWrapper">*/}
+      {/*    <div className="item">*/}
+      {/*      <img src="/images/home/bnbchain.svg" alt="" width={194} height={39} />*/}
+      {/*    </div>*/}
+      {/*  </div>*/}
+      {/*  <div className="itemWrapper">*/}
+      {/*    <div className="item">*/}
+      {/*      <img src="/images/home/unco.svg" alt="" width={107} height={48} />*/}
+      {/*    </div>*/}
+      {/*  </div>*/}
+      {/*  <div className="itemWrapper">*/}
+      {/*    <div className="item">*/}
+      {/*      <img src="/images/home/optmism.svg" alt="" width={151} height={20} />*/}
+      {/*    </div>*/}
+      {/*  </div>*/}
+      {/*</div>*/}
       <div className="pre-btn">
         <CaretUpOutlined onClick={handlePre} />
       </div>

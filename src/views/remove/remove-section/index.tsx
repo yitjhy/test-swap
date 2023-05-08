@@ -181,7 +181,9 @@ const RemoveSection: FC<TRemoveSection> = ({ data, onLiquidityChange }) => {
               amount={formatUnits(liquidity, data.pairDecimals)}
               checkedCurrency={{
                 name: `${data.tokens[0].symbol.slice(0, 3)} / ${data.tokens[1].symbol.slice(0, 3)}`,
-                symbol: `${data.tokens[0].symbol.slice(0, 3)} / ${data.tokens[1].symbol.slice(0, 3)}`,
+                symbol: `${data.tokens[0].symbol.slice(0, 3).toUpperCase()} / ${data.tokens[1].symbol
+                  .slice(0, 3)
+                  .toUpperCase()}`,
                 address: data.pairAddress,
                 decimals: data.pairDecimals,
                 balance: data.accountPairBalance,

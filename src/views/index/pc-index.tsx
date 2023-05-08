@@ -220,7 +220,7 @@ const MainWrapper = styled.div<{ bgSize: number; bgPosition: { left: number; top
       font-size: 20px;
       line-height: 25px;
       display: block;
-      text-align: left;
+      text-align: center;
     }
     .des2 {
       display: block;
@@ -300,7 +300,7 @@ const MainWrapper = styled.div<{ bgSize: number; bgPosition: { left: number; top
       font-size: 20px;
       line-height: 25px;
       display: block;
-      width: 660px;
+      width: 695px;
       margin-top: 10px;
     }
     .swap {
@@ -323,7 +323,7 @@ const MainWrapper = styled.div<{ bgSize: number; bgPosition: { left: number; top
     color: #a6a6a6;
     bottom: 20px;
     width: 100%;
-    padding: 0 30px;
+    padding: 0 40px;
     justify-content: space-between;
     .btn-group {
       display: flex;

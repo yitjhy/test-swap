@@ -8,10 +8,11 @@ import { getEllipsisStr } from '@/utils'
 import { routerMenu } from './constants'
 import Dropdown, { MenuItemText, MenuItemWrapper } from '@/components/dropdown/components/dropdown'
 import { LogoutOutlined } from '@ant-design/icons'
+import { Chain } from '@/types/enum'
 
 const Header = () => {
   const { account } = useWeb3React()
-  const { active, deActive } = useWallet()
+  const { active, deActive, switchChain } = useWallet()
   const router = useRouter()
   const [checkedMenu, setCheckedMenu] = useState(router.pathname)
   const goRouter = (route: string) => {
@@ -19,7 +20,8 @@ const Header = () => {
     router.push(route).then()
   }
   const goConnectWallet = async () => {
-    await active('metaMask')
+    // await active('metaMask')
+    await switchChain(Chain.COMBOTest)
   }
   useEffect(() => {
     setCheckedMenu(router.pathname)

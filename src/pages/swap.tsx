@@ -33,6 +33,7 @@ import useMobile from '@/hooks/useMobile'
 import { useWallet } from '@/context/WalletContext'
 import { useMessage } from '@/context/MessageContext'
 import { DialogType, useDialog } from '@/components/dialog'
+import { Chain } from '@/types/enum'
 
 enum ExactType {
   exactIn = 'exactIn',
@@ -45,7 +46,7 @@ function Swap() {
   const isMobile = useMobile()
   const router = useRouter()
   const { account, provider } = useWeb3React()
-  const { active } = useWallet()
+  const { active, switchChain } = useWallet()
   const [checkedFromCurrency, setCheckedFromCurrency] = useState<Global.TErc20InfoWithPair>(
     {} as Global.TErc20InfoWithPair
   )
@@ -79,7 +80,8 @@ function Swap() {
   //   exactType
   // )
   const goConnectWallet = async () => {
-    await active('metaMask')
+    // await active('metaMask')
+    await switchChain(Chain.COMBOTest)
   }
   const updateBalance = async () => {
     let fromBalance = constants.Zero

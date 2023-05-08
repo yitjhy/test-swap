@@ -171,6 +171,13 @@ export default function Home() {
                 window.open('https://twitter.com/Hunterswap2023', '__blank')
               }}
             />
+            <img
+              src="/images/common/telegram.svg"
+              alt=""
+              onClick={() => {
+                window.open('https://t.me/hunter_swap', '__blank')
+              }}
+            />
           </div>
         </div>
       </MainWrapper>

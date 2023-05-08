@@ -56,7 +56,7 @@ function LP() {
             </button>
           </div>
         </div>
-        {pairDetailList.length > 0 ? (
+        {pairDetailList.length > 0 && account ? (
           <>
             <div className="collapse-wrapper">
               {pairDetailList?.map((item, index) => {
@@ -66,7 +66,8 @@ function LP() {
                     title={
                       <div className="collapse-header">
                         {/*<Image src={imgSrc} alt="" width={40} height={40} />*/}
-                        {item.tokens[0].symbol} / {item.tokens[1].symbol}
+                        {item.tokens?.length > 1 ? `${item.tokens[0].symbol} / ${item.tokens[1].symbol}` : ''}
+                        {/*{item?.tokens && item?.tokens[0]?.symbol} / {item?.tokens && item?.tokens[1]?.symbol}*/}
                       </div>
                     }
                   >

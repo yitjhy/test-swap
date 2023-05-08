@@ -29,13 +29,14 @@ import VideoBg from '@/business-components/videoBg'
 import useMobile from '@/hooks/useMobile'
 import { useWallet } from '@/context/WalletContext'
 import { useWeb3React } from '@web3-react/core'
+import { Chain } from '@/types/enum'
 
 const IncreaseLP = () => {
   const { account } = useWeb3React()
   const isMobile = useMobile()
   const router = useRouter()
   const { query } = useRouter()
-  const { active } = useWallet()
+  const { active, switchChain } = useWallet()
   const [slippage, setSlippage] = useState<number>(0)
   const [deadline, setDeadline] = useState<number>(0)
   const [isExpertMode, setIsExpertMode] = useState(false)
@@ -72,7 +73,8 @@ const IncreaseLP = () => {
     { address: checkedToCurrency.address, inputValue: inputValueByTo }
   )
   const goConnectWallet = async () => {
-    await active('metaMask')
+    // await active('metaMask')
+    await switchChain(Chain.COMBOTest)
   }
   const onSelectedCurrencyByFrom: TSwapSectionProps['onSelectedCurrency'] = (balance, currency) => {
     setCheckedFromCurrency(currency)

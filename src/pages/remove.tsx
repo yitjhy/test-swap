@@ -21,10 +21,11 @@ import Popover from '@/components/popover'
 import useMobile from '@/hooks/useMobile'
 import { useWeb3React } from '@web3-react/core'
 import { useWallet } from '@/context/WalletContext'
+import { Chain } from '@/types/enum'
 
 const RemoveLP = () => {
   const { account } = useWeb3React()
-  const { active } = useWallet()
+  const { active, switchChain } = useWallet()
   const isMobile = useMobile()
   const router = useRouter()
   const { removeLiquidity, removeLiquidityETH } = useRemoveLiquidity()
@@ -49,7 +50,8 @@ const RemoveLP = () => {
     setInputToLiquidity(inputToLiquidity)
   }
   const goConnectWallet = async () => {
-    await active('metaMask')
+    // await active('metaMask')
+    await switchChain(Chain.COMBOTest)
   }
   const handleRemove = async () => {
     let res = false

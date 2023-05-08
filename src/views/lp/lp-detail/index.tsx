@@ -12,10 +12,12 @@ const PairDetail: FC<{ data: Global.TPairInfo }> = ({ data }) => {
     <LPDetailWrapper>
       <div className="lp-detail-item-wrapper">
         <div className="lp-detail-item-label">Your total pool tokens：</div>
-        <div className="lp-detail-item-value">{formatUnits(data.accountPairBalance, data.pairDecimals)}</div>
+        <div className="lp-detail-item-value">
+          {formatUnits(data.accountPairBalance || constants.Zero, data.pairDecimals)}
+        </div>
       </div>
       <>
-        {data.tokens.map((item, index) => {
+        {data.tokens?.map((item, index) => {
           return (
             <div className="lp-detail-item-wrapper" key={index}>
               <div className="lp-detail-item-label">Pooled {item.symbol}:</div>
@@ -28,7 +30,7 @@ const PairDetail: FC<{ data: Global.TPairInfo }> = ({ data }) => {
       </>
       <div className="lp-detail-item-wrapper">
         <div className="lp-detail-item-label">Your pool share:</div>
-        <div className="lp-detail-item-value">{formatUnits(data.LPShare, 6)}%</div>
+        <div className="lp-detail-item-value">{formatUnits(data.LPShare || constants.Zero, 6)}%</div>
       </div>
       <div className="operation-wrapper">
         <ConfirmBtn

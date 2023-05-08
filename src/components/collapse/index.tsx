@@ -55,7 +55,7 @@ const ContentWrapper = styled.div<{ isExpand: boolean; height: number | undefine
   transition: all cubic-bezier(0.39, 0.58, 0.57, 1) 0.2s;
   transform-origin: 50% 0;
   //height: ${({ isExpand, height }) => (isExpand ? `${height}px` : 0)};
-  height: ${({ isExpand, height }) => (isExpand ? `261px` : 0)};
+  max-height: ${({ isExpand, height }) => (isExpand ? `261px` : 0)};
   opacity: ${({ isExpand }) => (isExpand ? 1 : 0)};
   overflow: ${({ height, maxHeight }) => (Number(height) < maxHeight ? 'hidden' : 'auto')};
   /* transform: ${({ isExpand }) => (isExpand ? 'scaleY(1)' : 'scaleY(0)')}; */

@@ -5,16 +5,18 @@ import { routerMenu } from './constants'
 import { useRouter } from 'next/router'
 import { useState, useRef } from 'react'
 import { useClickAway } from 'ahooks'
+import { Chain } from '@/types/enum'
 
 const MobileHeader = () => {
   const { isActive } = useWeb3React()
-  const { active } = useWallet()
+  const { active, switchChain } = useWallet()
   const router = useRouter()
   const menuWrapperRef = useRef<HTMLDivElement>(null)
   const [checkedMenu, setCheckedMenu] = useState(router.pathname)
   const [isShowMenu, setIsShowMenu] = useState(false)
   const goConnectWallet = async () => {
-    await active('metaMask')
+    // await active('metaMask')
+    await switchChain(Chain.COMBOTest)
   }
   const goRouter = (route: string) => {
     setCheckedMenu(route)

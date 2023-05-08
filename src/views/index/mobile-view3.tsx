@@ -9,6 +9,10 @@ const MobileView3: FC<{ onPre: (id: 'view1' | 'view2' | 'view3') => void }> = ({
   return (
     <MobileView3Wrapper>
       <span className="title">Ecosystem Partner</span>
+      <span className="des">
+        At HunterSwap, we have established partnerships with various collaborators across business, technology, and
+        funding to cultivate an ecological economy and bolster the growth of the ecosystem.
+      </span>
       <div className="menuWrapper">
         <div className="itemWrapper">
           <div className="item">
@@ -46,11 +50,18 @@ const MobileView3Wrapper = styled.div`
     text-align: center;
     display: block;
   }
+  .des {
+    font-size: 12px;
+    color: #ffffff;
+    text-align: left;
+    display: block;
+    margin-top: 17px;
+  }
   .menuWrapper {
     margin-top: 60px;
     font-size: 28px;
     display: grid;
-    row-gap: 40px;
+    row-gap: 30px;
     .itemWrapper {
       display: flex;
       column-gap: 67px;

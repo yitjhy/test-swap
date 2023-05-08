@@ -90,7 +90,7 @@ const getGraphEdge = (pairs: TPair[]) => {
 }
 
 const useRoute2 = (inToken: string, outToken: string, amount: string, exactType: ExactType) => {
-  const { account, provider } = useWeb3React()
+  const { account, provider, isActive } = useWeb3React()
   const { loading, error, data, refetch } = useQuery<{ pairs: TPair[] }>(GET_All_PAIRS)
   const [routes, setRoutes] = useState<TRoutePair[]>([])
   const routerContract = useContract<HunterswapRouter02>(contractAddress.router, ABI.router)
@@ -214,7 +214,7 @@ const useRoute2 = (inToken: string, outToken: string, amount: string, exactType:
         setRoutes([])
       }
     },
-    [data]
+    [data, account, signer]
   )
   const refresh = () => {
     if (data && data.pairs && data.pairs.length && inToken && outToken && amount && amount !== '0' && account) {
@@ -227,7 +227,18 @@ const useRoute2 = (inToken: string, outToken: string, amount: string, exactType:
     }
   }
   useEffect(() => {
-    if (data && data.pairs && data.pairs.length && inToken && outToken && amount && amount !== '0' && account) {
+    if (
+      data &&
+      data.pairs &&
+      data.pairs.length &&
+      inToken &&
+      outToken &&
+      amount &&
+      amount !== '0' &&
+      account &&
+      isActive &&
+      signer
+    ) {
       getRoutes(
         isSameAddress(inToken, AddressZero) ? contractAddress.weth : inToken,
         isSameAddress(outToken, AddressZero) ? contractAddress.weth : outToken,
@@ -235,7 +246,7 @@ const useRoute2 = (inToken: string, outToken: string, amount: string, exactType:
         exactType
       ).then()
     }
-  }, [data, inToken, outToken, amount, exactType, account])
+  }, [data, inToken, outToken, amount, exactType, account, isActive, signer])
   return { routes, getRoutes, loading, refresh }
 }
 

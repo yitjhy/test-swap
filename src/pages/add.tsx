@@ -51,26 +51,26 @@ const IncreaseLP = () => {
   const { pairDetail, updatePairDetail } = usePairInfo(pairAddress)
   const { addLiquidity, addLiquidityETH } = useCreatePair()
   const { getOutValueByInputIn, getInValueByInputOut } = useValueByInput(
-    getAddress(checkedFromCurrency.address, checkedToCurrency.address).fromAddress,
-    getAddress(checkedFromCurrency.address, checkedToCurrency.address).toAddress
+    getAddress(checkedFromCurrency?.address, checkedToCurrency?.address).fromAddress,
+    getAddress(checkedFromCurrency?.address, checkedToCurrency?.address).toAddress
   )
   const { pairAddress: pairAddressFromHook } = usePairAddress(
-    getAddress(checkedFromCurrency.address, checkedToCurrency.address).fromAddress,
-    getAddress(checkedFromCurrency.address, checkedToCurrency.address).toAddress
+    getAddress(checkedFromCurrency?.address, checkedToCurrency?.address).fromAddress,
+    getAddress(checkedFromCurrency?.address, checkedToCurrency?.address).toAddress
   )
   const { approved: isApprovedCurrencyFrom, approve: approveCurrencyFrom } = useERC20Approved(
-    checkedFromCurrency.address,
+    checkedFromCurrency?.address,
     contractAddress.router,
     parseUnits(cutOffStr(inputValueByFrom || '0', checkedFromCurrency.decimals), checkedFromCurrency.decimals)
   )
   const { approved: isApprovedCurrencyTo, approve: approveCurrencyTo } = useERC20Approved(
-    checkedToCurrency.address,
+    checkedToCurrency?.address,
     contractAddress.router,
-    parseUnits(cutOffStr(inputValueByTo || '0', checkedToCurrency.decimals), checkedToCurrency.decimals)
+    parseUnits(cutOffStr(inputValueByTo || '0', checkedToCurrency?.decimals), checkedToCurrency?.decimals)
   )
   const { shareOfPool } = useLiquidityRate(
-    { address: checkedFromCurrency.address, inputValue: inputValueByFrom },
-    { address: checkedToCurrency.address, inputValue: inputValueByTo }
+    { address: checkedFromCurrency?.address, inputValue: inputValueByFrom },
+    { address: checkedToCurrency?.address, inputValue: inputValueByTo }
   )
   const goConnectWallet = async () => {
     // await active('metaMask')
@@ -187,7 +187,7 @@ const IncreaseLP = () => {
     }
   }
   const getSubmitBtnText = () => {
-    if (!checkedFromCurrency.address || !checkedToCurrency.address) {
+    if (!checkedFromCurrency.address || !checkedToCurrency?.address) {
       return 'Select a Token'
     }
     if (Number(inputValueByFrom) === 0 || Number(inputValueByTo) === 0) {
@@ -212,7 +212,7 @@ const IncreaseLP = () => {
       isApprovedCurrencyTo &&
       isApprovedCurrencyFrom &&
       checkedFromCurrency.address &&
-      checkedToCurrency.address &&
+      checkedToCurrency?.address &&
       checkedFromCurrency.address !== checkedToCurrency.address &&
       Number(inputValueByTo) > 0 &&
       Number(inputValueByFrom) > 0 &&
@@ -321,7 +321,7 @@ const IncreaseLP = () => {
           pairDetail.rate &&
           pairDetail.rate.length > 0 &&
           checkedFromCurrency.address &&
-          checkedToCurrency.address ? (
+          checkedToCurrency?.address ? (
             <Rate shareOfPool={shareOfPool} rate={pairDetail.rate} />
           ) : null}
           {account ? (

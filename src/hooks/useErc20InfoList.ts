@@ -30,6 +30,19 @@ export default function useErc20InfoList(addressList: string[]) {
     }, [])
   useEffect(() => {
     if (!addressList) return
+    if (multiCallContractList.length === 0 && provider && active) {
+      singleProvider?.getBalance(account as string).then((balance) => {
+        const platformCurrency = {
+          address: platFormAddress,
+          name: 'tcBNB',
+          symbol: 'BNB',
+          decimals: 18,
+          balance,
+        }
+        setList([platformCurrency])
+        return [platformCurrency]
+      })
+    }
     if (multiCallContractList && multiCallContractList.length > 0 && provider && active) {
       // @ts-ignore
       const promise: Promise<TErc20Info[]> = provider.all(multiCallContractList).then((res) => {

@@ -22,6 +22,7 @@ import useMobile from '@/hooks/useMobile'
 import { useWeb3React } from '@web3-react/core'
 import { useWallet } from '@/context/WalletContext'
 import { Chain } from '@/types/enum'
+import MobileBottom from '@/business-components/mobileBottom'
 
 const RemoveLP = () => {
   const { account } = useWeb3React()
@@ -237,6 +238,7 @@ const RemoveLP = () => {
           {pairDetail.tokens && pairDetail.tokens.length > 0 && <LPDetail data={pairDetail} />}
         </div>
       </div>
+      {isMobile && <MobileBottom />}
     </RemoveLPWrapper>
   )
 }
@@ -253,6 +255,10 @@ const TipText = styled.span`
   color: #9c9c9c;
 `
 const RemoveLPWrapper = styled.div`
+  min-height: calc(100vh - 168px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   color: #d9d9d9;
   padding: 1rem;
   max-width: 480px;

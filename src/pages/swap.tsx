@@ -34,6 +34,7 @@ import { useWallet } from '@/context/WalletContext'
 import { useMessage } from '@/context/MessageContext'
 import { DialogType, useDialog } from '@/components/dialog'
 import { Chain } from '@/types/enum'
+import MobileBottom from '@/business-components/mobileBottom'
 
 enum ExactType {
   exactIn = 'exactIn',
@@ -283,7 +284,7 @@ function Swap() {
     }
   }
   return (
-    <div style={{ maxWidth: 480, margin: '0 auto' }}>
+    <SwapMainWrapper>
       <Modal
         title="Confirm Swap"
         content={
@@ -455,9 +456,18 @@ function Swap() {
             />
           )}
       </div>
-    </div>
+      {isMobile && <MobileBottom />}
+    </SwapMainWrapper>
   )
 }
+const SwapMainWrapper = styled.div`
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+`
 
 const ScanView = styled.div`
   cursor: pointer;

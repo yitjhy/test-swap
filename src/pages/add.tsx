@@ -30,6 +30,7 @@ import useMobile from '@/hooks/useMobile'
 import { useWallet } from '@/context/WalletContext'
 import { useWeb3React } from '@web3-react/core'
 import { Chain } from '@/types/enum'
+import MobileBottom from '@/business-components/mobileBottom'
 
 const IncreaseLP = () => {
   const { account } = useWeb3React()
@@ -359,11 +360,17 @@ const IncreaseLP = () => {
           {pairDetail.tokens && pairDetail.tokens.length > 0 && <LPDetail data={pairDetail} />}
         </div>
       </div>
+      {isMobile && <MobileBottom />}
     </IncreaseLPWrapper>
   )
 }
 
 const IncreaseLPWrapper = styled.div`
+  //margin: 0 auto;
+  min-height: calc(100vh - 168px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   color: #d9d9d9;
   padding: 1rem;
   max-width: 480px;

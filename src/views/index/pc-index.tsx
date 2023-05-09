@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import styled from 'styled-components'
 import { useDebounceFn, useScroll } from 'ahooks'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { CaretRightOutlined } from '@ant-design/icons'
 import { useRouter } from 'next/router'
 
@@ -171,6 +171,13 @@ export default function Home() {
               alt=""
               onClick={() => {
                 window.open('https://t.me/hunter_swap', '__blank')
+              }}
+            />
+            <img
+              src="/images/common/medium.svg"
+              alt=""
+              onClick={() => {
+                window.open('https://medium.com/@Hunterswap2023', '__blank')
               }}
             />
           </div>

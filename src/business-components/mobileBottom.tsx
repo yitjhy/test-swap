@@ -19,6 +19,13 @@ const MobileBottom = () => {
             window.open('https://t.me/hunter_swap', '__blank')
           }}
         />
+        <img
+          src="/images/common/medium.svg"
+          alt=""
+          onClick={() => {
+            window.open('https://medium.com/@Hunterswap2023', '__blank')
+          }}
+        />
       </div>
       <div className="split-line" />
       <div className="copyRight">©2023 HunterSwap . All Rights Reserved</div>

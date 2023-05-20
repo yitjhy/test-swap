@@ -38,7 +38,7 @@ const MobileHeader = () => {
         />
         <div
           className="menu-wrapper-box"
-          style={{ height: isShowMenu ? 80 : 0, padding: !isShowMenu ? 0 : '16px 38px 16px 17px' }}
+          style={{ height: isShowMenu ? 105 : 0, padding: !isShowMenu ? 0 : '16px 38px 16px 17px' }}
         >
           {routerMenu.map((item) => {
             return (
@@ -48,7 +48,11 @@ const MobileHeader = () => {
                 key={item.key}
                 onClick={() => {
                   setIsShowMenu(false)
-                  goRouter(item.route)
+                  if (item.href) {
+                    window.open(item.href, '__blank')
+                  } else {
+                    goRouter(item.route)
+                  }
                 }}
               >
                 {item.name}

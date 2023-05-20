@@ -50,7 +50,11 @@ const Header = () => {
                 className="menu-item"
                 key={item.key}
                 onClick={() => {
-                  goRouter(item.route)
+                  if (item.href) {
+                    window.open(item.href, '__blank')
+                  } else {
+                    goRouter(item.route)
+                  }
                 }}
               >
                 {item.name}
